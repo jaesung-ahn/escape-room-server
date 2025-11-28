@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="~{layout/layout}">
+
+<th:block layout:fragment="css"> </th:block>
+<th:block layout:fragment="script"> </th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">이벤트 목록</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>이벤트 목록</span>
+        </div>
+        <div class="card-body row">
+            <div style="width: 100%;">
+                <div style="margin-top:15px; text-align:right; margin-right:12px;">
+<!--                    <button id="excel_btn" class="btn btn-primary" style="width: 160px;">엑셀 다운로드</button>-->
+                </div>
+            </div>
+            <div class="list_search_region">
+                <p>
+                <div class="regist-div" style="margin-top:15px; text-align:right;">
+                    <button id="regist_btn" class="btn btn-primary regist-btn" style="width:120px; "
+                            th:onclick="|location.href='@{/admin/event/regForm}'|"     >
+                        이벤트 등록
+                    </button>
+
+                </div>
+                <form id="search-form"  method="get">
+<!--                    <select id="search_platform" name="search_platform" class="form-control list_search_element">-->
+<!--                        <option disabled selected >가입수단 선택</option>-->
+
+<!--                        <option value="" >전체보기</option>-->
+<!--                        {% if request.GET.search_platform == "E" %}-->
+<!--                        <option value="E" selected >이메일</option>-->
+<!--                        {% else %}-->
+<!--                        <option value="E" >이메일</option>-->
+<!--                        {% endif %}-->
+
+<!--                        {% if request.GET.search_platform == "K" %}-->
+<!--                        <option value="K" selected >카카오</option>-->
+<!--                        {% else %}-->
+<!--                        <option value="K" >카카오</option>-->
+<!--                        {% endif %}-->
+
+<!--                        {% if request.GET.search_platform == "N" %}-->
+<!--                        <option value="N" selected >네이버</option>-->
+<!--                        {% else %}-->
+<!--                        <option value="N" >네이버</option>-->
+<!--                        {% endif %}-->
+<!--                    </select>-->
+
+<!--                    <select id="search_is_agree_marketing" name="search_is_agree_marketing" class="form-control list_search_element">-->
+<!--                        <option disabled selected >마케팅 수신동의</option>-->
+
+<!--                        <option value="" >전체</option>-->
+
+
+<!--                    </select>-->
+
+<!--                    <input name="search_nickname" class="form-control list_search_element" placeholder="닉네임 입력" value="{{ request.GET.search_nickname }}">-->
+
+<!--                    <input name="search_email" class="form-control list_search_element" placeholder="이메일 입력" value="{{ request.GET.search_email }}">-->
+<!--                    <input id="search_date_filter" name="search_date_filter" class="form-control list_search_element" style="width:260px" placeholder="날짜 선택">-->
+
+                    <div style="margin-top:15px; text-align:right;">
+<!--                        <button id="btn-search" type="submit" class="btn btn-primary" style="width:120px; ">-->
+<!--                            검색</button>-->
+
+                    </div>
+
+                </form>
+
+                </p>
+            </div>
+
+            <div class="table-responsive list-table-region">
+                <table class="table table-bordered table-hover table-striped" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th> 제목 </th>
+                            <th> 이벤트 위치 </th>
+                            <th> 조회수 </th>
+                            <th> 이벤트 시작일자 </th>
+                            <th> 노출 상태 </th>
+                            <th> 작성일 </th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="table_event_list">
+                        <tr th:each="event : ${event_list}">
+                            <td th:text="${event.id}">id</td>
+                            <td th:text="${event.title}">title</td>
+                            <td th:text="${event.eventLocation.getName()}">eventLocation</td>
+                            <td th:text="${event.hitCount}"></td>
+                            <td >
+                                <span th:text="${event.displayStartDate}"></span>
+                            </td>
+                            <td >
+                                <span th:if="${event.isOperated}" th:text="'노출중'"></span>
+                                <span th:unless="${event.isOperated}" th:text="'노출 중지'"></span>
+                            </td>
+
+                            <td th:text="${event.createdAt}"></td>
+
+                            <td>
+                                <a class="btn btn-primary btn-block" th:href="@{/admin/event/detail(eventId=${event.id})}">상세 보기</a>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+    </div>
+
+    <script type="text/javascript">
+    </script>
+
+<script th:inline="javascript">
+
+</script>
+
+</div>
+
+
+
+</html>
+
+
+

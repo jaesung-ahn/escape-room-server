@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="~{layout/layout}">
+
+<th:block layout:fragment="css"> </th:block>
+<th:block layout:fragment="script">
+
+</th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">잼핏 테스트 관리</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>잼핏 테스트 관리</span>
+        </div>
+        <div class="card-body row">
+
+            <div class="list_search_region">
+                <p>
+
+                </p>
+            </div>
+
+            <form role="form" th:object="${wbtiForm}"
+                  method="post" style="width:1000px">
+            <div class="form-group">
+                <input  class="form-control" type="text"
+                        hidden
+                        th:field="*{id}">
+                <div class="table-responsive list-table-region">
+                <table class="table table-bordered table-hover table-striped" id="dataTable" width="100%" cellspacing="0">
+                    <tbody id="table_company_list">
+                        <tr>
+                            <td class="detail-left-td-info"> 이름<span style="color:red">*</span> </td>
+                            <td class="detail-content-td" colspan="1">
+                                <input  class="form-control" type="text"
+                                       placeholder="이름을 입력해주세요."
+                                       th:field="*{name}">
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 이미지</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <div style='width:200px; height: 140px; float: left; margin-left:12px;'>
+                                    <input id="imageUrlPreview" type='file' class='dropify'
+                                           data-width='200' data-height='110' data-show-loader='false'
+                                           data-default-file='' style='width:100%; height:100%;'/>
+
+                                    <input type="text"
+                                           th:field="*{wbtiImageId}"
+                                           hidden >
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 태그</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <input th:field="*{tags}" class="form-control" type="text"
+                                       placeholder="tags" >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 설명글</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <div style="margin-top:0px; height:360px;">
+                                    <textarea class="form-control" type="text" style="height:100%;"
+                                              th:field="*{descriptions}"
+                                              th:value="${descriptions}" th:text="${descriptions}"
+                                              placeholder="" ></textarea>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 잘맞는 잼핏 테스트</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div class="table-responsive list-table-region">
+                                    <table id="content_table" class="table table-bordered " width="100%" cellspacing="0">
+                                        <tbody id="table_wbti_list">
+                                        <tr>
+                                            <td class="detail-content-td"> no. </td>
+                                            <td class="detail-content-td"> 잼핏 테스트명 </td>
+                                            <td class="detail-content-td">
+                                                <div style='clear:both'>
+                                                    <button type='button' class='btn btn-primary add-wbti-btn' style='float:left; margin-left:12px;'>
+                                                        추가</button>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr th:each="wbtiPartnerForm : ${wbtiForm.wbtiPartnerForms}">
+                                            <td class="detail-wbti-td wbti-id"
+                                                th:text="${wbtiPartnerForm.wbtiId}">  </td>
+                                            <td class="detail-wbti-td"
+                                                th:text="${wbtiPartnerForm.wbtiName}">
+
+                                            </td>
+                                            <td class="detail-wbti-td">
+                                                <div style='clear:both'>
+                                                    <button type='button' class='btn btn-primary add-wbti-btn' style='float:left; margin-left:12px;'>
+                                                        추가</button>
+                                                    <button type='button' class='btn btn-danger del-wbti-btn' style='float:left; margin-left:12px;' 
+                                                            >
+                                                        삭제</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 등록일</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <input readonly th:field="*{createdAt}" class="form-control" type="text"
+                                       placeholder="등록일" >
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+                <div style="width: 100%; height:60px;clear:both; text-align:center;">
+                    <button id="back-button" type="button" class="btn btn-secondary" >취소</button>
+                    <button id="submit-button" type="button" class="btn btn-primary" style=" margin-left:12px;">저장</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+        <!-- Element to pop up -->
+        <div id="element_to_pop_up">
+            <a class="b-close">닫기</a>
+            <div>
+                <table class="table table-bordered table-hover table-striped" width="100%" cellspacing="0">
+                    <tbody id="table_popup_list">
+
+                    <tr>
+                        <td>no.</td>
+                        <td>잼핏 테스트명 </td>
+                        <td></td>
+                    </tr>
+                    <tr th:each="wbti : ${wbtiList}">
+                        <td class="detail-wbti-td"
+                            th:text="${wbti.id}"> 1 </td>
+                        <td class="detail-wbti-td"
+                            th:text="${wbti.name}"> 놀거리명 </td>
+                        <td class="detail-wbti-td">
+                            <div style='clear:both'>
+                                <button type='button' class='btn btn-primary sel-wbti-btn' style='float:left; margin-left:12px;'
+                                        th:attr="wbtiId=${wbti.id},wbtiName=${wbti.name}"
+                                >
+                                    선택</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+    </script>
+
+    <script type="text/javascript" th:src="@{/js/jquery.bpopup.min.js}"></script>
+
+    <style>
+    #element_to_pop_up {
+        background-color:#fff;
+        border-radius:5px;
+        color:#000;
+        display:none;
+        padding:20px;
+        min-width:400px;
+        min-height: 180px;
+    }
+    .b-close{
+        cursor:pointer;
+        position:absolute;
+        right:10px;
+        top:5px;
+    }
+    </style>
+
+    <script th:inline="javascript">
+
+        var bPopupElement = $('#element_to_pop_up');
+        // bPopup.close();
+        let wbtiSet = new Set();
+
+        // 보유 wbti 리스트
+        var wbtiList = [[${wbtiPartnerList}]];
+        var id = [[${wbtiForm.id}]];
+        if (wbtiList != null && wbtiList.length > 0) {
+            $.each(wbtiList, function(index, element) {
+                wbtiSet.add(element);
+            });
+        }
+
+        var show_popup_func = function(){
+            bPopupElement.bPopup();
+        };
+        var del_wbti_func = function(){
+            var _this = $(this);
+            _this.parent().parent().parent().remove();
+
+            var wbtiId = parseInt(_this.parent().parent().parent().children('.wbti-id').text());
+
+            wbtiSet.delete(wbtiId);
+            console.log(wbtiSet);
+        };
+
+        $('.add-wbti-btn').click(show_popup_func);
+        $('.del-wbti-btn').click(del_wbti_func);
+        
+        $('.sel-wbti-btn').click(function(){
+            var wbtiId = parseInt($(this).attr('wbtiId'));
+            var wbtiName = $(this).attr('wbtiName');
+            console.log(wbtiId);
+            console.log(wbtiName);
+
+            console.log('wbtiSet:', wbtiSet);
+            if (wbtiSet.has(wbtiId) == false) {
+                bPopupElement.close();
+                $('#table_wbti_list').append(
+                    "<tr > <td class='detail-wbti-td wbti-id'>"+wbtiId+"</td><td class='detail-wbti-td'>" + wbtiName+"</td>                                            <td class='detail-wbti-td'>                                                <div style='clear:both'>                                                    <button type='button' class='btn btn-primary add-wbti-btn' style='float:left; margin-left:12px;'>                                                        추가</button>                                                    <button type='button' class='btn btn-danger del-wbti-btn' style='float:left; margin-left:12px;'                                                             >                                                        삭제</button>                                                </div>                                            </td> </tr>"
+                );
+                $('.add-wbti-btn').click(show_popup_func);
+                $('.del-wbti-btn').click(del_wbti_func);
+                wbtiSet.add(wbtiId);
+            }
+            else {
+                alert('이미 보유한 잼핏테스트 입니다.');
+            }
+        });
+
+        var change_img_callback = function(){
+          var files = $(this).prop("files")[0];
+          var form_data = new FormData();
+          var detail_id = [[${wbtiForm.id}]];
+
+
+          form_data.append("file", files);
+          //form_data.append("bucket_folder", $(this).attr('org-bucket-folder'));
+          form_data.append("group", "company");
+          form_data.append("detail_id", detail_id);
+
+          var _this = $(this);
+          console.log(form_data);
+
+          var this_id = _this.attr('id');
+
+          $.ajax({
+            type: "POST",
+            dataType: 'json',
+            processData: false, // important
+            contentType: false, // important
+            url: "/admin/company/images_upload",
+            data: form_data,
+            success: function(response){
+
+              if(response.status == '0000'){
+                // console.log('success');
+                console.log(response);
+                _this.attr('data-default-file', response.return_s3_url);
+                setTimeout(function(){
+
+                    if (this_id === 'imageUrlPreview') {
+
+                        $('#wbtiImageId').val(response.image_id);
+                    }
+
+
+                }, 400);
+
+              }
+              else{
+                  console.log('response:', response);
+                  // alert(response.message);
+              }
+            },
+            error: function(request, status, error){
+                  console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            },
+          });
+        };
+
+        var imageUrl = [[${wbtiForm.wbtiImageUrl}]];
+        $('#imageUrlPreview').attr('data-default-file', imageUrl);
+
+        // dropify: 이미지 미리보기
+        // 이미지 설정 이후에 dropify() 호출해야 정상적으로 이미지 보임
+        $('.dropify').dropify();
+
+        $('.dropify').on("change", change_img_callback);
+
+        $('#submit-button').click(function(){
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                traditional : true,
+                url: "/admin/wbti/save",
+                data: {
+                    "id": id,
+                    "name": $('#name').val(),
+                    "wbtiImageId": $('#wbtiImageId').val(),
+                    "tags": $('#tags').val(),
+                    "descriptions": $('#descriptions').val(),
+                    "wbtiPartnerList": Array.from(wbtiSet)
+                },
+                success: function(response){
+
+                    if(response.status == '0000'){
+                        // console.log('success');
+                        console.log(response);
+                        alert('수정/등록 되었습니다.');
+
+                        location.replace('/admin/wbti/list');
+                    }
+                    else{
+                        console.log('response:', response);
+                        alert(response.message);
+                    }
+                },
+                error: function(request, status, error){
+                    console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                    alert("서버 통신 중 오류가 발생하였습니다.");
+                },
+            });
+        });
+
+    </script>
+</div>
+
+</html>

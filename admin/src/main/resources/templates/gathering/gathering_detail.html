@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="~{layout/layout}">
+
+<th:block layout:fragment="css">
+
+
+</th:block>
+<th:block layout:fragment="script">
+
+</th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">동행모집 관리</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>동행모집 관리</span>
+        </div>
+        <div class="card-body row">
+
+            <div class="list_search_region">
+                <p>
+
+                </p>
+            </div>
+
+            <form role="form" th:object="${gatheringForm}"
+                  method="post" style="width:1000px">
+            <div class="form-group">
+                <input  class="form-control" type="text"
+                        hidden
+                        th:field="*{id}">
+                <div class="table-responsive list-table-region">
+                <table class="table table-bordered table-hover table-striped" id="dataTable" width="100%" cellspacing="0">
+                    <tbody id="table_gathering_list">
+                        <tr>
+                            <td class="detail-left-td-info"> 호스트명<span style="color:red">*</span> </td>
+                            <td class="detail-content-td" colspan="1">
+                                <input class="form-control" type="text"
+                                       placeholder=""
+                                       th:field="*{leader}"
+                                       readonly
+                                       >
+                            </td>
+                            <td class="detail-left-td-info"> 동행모집 상태 </td>
+                            <td class="detail-content-td" colspan="1">
+                                <select th:field="*{gatheringStatus}" class="form-control">
+
+                                    <option th:each="gatheringStatusValue : ${gatheringStatusValues}"
+                                            th:value="${gatheringStatusValue}"
+                                            th:text="${gatheringStatusValue.getName()}">
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 제목 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{title}"
+                                        placeholder=""
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 글 내용</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div style="margin-top:0px; height:160px;">
+                                    <textarea class="form-control" type="text" style="height:100%;"
+                                              th:field="*{information}"
+                                              th:value="${information}" th:text="${information}"
+                                              placeholder="" ></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 업체 / 놀거리명</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        style="width: 300px;" readonly
+                                        th:field="*{companyAndContentName}"
+                                        placeholder=""
+                                >
+                                <a id="content_btn" class="btn btn-primary move-btn content-btn" style="width:100px; "
+                                   th:href="@{/admin/content/detail(contentId=*{contentId})}">
+                                    이동하기
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 모집조건</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                          <td class="detail-left-td-info">
+                                              모집방식
+                                          </td>
+                                          <td class="detail-left-td-info">
+                                              메이트 수
+                                          </td>
+                                          <td class="detail-left-td-info">
+                                              연령대
+                                          </td>
+                                          <td class="detail-left-td-info">
+                                              성별
+                                          </td>
+                                          <td class="detail-left-td-info">
+                                              가격
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="detail-left-td-info">
+                                                <span th:field="*{recruitType}" th:text="*{recruitType.name}"></span>
+                                            </td>
+                                            <td class="detail-left-td-info">
+                                                <span th:text="*{maxPeople}" ></span>
+                                            </td>
+                                            <td class="detail-left-td-info">
+                                                <div th:each="ageGroup : ${ageGroups}">
+                                                    <span th:text="${ageGroup.getName()}"></span>
+                                                </div>
+                                            </td>
+                                            <td class="detail-left-td-info">
+                                                <span th:text="*{genderType.name}" ></span>
+                                            </td>
+                                            <td class="detail-left-td-info">
+                                                <span th:text="*{peopleNumber}"></span>
+                                                <span>인 - </span>
+                                                <span th:text="*{price}"></span>
+                                                <span>원 </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 일시 협의 여부</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="checkbox"
+                                        style="width: 60px;"
+                                        th:field="*{isDateAgreement}"
+                                        placeholder=""
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 동행 희망일</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{hopeDate}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 희망 지역</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <select class="form-control" th:field="*{city.code}">
+                                    <option th:each="cityValue : ${seoulCities}"
+                                            th:value="${cityValue.code}"
+                                            th:text="${cityValue.getName()}">
+
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 카카오 오픈채팅방 링크</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{kakaoOpenChatUrl}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 댓글 목록</td>
+                            <td class="detail-content-td" colspan="3">
+                                <a id="reply_btn" class="btn btn-primary move-btn reply-btn" style="width:120px; ">
+                                    이동하기
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 동행 실제 일자</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{realGatherDate}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 찜수</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 방문자 수</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{hitCount}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 작성일</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{createdAt}"
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+                <div style="width: 100%; height:60px;clear:both; text-align:center;">
+                    <button id="back-button" type="button" class="btn btn-secondary" >취소</button>
+<!--                    <button id="submit-button" type="submit" class="btn btn-primary" style=" margin-left:12px;">저장</button>-->
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+    </div>
+
+    <script type="text/javascript">
+
+    </script>
+
+    <script th:inline="javascript">
+
+    </script>
+</div>
+
+</html>

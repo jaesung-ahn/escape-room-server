@@ -1,0 +1,60 @@
+spring.h2.console.enabled: true
+
+# AWS Account Credentials (AWS 접근 키)
+#cloud.aws.credentials.accessKey={액세스키}
+#cloud.aws.credentials.secretKey={액세스 시크릿 키}
+#
+## AWS S3 bucket Info (S3 버킷정보)
+#cloud.aws.s3.bucket={S3 버킷 이름)
+#cloud.aws.region.static=ap-northeast-2 (S3 버킷 지역)
+#cloud.aws.stack.auto=false
+#
+## file upload max size (파일 업로드 크기 설정)
+#spring.servlet.multipart.max-file-size=20MB
+#spring.servlet.multipart.max-request-size=20MB
+
+cloud:
+  aws:
+    credentials:
+      accessKey:
+      secretKey:
+    s3:
+      bucket: wiiee
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+## file upload max size (파일 업로드 크기 설정)
+#spring.servlet.multipart.max-file-size=20MB
+#spring.servlet.multipart.max-request-size=20MB
+
+#spring:
+#  profiles:
+#    active: dev
+spring:
+  devtools:
+    livereload:
+      enabled: true
+  thymeleaf:
+    cache: false
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+  jpa:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: false
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+
+server:
+  port: 8080

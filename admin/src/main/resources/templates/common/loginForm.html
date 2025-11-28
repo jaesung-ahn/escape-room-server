@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>admin</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+
+    <!-- Custom fonts for this template-->
+<!--    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}"-->
+<!--          rel="stylesheet" type="text/css">-->
+
+<!--    &lt;!&ndash; Custom styles for this template&ndash;&gt;-->
+<!--    <link href="{% static 'css/sb-admin.min.css' %}" rel="stylesheet">-->
+<!--    <link href="{% static 'css/common.css' %}" rel="stylesheet">-->
+
+    <link th:href="@{/css/sb-admin.min.css}" rel="stylesheet" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+<body class="bg-white">
+
+
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+
+    <a class="navbar-brand mr-1" href="/admin">Internal Admin</a>
+
+  </nav>
+
+
+
+  <div class="container bg-white">
+    <div class="card card-login mx-auto mt-5">
+      <div class="card-header">어드민 Login</div>
+      <div class="card-body">
+<!--          action="/"-->
+          <form id="loginForm" th:acton="@{/}" method="post">
+              <div class="form-group">
+                  <input type="text" name="adminEmail" class="form-control"
+                         required="required"
+                         value="wiiee_admin@wiiee.co.kr"
+                         placeholder="email을 입력하세요"/>
+              </div>
+              <div class="form-group">
+                  <input type="password" name="password" class="form-control"
+                         required="required"
+                         value=""
+                         placeholder="password를 입력하세요"/>
+              </div>
+              <div class="danger text-center" >
+                  <p class="text-danger" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Login</button>
+          </form>
+
+<!--        <form id="loginForm" method="post">-->
+<!--            <div class="form-group">-->
+<!--              <input type="text" id="inputEmail" name="inputEmail" class="form-control"-->
+<!--                     placeholder="이메일" required="required" autofocus="autofocus">-->
+<!--              &lt;!&ndash;<label for="inputEmail">email을 입력하세요</label>&ndash;&gt;-->
+<!--          </div>-->
+<!--            <div class="form-group">-->
+<!--              <input type="password" id="inputPassword" name="inputPassword" class="form-control"-->
+<!--                     placeholder="패스워드" required="required">-->
+<!--              &lt;!&ndash;<label for="inputPassword">password를 입력하세요</label>&ndash;&gt;-->
+<!--          </div>-->
+
+<!--            <input type="submit" class="btn btn-primary btn-block" value="로그인">-->
+<!--        </form>-->
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Footer -->
+  <footer class="sticky-footer-index">
+    <div class="container my-auto">
+      <div class="copyright text-center my-auto">
+        <span>Copyright 2021 by <a href="">wiiee</a></span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- custom js -->
+
+<!--  <script type="text/javascript" th:src="@{/js/login.js}"></script>-->
+
+<!--  <script src="{% static 'js/login.js' %}"></script>-->
+
+<!--  &lt;!&ndash; Bootstrap core JavaScript&ndash;&gt;-->
+<!--  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>-->
+<!--  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>-->
+
+<!--  &lt;!&ndash; Core plugin JavaScript&ndash;&gt;-->
+<!--  <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>-->
+
+</body>
+</html>

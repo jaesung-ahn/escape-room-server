@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorator="~{layout/layout}">
+
+<th:block layout:fragment="css">
+
+</th:block>
+<th:block layout:fragment="script">
+
+</th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">이벤트 관리</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>이벤트 관리</span>
+        </div>
+        <div class="card-body row">
+
+            <div class="list_search_region">
+                <p>
+
+                </p>
+            </div>
+
+            <form role="form" th:object="${eventForm}"
+                  th:action="@{/admin/event/save}"
+                  method="post" style="width:1000px">
+                <div class="form-group">
+                    <input  class="form-control" type="text"
+                            hidden
+                            th:field="*{id}">
+                    <div class="table-responsive list-table-region">
+                        <table class="table table-bordered table-hover table-striped" id="dataTable" width="100%" cellspacing="0">
+                            <tbody id="table_gathering_list">
+                            <tr>
+                                <td class="detail-left-td-info"> 제목<span style="color:red">*</span> </td>
+                                <td class="detail-content-td" colspan="1">
+                                    <textarea
+                                              rows="2" cols="10"
+                                              placeholder="내용을 입력해주세요"
+                                              th:field="*{title}"
+                                              style="width:100%;"></textarea>
+                                </td>
+                                <td class="detail-left-td-info"> 노출 상태 </td>
+                                <td class="detail-content-td" colspan="1">
+                                    <select th:field="*{isOperated}" class="form-control">
+                                        <option value="true" >노출중</option>
+                                        <option value="false" >노출 중지</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="detail-left-td-info"> 제목 아래 요약글 </td>
+                                <td class="detail-content-td" colspan="3">
+                                    <textarea
+                                            rows="2" cols="10"
+                                            placeholder="메인에서 제목 아래 짧은 요약글 입력해주세요"
+                                            th:field="*{bannerDescription}"
+                                            style="width:100%;"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="detail-left-td-info"> 이벤트 시작일시 </td>
+                                <td class="detail-content-td" colspan="3">
+                                    <input type="date" th:field="*{displayStartDate}" class="form-control" style="width: 200px;"
+                                           data-date="" data-date-format="YYYY-MM-DD"
+                                    >
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="detail-left-td-info"> 이벤트 종료일시 </td>
+                                <td class="detail-content-td" colspan="3">
+                                    <input type="date" th:field="*{displayEndDate}" class="form-control" style="width: 200px;"
+                                           data-date="" data-date-format="YYYY-MM-DD"
+                                    >
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="detail-left-td-info"> 이벤트 위치 </td>
+                                <td class="detail-content-td" colspan="3">
+                                    <select th:field="*{eventLocation}" class="form-select form-control" style=" width:160px;"
+                                    >
+                                        <option th:each="eventLocationValue : ${eventLocations}"
+                                                th:value="${eventLocationValue}"
+                                                th:text="${eventLocationValue.getName()}">
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="detail-left-td-info"> 배너 이미지 </td>
+                                <td class="detail-content-td" colspan="3">
+                                    <div style='width:200px; height: 140px; float: left; margin-left:12px;'>
+                                        <input id="imageUrlPreview" type='file' class='dropify'
+                                               data-width='200' data-height='110' data-show-loader='false'
+                                               data-default-file='' style='width:100%; height:100%;'/>
+                                        <input type="text" th:field="*{bannerImgId}"
+                                               hidden >
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="detail-left-td-info"> 조회수 </td>
+                                <td class="detail-content-td" colspan="3">
+                                    <input  class="form-control" type="text"
+                                            th:field="*{hitCount}"
+                                            readonly
+                                            placeholder=""
+                                    >
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="detail-left-td-info"> 내용 </td>
+                                <td class="detail-content-td" colspan="3">
+                                    <textarea name="editorTxt" id="editorTxt"
+                                              rows="20" cols="10"
+                                              placeholder="내용을 입력해주세요"
+                                              th:field="*{eventContent}"
+                                              style="width:100%;"></textarea>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="detail-left-td-info"> 작성일</td>
+                                <td class="detail-content-td" colspan="3">
+                                    <input  class="form-control" type="text"
+                                            th:field="*{createdAt}"
+                                            readonly
+                                    >
+                                </td>
+                            </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div style="width: 100%; height:60px;clear:both; text-align:center;">
+                    <button id="back-button" type="button" class="btn btn-secondary" >취소</button>
+                    <button id="submit-button" type="submit" class="btn btn-primary" style=" margin-left:12px;">저장</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+    </div>
+
+    <script type="text/javascript">
+
+    </script>
+    <script src="//cdn.ckeditor.com/4.18.0/standard/ckeditor.js"></script>
+
+
+    <script th:inline="javascript">
+
+    var change_img_callback = function(){
+      var files = $(this).prop("files")[0];
+      var form_data = new FormData();
+      var detail_id = [[${eventForm.id}]];
+
+      if(typeof detail_id == "undefined" || detail_id == "" || detail_id == null){
+        detail_id = "new";
+      }
+
+      form_data.append("file", files);
+      //form_data.append("bucket_folder", $(this).attr('org-bucket-folder'));
+      form_data.append("group", "event");
+      form_data.append("detail_id", detail_id);
+
+      var _this = $(this);
+      console.log(form_data);
+
+      var this_id = _this.attr('id');
+
+      $.ajax({
+        type: "POST",
+        dataType: 'json',
+        processData: false, // important
+        contentType: false, // important
+        url: "/admin/company/images_upload",
+        data: form_data,
+        success: function(response){
+
+          if(response.status == '0000'){
+            // console.log('success');
+            console.log(response);
+            _this.attr('data-default-file', response.return_s3_url);
+            setTimeout(function(){
+                $('#bannerImgId').val(response.image_id);
+
+            }, 400);
+
+          }
+          else{
+              console.log('response:', response);
+              alert(response.message);
+          }
+        },
+        error: function(request, status, error){
+              console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              alert("서버로부터 오류가 발생하였습니다.");
+        },
+      });
+    };
+
+    $("#displayStartDate, #displayEndDate").on("change", function() {
+        this.setAttribute(
+            "data-date",
+            moment(this.value, "YYYY-MM-DD")
+            .format( this.getAttribute("data-date-format") )
+        )
+    }).trigger("change");
+
+    var ckeditor_config = {
+        filebrowserUploadMethod :'form',
+        filebrowserUploadUrl: "/admin/company/editor_image_upload",
+    };
+    var displayStartDate = [[${eventForm.displayStartDate}]];
+    var displayEndDate = [[${eventForm.displayEndDate}]];
+    console.log('startDate:', displayStartDate);
+    $('#displayStartDate').val(displayStartDate);
+    $('#displayStartDate').attr('data-date', displayStartDate);
+    $('#displayEndDate').val(displayEndDate);
+    $('#displayEndDate').attr('data-date', displayEndDate);
+
+    var eventContent = [[${eventForm.eventContent}]];
+    CKEDITOR.replace("editorTxt", ckeditor_config);
+    // 내용 설정하기
+    CKEDITOR.instances.editorTxt.setData(eventContent);
+    // 내용 가져오기: CKEDITOR.instances.editor1.getData()
+
+    CKEDITOR.addCss('body { background-color: black; }');
+
+    var imageUrl = [[${eventForm.bannerImgUrl}]];
+    console.log(imageUrl);
+    $('#imageUrlPreview').attr('data-default-file', imageUrl);
+    $('.dropify').dropify();
+    $('.dropify').on("change", change_img_callback);
+    </script>
+
+    <style>
+    .cke_contents.cke_reset{
+        min-height:550px;
+        height: 600px;
+    }
+    </style>
+</div>
+
+</html>

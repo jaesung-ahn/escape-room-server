@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_HOME" value="/wiiee/zamfit/logs/api" />
+
+    <springProfile name="local">
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] : %msg%n</pattern>
+            </encoder>
+        </appender>
+        <root level="info">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="ROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_HOME}/service.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <!-- rollover daily -->
+                <fileNamePattern>${LOG_HOME}/log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <!-- or whenever the file size reaches 100MB -->
+                    <maxFileSize>100MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+
+                <!-- maximum number of archive files to keep, deleting older files. For example, if you specify monthly rollover, and set maxHistory to 6, then 6 months worth of archives files will be kept with files older than 6 months deleted. -->
+                <maxHistory>30</maxHistory>
+
+            </rollingPolicy>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <!-- log4jdbc 옵션 설정 -->
+        <logger name="org.apache.commons.dbcp2" level="error" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ROLLFILE"/>
+        </logger>
+        <logger name="java.sql" level="warn" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ROLLFILE"/>
+        </logger>
+        <logger name="jdbc" level="error" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ROLLFILE"/>
+        </logger>
+        <!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함 -->
+        <logger name="jdbc.sqltiming" level="info" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ROLLFILE"/>
+        </logger>
+        <logger name="jdbc.resultsettable" level="info" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ROLLFILE"/>
+        </logger>
+
+        <root level="info">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLFILE"/>
+        </root>
+    </springProfile>
+</configuration>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="~{layout/layout}">
+
+<th:block layout:fragment="css"> </th:block>
+<th:block layout:fragment="script">
+
+</th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">업체 관리</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>업체 관리</span>
+        </div>
+        <div class="card-body row">
+
+            <div class="list_search_region">
+                <p>
+
+                </p>
+            </div>
+
+            <form role="form" th:action="@{/admin/company/save}" th:object="${companyForm}"
+                  method="post" style="width:1000px">
+            <div class="form-group">
+                <input  class="form-control" type="text"
+                        hidden
+                        th:field="*{id}">
+                <div class="table-responsive list-table-region">
+                <table class="table table-bordered table-hover table-striped" id="dataTable" width="100%" cellspacing="0">
+                    <tbody id="table_company_list">
+                        <tr>
+                            <td class="detail-left-td-info"> 업체명<span style="color:red">*</span> </td>
+                            <td class="detail-content-td" colspan="1">
+                                <input  class="form-control" type="text"
+                                       placeholder="업체명을 입력해주세요."
+                                       th:field="*{name}">
+                            </td>
+                            <td class="detail-left-td-info"> 운영상태 </td>
+                            <td class="detail-content-td" colspan="1">
+
+                                <select th:field="*{operated}" class="form-control">
+                                    <option value="true" >운영중</option>
+                                    <option value="false" >운영 중지</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 업체 이미지</td>
+                            <td class="detail-content-td" colspan="3">
+<!--                                <input id="imageUrl" name="imageUrl" class="form-control"  type="text"-->
+<!--                                       placeholder="업체 이미지" >-->
+                                <div style='width:200px; height: 140px; float: left; margin-left:12px;'>
+                                    <input id="imageUrlPreview" type='file' class='dropify'
+                                           data-width='200' data-height='110' data-show-loader='false'
+                                           data-default-file='' style='width:100%; height:100%;'/>
+                                    <input type="text" th:field="*{imageId}"
+                                           hidden >
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 사업자 번호</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input id="businessNumber" name="businessNumber" class="form-control" type="text"
+                                       th:field="*{businessNumber}"
+                                       placeholder="사업자 번호" >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 사업자등록증</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div style='width:200px; height: 140px; float: left; margin-left:12px;'>
+
+                                    <input id="businessRegImageUrlPreview" type='file' class='dropify'
+                                           data-width='200' data-height='110' data-show-loader='false'
+                                           org-bucket-folder='/cs/school_img/' org-file-name='cs_school_img'
+                                           data-default-file='' style='width:100%; height:100%;'/>
+                                    <input type="text" th:field="*{businessRegImageId}"
+                                           hidden >
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 업체 주소</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                       th:field="*{address}"
+                                       placeholder="업체 주소" >
+                                <input  class="form-control" type="text"
+                                       th:field="*{detailAddress}"
+                                       placeholder="업체 상세 주소" >
+                                <div style="margin-top:12px; width:200px;">
+                                    <select th:field="*{companyCityCode}" class="form-control">
+
+                                        <option th:each="cityValue : ${seoulCities}"
+                                                th:value="${cityValue.code}"
+                                                th:text="${cityValue.getName()}">
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 운영요일(체크)</td>
+                            <td class="detail-content-td" colspan="3">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>&nbsp;&nbsp;&nbsp;월&nbsp;&nbsp;&nbsp;</td>
+                                            <td>&nbsp;&nbsp;&nbsp;화&nbsp;&nbsp;&nbsp;</td>
+                                            <td>&nbsp;&nbsp;&nbsp;수&nbsp;&nbsp;&nbsp;</td>
+                                            <td>&nbsp;&nbsp;&nbsp;목&nbsp;&nbsp;&nbsp;</td>
+                                            <td>&nbsp;&nbsp;&nbsp;금&nbsp;&nbsp;&nbsp;</td>
+                                            <td>&nbsp;&nbsp;&nbsp;토&nbsp;&nbsp;&nbsp;</td>
+                                            <td>&nbsp;&nbsp;&nbsp;일&nbsp;&nbsp;&nbsp;</td>
+                                            <td style="width:80px;"></td>
+                                            <td style="width:120px;">연중무휴</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" th:field="*{mon}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" th:field="*{tue}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" th:field="*{wed}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" th:field="*{thu}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" th:field="*{fri}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" th:field="*{sat}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" th:field="*{sun}" class="form-control">
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <input type="checkbox" th:field="*{alwaysOperated}" class="form-control">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 업체 전화번호</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input th:field="*{companyNumber}" class="form-control" type="text"
+                                       placeholder="업체 전화번호" >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 홈페이지 주소</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input th:field="*{homepageUrl}" class="form-control" type="text"
+                                       placeholder="홈페이지 주소" >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 공지사항</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div style="margin-top:0px; height:160px;">
+                                    <textarea th:field="*{notice}" class="form-control" type="text"
+                                              style="height:100%;"
+                                              th:value="${notice}" th:text="${notice}"
+                                          placeholder="공지사항" ></textarea>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 보유 놀거리</td>
+                            <td class="detail-content-td" colspan="3">
+                                <a id="regist_btn" class="btn btn-primary regist-btn" style="width:120px; "
+                                   th:if="${companyForm.id}"
+                                   th:href="@{/admin/content/regForm(companyId=${companyForm.id})}"     >
+                                    놀거리 등록
+                                </a>
+                                <div class="table-responsive list-table-region" style="margin-top: 12px;">
+                                    <table id="content_table" class="table table-bordered " width="100%" cellspacing="0">
+                                        <tbody id="table_content_list">
+                                        <tr>
+                                            <td class="detail-content-td"> no. </td>
+                                            <td class="detail-content-td"> 놀거리명 </td>
+                                            <td class="detail-content-td">
+                                                <div style='clear:both'>
+                                                    <a class='btn btn-primary add-content-btn'
+                                                       th:href="@{/admin/content/list(companyId=${companyForm.id})}">
+                                                        업체 보유 놀거리 목록 이동</a>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr th:each="contentForm : ${contents}">
+                                            <td class="detail-content-td content-id"
+                                                th:text="${contentForm.id}"> id </td>
+                                            <td class="detail-content-td"
+                                                th:text="${contentForm.name}"> 놀거리명  </td>
+                                            <td class="detail-content-td">
+                                                <div style='clear:both'>
+                                                    <a class='btn btn-primary detail-content-btn'
+                                                       th:href="@{/admin/content/detail(contentId=${contentForm.id})}">
+                                                        상세보기</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 업체  관리용 정보</td>
+                            <td class="detail-content-td" colspan="3">
+                                ---------------------------------------------------------------------------------
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 정산 계좌</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <select th:field="*{companyBankCode}" class="form-select form-control"
+                                        >
+<!--                                    th:field="*{companyBank.code}"-->
+
+                                    <option th:each="companyBankValue : ${companyBanks}"
+                                            th:value="${companyBankValue.code}"
+                                            th:text="${companyBankValue.getName()}">
+                                    </option>
+                                </select>
+
+                                <input id="settlementAccount" name="settlementAccount" class="form-control" type="text"
+                                       th:field="*{settlementAccount}"
+                                       placeholder="정산 계좌" >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 대표자명</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input id="representativeName" name="representativeName" class="form-control" type="text"
+                                       th:field="*{representativeName}"
+                                       placeholder="대표자명" >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 대표 연락처</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input id="repContractNumber" name="repContractNumber" class="form-control" type="text"
+                                       th:field="*{repContractNumber}"
+                                       placeholder="대표 연락처" >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 담당자 연락처</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input id="chargeContractNumber" name="chargeContractNumber" class="form-control" type="text"
+                                       th:field="*{chargeContractNumber}"
+                                       placeholder="담당자 연락처" >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 업체 등록일</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <input readonly th:field="*{createdAt}" class="form-control" type="text"
+                                       placeholder="등록일" >
+                            </td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+                <div style="width: 100%; height:60px;clear:both; text-align:center;">
+                    <button id="back-button" type="button" class="btn btn-secondary" >취소</button>
+                    <button id="submit-button" type="submit" class="btn btn-primary" style=" margin-left:12px;">저장</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+    </div>
+
+    <script type="text/javascript">
+
+    </script>
+
+    <script th:inline="javascript">
+
+        var change_img_callback = function(){
+          var files = $(this).prop("files")[0];
+          var form_data = new FormData();
+          var detail_id = [[${companyForm.id}]];
+
+          if(typeof detail_id == "undefined" || detail_id == "" || detail_id == null){
+            detail_id = "new";
+          }
+
+          form_data.append("file", files);
+          //form_data.append("bucket_folder", $(this).attr('org-bucket-folder'));
+          form_data.append("group", "company");
+          form_data.append("detail_id", detail_id);
+
+          var _this = $(this);
+          console.log(form_data);
+
+          var this_id = _this.attr('id');
+
+          $.ajax({
+            type: "POST",
+            dataType: 'json',
+            processData: false, // important
+            contentType: false, // important
+            url: "/admin/company/images_upload",
+            data: form_data,
+            success: function(response){
+
+              if(response.status == '0000'){
+                // console.log('success');
+                console.log(response);
+                _this.attr('data-default-file', response.return_s3_url);
+                setTimeout(function(){
+
+                    if (this_id === 'imageUrlPreview') {
+
+                        $('#imageId').val(response.image_id);
+                    }
+                    else if (this_id === 'businessRegImageUrlPreview') {
+                        $('#businessRegImageId').val(response.image_id);
+                    }
+
+                }, 400);
+
+              }
+              else{
+                  console.log('response:', response);
+                  // alert(response.message);
+              }
+            },
+            error: function(request, status, error){
+                  console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            },
+          });
+        };
+
+        var imageUrl = [[${companyForm.imageUrl}]];
+        var businessRegImageUrl = [[${companyForm.businessRegImageUrl}]];
+        // console.log(imageUrl);
+        $('#imageUrlPreview').attr('data-default-file', imageUrl);
+
+        $('#businessRegImageUrlPreview').attr('data-default-file', businessRegImageUrl);
+        // 아래 같은 설정은 오류 발생함
+        //$('#businessRegImageUrl').val(businessRegImageUrl);
+
+        // dropify: 이미지 미리보기
+        // 이미지 설정 이후에 dropify() 호출해야 정상적으로 이미지 보임
+        $('.dropify').dropify();
+
+        $('.dropify').on("change", change_img_callback);
+
+    </script>
+</div>
+
+</html>

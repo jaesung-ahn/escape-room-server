@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="~{layout/layout}">
+
+<th:block layout:fragment="css">
+
+
+</th:block>
+<th:block layout:fragment="script">
+
+</th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">푸시 관리</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>푸시 관리</span>
+        </div>
+        <div class="card-body row">
+
+            <div class="list_search_region">
+                <p>
+
+                </p>
+            </div>
+
+            <form role="form" id="pushForm" th:object="${pushForm}"
+                  method="post" style="width:1000px">
+            <div class="form-group">
+                <input  class="form-control" type="text"
+                        hidden
+                        th:field="*{id}">
+                <div class="table-responsive list-table-region">
+                <table class="table table-bordered table-hover table-striped" id="dataTable" width="100%" cellspacing="0">
+                    <tbody>
+                        <tr>
+                            <td class="detail-left-td-info"> 제목 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{title}"
+                                        placeholder=""
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 푸시 종류</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <select class="form-control" th:field="*{pushTypeCode}"
+                                        style="width: 160px;">
+                                    <option th:each="pushTypeValue : ${pushTypes}"
+                                            th:value="${pushTypeValue.code}"
+                                            th:text="${pushTypeValue.name}">
+
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 푸시 내용 글 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{pushContent}"
+                                        placeholder=""
+                                >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 이벤트 선택 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <select class="form-control" th:field="*{eventId}"
+                                        style="width: 600px;">
+                                    <option th:each="eventValue : ${events}"
+                                            th:value="${eventValue.id}"
+                                            th:text="${eventValue.title}+' ('+ ${eventValue.displayStartDate} +' ~ '+${eventValue.displayEndDate}+')'">
+
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${pushForm.id}">
+                            <td class="detail-left-td-info"> 성공 건수 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text" th:field="*{successCnt}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+                        <tr th:if="${pushForm.id}">
+                            <td class="detail-left-td-info"> 실패 건수 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text" th:field="*{failCnt}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+                        <tr th:unless="${pushForm.id}">
+                            <td class="detail-left-td-info"> OS </td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <select class="form-control" th:field="*{targetOs}"
+                                        style="width: 160px;">
+                                    <option
+                                            value="ALL_OS"
+                                            text="모두 선택">모두 선택</option>
+                                    <option th:each="osValue : ${userOS}"
+                                            th:value="${osValue}"
+                                            th:text="${osValue.name}">
+
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr th:unless="${pushForm.id}">
+                            <td class="detail-left-td-info"> 예상 대상자 수 <br/> (현재는 무조건 <br/>안드로이드 유저수) </td>
+                            <td class="detail-content-td" colspan="3">
+<!--                                <input class="form-control" type="text"-->
+<!--                                       th:field="${countAndroidEventUser}"-->
+<!--                                       th:value="${countAndroidEventUser}">-->
+                                <span th:field="${countAndroidEventUser}" th:text="${countAndroidEventUser}"></span>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${pushForm.id}">
+                            <td class="detail-left-td-info"> OS </td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <input  class="form-control" type="text" th:field="*{targetOs}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+
+
+                        <tr>
+                            <td class="detail-left-td-info"> 작성일</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{createdAt}"
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+                <div style="width: 100%; height:60px;clear:both; text-align:center;">
+                    <button id="back-button" type="button" class="btn btn-secondary" >취소</button>
+                    <button th:unless="${pushForm.id}" id="submit-button" type="button" class="btn btn-primary" style=" margin-left:12px;">발송</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+    </div>
+
+    <script th:inline="javascript">
+        $("#submit-button").click(function() {
+
+            if ( confirm("해당 푸시를 발송하시겠습니까?") ) {
+                var pushFormArray = $("#pushForm").serializeArray();
+                console.log(JSON.stringify(pushFormArray));
+
+                var objParams = {
+                    "title"  : $("#title").val(),
+                    "pushContent"  : $("#pushContent").val(),
+                    "pushTypeCode"  : $("#pushTypeCode").val(),
+                    "targetOs"  : $("#targetOs").val(),
+                    "eventId"  : $("#eventId").val(),
+                };
+
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    //contentType: "application/json; charset=utf-8",
+                    //contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+                    traditional : true,
+                    //processData: false, // important
+                    //contentType: false, // important
+                    url: "/admin/pushHistory/save",
+                    data: objParams,
+                    success: function(response){
+                        console.log('response:', response);
+                        if(response.status == '0000'){
+                            // console.log('success');
+                            alert('등록/발송 되었습니다.');
+                            location.replace('/admin/pushHistory/list');
+
+                        }
+                        else{
+
+                            alert('서버 통신간 오류가 발생하였습니다.');
+                        }
+                    },
+                    error: function(request, status, error){
+                        console.log("error code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                        alert('서버 통신간 오류가 발생하였습니다.');
+                    },
+                });
+            }
+
+
+
+
+        });
+    </script>
+</div>
+
+</html>

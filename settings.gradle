@@ -1,0 +1,6 @@
+rootProject.name = 'escape-room-server'
+include 'api'
+include 'common'
+include 'admin'
+include 'push'
+

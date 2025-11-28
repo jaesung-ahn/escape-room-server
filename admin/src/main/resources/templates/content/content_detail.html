@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="~{layout/layout}">
+
+<head>
+    <meta charset="UTF-8" />
+    <script
+            src="https://code.jquery.com/jquery-1.11.1.min.js"
+            crossorigin="anonymous"></script>
+</head>
+
+
+<th:block layout:fragment="css"> </th:block>
+<th:block layout:fragment="script">
+
+</th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">놀거리 관리</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>놀거리 관리</span>
+        </div>
+        <div class="card-body row">
+
+            <div class="list_search_region">
+                <p>
+
+                </p>
+            </div>
+
+            <form id="content-form" role="form"  th:object="${contentForm}"
+                  style="width: 1100px;"
+                  method="post">
+            <div class="form-group">
+                <input class="form-control" type="text"
+                       hidden
+                       th:field="*{id}">
+                <input class="form-control" type="text"
+                       hidden
+                       th:field="*{companyId}">
+                <div class="table-responsive list-table-region">
+                <table class="table table-bordered table-hover table-striped" id="dataTable"
+                       style="width:1000px!important; clear:both;"
+                       cellspacing="0">
+                    <tbody id="table_content_list">
+                        <tr>
+                            <td class="detail-left-td-info"> 업체명 </td>
+                            <td class="detail-content-td" colspan="1">
+                                <input  class="form-control" type="text"
+                                        placeholder="업체명을 입력해주세요."
+                                       readonly
+                                       th:field="*{companyName}">
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 놀거리명<span style="color:red">*</span> </td>
+                            <td class="detail-content-td" colspan="1">
+                                <input  class="form-control" type="text"
+                                       placeholder="놀거리명을 입력해주세요."
+                                       th:field="*{name}">
+                            </td>
+                            <td class="detail-left-td-info"> 노출상태 </td>
+                            <td class="detail-content-td" colspan="1">
+
+                                <select th:field="*{operated}" class="form-control">
+                                    <option value="true" >노출중</option>
+                                    <option value="false" >노출 중지</option>
+                                </select>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 놀거리 이미지</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div style='width:800px; height: 100%; float: left; margin-left:12px;clear: both;'>
+                                    <ul id="img-ul">
+
+                                        <li style='clear: both; margin-top:12px;' th:each="contentImage : ${contentImages}"
+                                            th:if="${contentImages}">
+                                            <div class="dropify-div" style='float:left;width:200px;'>
+                                                <input type='file' class='dropify'
+                                                       th:name="|img_${contentImage.imgId}|"
+                                                       data-width='200' data-height='110' data-show-loader='false'
+                                                       data-default-file='' style='width:200px; height:100%; '/>
+
+                                                <input type='text' class='hidden-img-id'
+                                                       th:name='contentImgId' th:value="${contentImage.imgId}"
+                                                       hidden >
+
+                                            </div>
+                                            <div style='float:left;'>
+                                                <button type='button' class='btn btn-primary add-img-btn' style='float:left; margin-left:12px;'
+                                                        >
+                                                    추가</button>
+                                                <button type='button' class='btn btn-danger del-img-btn' style='float:left; margin-left:12px;' >
+                                                    삭제</button>
+                                            </div>
+                                            <div style='float:left; width:180px;'>
+                                                <label th:if="${contentImage.representativePhoto}"> <input type='checkbox' checked class='is-representive' style='width:40px;'> 대표사진여부 </label>
+                                                <label th:unless="${contentImage.representativePhoto}"> <input type='checkbox' class='is-representive' style='width:40px;'> 대표사진여부 </label>
+                                            </div>
+                                        </li>
+                                        <li style='clear: both; margin-top:12px;'
+                                            th:unless='${contentImages}'>
+                                            <div class='dropify-div' style='float:left;width:200px;'>
+                                                <input type='file' class='dropify'
+                                                       th:name='default_img'
+                                                       data-width='200' data-height='110' data-show-loader='false'
+                                                       data-default-file='' style='width:200px; height:100%; '/>
+
+                                                <input type='text' class='hidden-img-id'
+                                                       name='contentImgId'
+                                                       hidden >
+
+                                            </div>
+                                            <div style='float:left;'>
+                                                <button type='button' class='btn btn-primary add-img-btn' style='float:left; margin-left:12px;'
+                                                >
+                                                    추가</button>
+                                                <button type='button' class='btn btn-danger del-img-btn' style='float:left; margin-left:12px;' >
+                                                    삭제</button>
+                                            </div>
+                                            <div style='float:left; width:180px;'>
+                                                <label > <input type='checkbox' checked class='is-representive' style='width:40px;'> 대표사진여부 </label>
+                                            </div>
+                                        </li>
+
+
+                                    </ul>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 놀거리 NEW 표시</td>
+                            <td class="detail-content-td" colspan="3" style="text-align:center;">
+                                <input type="checkbox" th:field="*{displayNew}" class="form-control" style="width: 60px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> NEW 표시 만료 날짜</td>
+                            <td class="detail-content-td" colspan="3" style="">
+                                <input type="date" th:field="*{newDisplayExpirationDate}" class="form-control" style="width: 200px;"
+                                       data-date="" data-date-format="YYYY-MM-DD"
+                                       >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 평점</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        value="0.0/5"
+                                        placeholder="0.0/5"
+                                        readonly
+                                        >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 이용 가격</td>
+                            <td class="detail-content-td" colspan="3">
+                                <ul id="price-ul">
+                                    <li th:each="contentPrice : ${contentPrices}"
+                                        th:if="${contentPrices}">
+                                        <div style='clear:both;'>
+                                            <input  class='form-control' type='number' style='float:left; width:160px;'
+                                                    name='peopleNumber'
+                                                    th:value="${contentPrice.peopleNumber}"
+                                                    placeholder='인원수' >
+                                            <input  class='form-control' type='number' style='float:left; width:160px; margin-left:12px;'
+                                                    name='price'
+                                                    th:value="${contentPrice.price}"
+                                                    placeholder='가격' >
+                                            <span style='float:left; margin-left:4px;'>원</span>
+
+                                            <input type='text' class='content-price-id'
+                                                   name='contentPriceId' th:value="${contentPrice.contentPriceId}"
+                                                   hidden >
+
+                                            <button type='button' class='btn btn-primary add-price-btn' style='float:left; margin-left:12px;' >
+                                                추가</button>
+                                            <button type='button' class='btn btn-danger del-price-btn' style='float:left; margin-left:12px;' 
+                                                th:value="${contentPrice.contentPriceId}" >
+                                                삭제</button>
+
+                                        </div>
+                                    </li>
+
+                                    <li
+                                        th:unless="${contentPrices}">
+                                        <div style='clear:both;'>
+                                            <input  class='form-control' type='number' style='float:left; width:160px;'
+                                                    name='peopleNumber'
+                                                    placeholder='인원수' >
+                                            <input  class='form-control' type='number' style='float:left; width:160px; margin-left:12px;'
+                                                    name='price'
+                                                    placeholder='가격' >
+                                            <span style='float:left; margin-left:4px;'>원</span>
+
+                                            <input type='text' class='content-price-id'
+                                                   name='contentPriceId'
+                                                   hidden >
+
+                                            <button type='button' class='btn btn-primary add-price-btn' style='float:left; margin-left:12px;' >
+                                                추가</button>
+                                            <button type='button' class='btn btn-danger del-price-btn' style='float:left; margin-left:12px;' >
+                                                삭제</button>
+                                        </div>
+                                    </li>
+                                </ul>
+
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 장르</td>
+                            <td class="detail-content-td" colspan="3">
+                                <select th:field="*{genreCode}" class="form-select form-control" style=" width:160px;"
+                                >
+                                    <option th:each="genreValue : ${genres}"
+                                            th:value="${genreValue.code}"
+                                            th:text="${genreValue.getName()}">
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 추천 인원</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <input th:field="*{minPeople}" class="form-control" type="text" style="float:left; width:160px;"
+                                       placeholder="최소 인원" >
+                                <span style="float:left; margin-left:4px;">-</span>
+                                <input th:field="*{maxPeople}" class="form-control" type="text" style="float:left; width:160px; margin-left:4px;"
+                                       placeholder="최대 인원" >
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 난이도</td>
+                            <td class="detail-content-td" colspan="3">
+                                <select th:field="*{difficultyCode}" class="form-select form-control" style=" width:160px;"
+                                >
+                                    <option th:each="difficultyValue : ${difficulties}"
+                                            th:value="${difficultyValue.code}"
+                                            th:text="${difficultyValue.getName()}">
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 활동성</td>
+                            <td class="detail-content-td" colspan="3">
+                                <select th:field="*{activityLevelCode}" class="form-select form-control" style=" width:160px;"
+                                >
+                                    <option th:each="activityLevelValue : ${activityLevels}"
+                                            th:value="${activityLevelValue.code}"
+                                            th:text="${activityLevelValue.getName()}">
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 유형<br/>(자물쇠:장치 비율)</td>
+                            <td class="detail-content-td" colspan="1">
+                                <select th:field="*{escapeTypeCode}" class="form-select form-control" style=" width:160px;"
+                                >
+                                    <option th:each="escapeTypeValue : ${escapeTypes}"
+                                            th:value="${escapeTypeValue.code}"
+                                            th:text="${escapeTypeValue.getName()}">
+                                    </option>
+                                </select>
+                            </td>
+                            <td class="detail-content-td" colspan="2">
+                                <div style="clear:both;">
+                                    <span style="float:left;">해당 비율없음:</span>
+                                    <input type="checkbox" th:field="*{noEscapeType}" class="form-control" style="float:left;width: 60px;margin-left:12px;">
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 시간</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div style="clear:both;">
+                                    <input th:field="*{playTime}" class="form-control" type="number" style="float:left; width:160px;"
+                                           placeholder="" >
+                                    <span style="float:left; margin-left:4px;">분</span>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 기본정보</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div style="margin-top:0px; height:160px;">
+                                    <textarea th:field="*{information}" class="form-control" type="text"
+                                              style="height:100%;"
+                                              th:value="${information}" th:text="${information}"
+                                          placeholder="기본정보" ></textarea>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 업체 등록일</td>
+                            <td class="detail-content-td" colspan="3">
+
+                                <input readonly th:field="*{createdAt}" class="form-control" type="text"
+                                       placeholder="등록일" >
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+                <div style="width: 100%; height:60px;clear:both; text-align:center;">
+                    <button id="back-button" type="button" class="btn btn-secondary" >취소</button>
+                    <button id="submit-button" type="button" class="btn btn-primary" style=" margin-left:12px;">저장</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+    </div>
+
+    <style>
+        ul{
+            list-style:none;
+            padding-left:0px;
+        }
+
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+
+    <script th:inline="javascript">
+
+        var change_img_callback = function(){
+          var files = $(this).prop("files")[0];
+          var form_data = new FormData();
+          var detail_id = [[${contentForm.id}]];
+
+          if(typeof detail_id == "undefined" || detail_id == "" || detail_id == null){
+            detail_id = "new";
+          }
+
+          form_data.append("file", files);
+          //form_data.append("bucket_folder", $(this).attr('org-bucket-folder'));
+          form_data.append("group", "content");
+          form_data.append("detail_id", detail_id);
+
+          var _this = $(this);
+          console.log(form_data);
+
+          $.ajax({
+            type: "POST",
+            dataType: 'json',
+            processData: false, // important
+            contentType: false, // important
+            url: "/admin/company/images_upload",
+            data: form_data,
+            success: function(response){
+
+              if(response.status == '0000'){
+                // console.log('success');
+                console.log(response);
+                _this.attr('data-default-file', response.return_s3_url);
+                setTimeout(function(){
+                    _this.closest(".dropify-div").children('.hidden-img-id').val(response.image_id);
+
+                }, 400);
+
+              }
+              else{
+                  console.log('response:', response);
+                  // alert(response.message);
+              }
+            },
+            error: function(request, status, error){
+                  console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            },
+          });
+        };
+
+        var add_img_function = function(){
+            if ($('#img-ul').children().length >= 5 ) {
+                alert('이미지 row 가 5개 이상이면 할 수 없습니다.');
+            }
+            else {
+                $('#img-ul').append(
+                    "<li style='clear: both; margin-top:12px;'                                            >                                            <div class='dropify-div' style='float:left;width:200px;'>                                                <input type='file' class='dropify'                                                       th:name='default_img'                                                       data-width='200' data-height='110' data-show-loader='false'                                                       data-default-file='' style='width:200px; height:100%; '/>                                                <input type='text' class='hidden-img-id'                                                       name='contentImgId'                                                       hidden >                                            </div>                                            <div style='float:left;'>                                                <button type='button' class='btn btn-primary add-img-btn' style='float:left; margin-left:12px;'                                                >                                                    추가</button>                                                <button type='button' class='btn btn-danger del-img-btn' style='float:left; margin-left:12px;' >                                                    삭제</button>                                            </div>                                            <div style='float:left; width:180px;'>                                                <label > <input type='checkbox' class='is-representive' style='width:40px;'> 대표사진여부 </label>                                            </div>                                        </li>"
+                );
+
+                $('.is-representive').change(function(){
+                    $('.is-representive').prop('checked', false);
+                    $(this).prop('checked', true);
+                });
+                $('.dropify').dropify();
+                $('.dropify').on("change", change_img_callback);
+            }
+        };
+
+        var del_img_function = function(){
+            if ($('#img-ul').children().length <= 1) {
+                alert('이미지 row 가 하나일때는 삭제 할 수 없습니다.');
+            }
+            else {
+                $(this).parent().parent().remove();
+            }
+        };
+
+        $(document).on("click", '.add-img-btn', add_img_function);
+        $(document).on("click", '.del-img-btn', del_img_function);
+
+        $('.dropify').on("change", change_img_callback);
+
+        var add_price_function = function(){
+            $('#price-ul').append(
+                "<li >                                        <div style='clear:both;'>                                            <input  class='form-control' type='number' style='float:left; width:160px;'                                                    name='peopleNumber'                                                    placeholder='인원수' >                                            <input  class='form-control' type='number' style='float:left; width:160px; margin-left:12px;'                                                    name='price'                                                    placeholder='가격' >                                            <span style='float:left; margin-left:4px;'>원</span>                                            <input type='text' class='content-price-id'                                                   name='contentPriceId'                                                   hidden >                                            <button type='button' class='btn btn-primary add-price-btn' style='float:left; margin-left:12px;' >                                                추가</button>                                            <button type='button' class='btn btn-danger del-price-btn' style='float:left; margin-left:12px;' >                                                삭제</button>                                        </div>                                    </li>"
+            );
+        };
+        var del_price_function = function(){
+            if ($('#price-ul').children().length <= 1) {
+                alert('가격 row 가 하나일때는 삭제 할 수 없습니다.');
+            }
+            else {
+                var _this = $(this);
+                var contentPriceId = $(this).val();
+                if (contentPriceId !== "" && contentPriceId != null && contentPriceId.length > 0){
+                    var result = confirm("해당 가격 정보를 삭제하시겠습니까?");
+                    if (result) {
+                        //_this
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            traditional : true,
+                            url: "/admin/content/delete_content_price",
+                            data: {
+                                "contentPriceId": contentPriceId
+                            },
+                            success: function(response){
+                              console.log('response:', response);
+                              if(response.status == '0000'){
+                                alert('해당 가격 정보가 삭제되었습니다.');
+                                _this.parent().parent().remove();
+                              }
+                              else{
+
+                                  alert('가격 삭제에 오류가 발생하였습니다.');
+                              }
+                            },
+                            error: function(request, status, error){
+                                  console.log("error code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                                  alert('서버 통신간 오류가 발생하였습니다.');
+                            },
+                        });
+                    }
+                }
+                else {
+                    _this.parent().parent().remove();
+                }
+            }
+        };
+
+        $(document).on("click", '.add-price-btn', add_price_function);
+        $(document).on("click", '.del-price-btn', del_price_function);
+
+        $('.is-representive').change(function(){
+            $('.is-representive').prop('checked', false);
+            $(this).prop('checked', true);
+        });
+
+        //$('#input').attr("data-default-file", "imagePath");
+        // 처음에 이미지 설정 부분
+        setTimeout(function(){
+            let articleArray = new Array();
+            let article = new Object();
+            /*[# th:each="contentImage : ${contentImages}"]*/
+            article = new Object();
+            article.imgId =  /*[[${contentImage.imgId}]]*/;
+            article.imgUrl =  /*[[${contentImage.imgUrl}]]*/;
+            articleArray.push(article);
+            var input_name = "img_" + article.imgId;
+
+            $("input[name='" + input_name + "']").attr('data-default-file', article.imgUrl);
+            /*[/]*/
+            // dropify: 이미지 미리보기
+            // 이미지 설정 이후에 dropify() 호출해야 정상적으로 이미지 보임
+            $('.dropify').dropify();
+        }, 600);
+
+        $("#newDisplayExpirationDate").on("change", function() {
+            this.setAttribute(
+                "data-date",
+                moment(this.value, "YYYY-MM-DD")
+                .format( this.getAttribute("data-date-format") )
+            )
+        }).trigger("change");
+
+        $("#submit-button").click(function(){
+
+            var contentFormArray = $("#content-form").serializeArray();
+            console.log(JSON.stringify(contentFormArray));
+
+            var isDisplayNew = $('input[name="displayNew"]').is(":checked");
+            var isNoEscapeType = $('input[name="noEscapeType"]').is(":checked");
+
+            // 배열 선언
+            var contentImages = [];
+            var isRepresentives = [];
+            var contentPrices = [];
+
+            $('input[name="contentImgId"]').each(function(i){//체크된 리스트 저장
+                contentImages.push($(this).val());
+            });
+
+            $('.is-representive').each(function(i){//체크된 리스트 저장
+                isRepresentives.push($(this).is(":checked"));
+            });
+
+            var objParams = {
+                    "contentForm"  : JSON.stringify(contentFormArray),
+                    "contentImages": contentImages,
+                    "isRepresentives": isRepresentives,
+                    "contentPrices": null,
+                    "isDisplayNew" : isDisplayNew,
+                    "isNoEscapeType" : isNoEscapeType,
+                };
+
+            console.log(objParams);
+            var form_data = new FormData();
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                //contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+                traditional : true,
+                //processData: false, // important
+                //contentType: false, // important
+                url: "/admin/content/save",
+                data: objParams,
+                success: function(response){
+                  console.log('response:', response);
+                  if(response.status == '0000'){
+                    // console.log('success');
+                    alert('수정/등록 되었습니다.');
+                    location.replace('/admin/content/list');
+
+                  }
+                  else{
+
+                      alert('서버 통신간 오류가 발생하였습니다.');
+                  }
+                },
+                error: function(request, status, error){
+                      console.log("error code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                      alert('서버 통신간 오류가 발생하였습니다.');
+                },
+            });
+
+        });
+
+    </script>
+</div>
+
+</html>

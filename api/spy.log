@@ -1,0 +1,192 @@
+1763543746903|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists admin_user CASCADE |drop table if exists admin_user CASCADE 
+1763543746903|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists app_version CASCADE |drop table if exists app_version CASCADE 
+1763543746903|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists comment CASCADE |drop table if exists comment CASCADE 
+1763543746903|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists company CASCADE |drop table if exists company CASCADE 
+1763543746903|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists content CASCADE |drop table if exists content CASCADE 
+1763543746903|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists content_price CASCADE |drop table if exists content_price CASCADE 
+1763543746903|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists content_favorite CASCADE |drop table if exists content_favorite CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists discount CASCADE |drop table if exists discount CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists event CASCADE |drop table if exists event CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists faq CASCADE |drop table if exists faq CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists gathering CASCADE |drop table if exists gathering CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists gathering_member CASCADE |drop table if exists gathering_member CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists gathering_request CASCADE |drop table if exists gathering_request CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists gathering_favorite CASCADE |drop table if exists gathering_favorite CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists image CASCADE |drop table if exists image CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists notice CASCADE |drop table if exists notice CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists push_history CASCADE |drop table if exists push_history CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists rank_content CASCADE |drop table if exists rank_content CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists recommendation CASCADE |drop table if exists recommendation CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists recommendation_contents CASCADE |drop table if exists recommendation_contents CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists review CASCADE |drop table if exists review CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists tag CASCADE |drop table if exists tag CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists users CASCADE |drop table if exists users CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists wbti CASCADE |drop table if exists wbti CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists wbti_partners CASCADE |drop table if exists wbti_partners CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation CASCADE |drop table if exists wbti_recommendation CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation_contents CASCADE |drop table if exists wbti_recommendation_contents CASCADE 
+1763543746904|0|statement|connection 33|url jdbc:h2:mem:testdb|drop sequence if exists hibernate_sequence|drop sequence if exists hibernate_sequence
+1763631698513|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists admin_user CASCADE |drop table if exists admin_user CASCADE 
+1763631698515|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists app_version CASCADE |drop table if exists app_version CASCADE 
+1763631698515|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists comment CASCADE |drop table if exists comment CASCADE 
+1763631698515|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists company CASCADE |drop table if exists company CASCADE 
+1763631698515|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists content CASCADE |drop table if exists content CASCADE 
+1763631698515|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists content_price CASCADE |drop table if exists content_price CASCADE 
+1763631698516|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists content_favorite CASCADE |drop table if exists content_favorite CASCADE 
+1763631698516|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists discount CASCADE |drop table if exists discount CASCADE 
+1763631698516|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists event CASCADE |drop table if exists event CASCADE 
+1763631698516|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists faq CASCADE |drop table if exists faq CASCADE 
+1763631698516|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists gathering CASCADE |drop table if exists gathering CASCADE 
+1763631698516|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists gathering_member CASCADE |drop table if exists gathering_member CASCADE 
+1763631698517|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists gathering_request CASCADE |drop table if exists gathering_request CASCADE 
+1763631698517|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists gathering_favorite CASCADE |drop table if exists gathering_favorite CASCADE 
+1763631698517|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists image CASCADE |drop table if exists image CASCADE 
+1763631698517|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists notice CASCADE |drop table if exists notice CASCADE 
+1763631698518|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists push_history CASCADE |drop table if exists push_history CASCADE 
+1763631698518|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists rank_content CASCADE |drop table if exists rank_content CASCADE 
+1763631698518|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists recommendation CASCADE |drop table if exists recommendation CASCADE 
+1763631698518|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists recommendation_contents CASCADE |drop table if exists recommendation_contents CASCADE 
+1763631698518|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists review CASCADE |drop table if exists review CASCADE 
+1763631698518|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists tag CASCADE |drop table if exists tag CASCADE 
+1763631698518|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists users CASCADE |drop table if exists users CASCADE 
+1763631698519|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists wbti CASCADE |drop table if exists wbti CASCADE 
+1763631698519|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists wbti_partners CASCADE |drop table if exists wbti_partners CASCADE 
+1763631698519|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation CASCADE |drop table if exists wbti_recommendation CASCADE 
+1763631698519|0|statement|connection 37|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation_contents CASCADE |drop table if exists wbti_recommendation_contents CASCADE 
+1763631698519|0|statement|connection 37|url jdbc:h2:mem:testdb|drop sequence if exists hibernate_sequence|drop sequence if exists hibernate_sequence
+1763715074732|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists admin_user CASCADE |drop table if exists admin_user CASCADE 
+1763715074733|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists app_version CASCADE |drop table if exists app_version CASCADE 
+1763715074734|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists comment CASCADE |drop table if exists comment CASCADE 
+1763715074734|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists company CASCADE |drop table if exists company CASCADE 
+1763715074734|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists content CASCADE |drop table if exists content CASCADE 
+1763715074734|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists content_price CASCADE |drop table if exists content_price CASCADE 
+1763715074734|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists content_favorite CASCADE |drop table if exists content_favorite CASCADE 
+1763715074735|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists discount CASCADE |drop table if exists discount CASCADE 
+1763715074735|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists event CASCADE |drop table if exists event CASCADE 
+1763715074735|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists faq CASCADE |drop table if exists faq CASCADE 
+1763715074735|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering CASCADE |drop table if exists gathering CASCADE 
+1763715074735|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering_member CASCADE |drop table if exists gathering_member CASCADE 
+1763715074735|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering_request CASCADE |drop table if exists gathering_request CASCADE 
+1763715074735|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering_favorite CASCADE |drop table if exists gathering_favorite CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists image CASCADE |drop table if exists image CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists notice CASCADE |drop table if exists notice CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists push_history CASCADE |drop table if exists push_history CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists rank_content CASCADE |drop table if exists rank_content CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists recommendation CASCADE |drop table if exists recommendation CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists recommendation_contents CASCADE |drop table if exists recommendation_contents CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists review CASCADE |drop table if exists review CASCADE 
+1763715074736|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists tag CASCADE |drop table if exists tag CASCADE 
+1763715074737|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists users CASCADE |drop table if exists users CASCADE 
+1763715074737|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti CASCADE |drop table if exists wbti CASCADE 
+1763715074737|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti_partners CASCADE |drop table if exists wbti_partners CASCADE 
+1763715074737|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation CASCADE |drop table if exists wbti_recommendation CASCADE 
+1763715074737|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation_contents CASCADE |drop table if exists wbti_recommendation_contents CASCADE 
+1763715074737|0|statement|connection 39|url jdbc:h2:mem:testdb|drop sequence if exists hibernate_sequence|drop sequence if exists hibernate_sequence
+1764049333037|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists admin_user CASCADE |drop table if exists admin_user CASCADE 
+1764049333039|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists app_version CASCADE |drop table if exists app_version CASCADE 
+1764049333039|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists comment CASCADE |drop table if exists comment CASCADE 
+1764049333039|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists company CASCADE |drop table if exists company CASCADE 
+1764049333039|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists content CASCADE |drop table if exists content CASCADE 
+1764049333040|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists content_price CASCADE |drop table if exists content_price CASCADE 
+1764049333040|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists content_favorite CASCADE |drop table if exists content_favorite CASCADE 
+1764049333040|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists discount CASCADE |drop table if exists discount CASCADE 
+1764049333040|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists event CASCADE |drop table if exists event CASCADE 
+1764049333041|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists faq CASCADE |drop table if exists faq CASCADE 
+1764049333041|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering CASCADE |drop table if exists gathering CASCADE 
+1764049333041|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering_member CASCADE |drop table if exists gathering_member CASCADE 
+1764049333041|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering_request CASCADE |drop table if exists gathering_request CASCADE 
+1764049333041|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists gathering_favorite CASCADE |drop table if exists gathering_favorite CASCADE 
+1764049333042|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists image CASCADE |drop table if exists image CASCADE 
+1764049333042|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists notice CASCADE |drop table if exists notice CASCADE 
+1764049333042|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists push_history CASCADE |drop table if exists push_history CASCADE 
+1764049333042|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists rank_content CASCADE |drop table if exists rank_content CASCADE 
+1764049333043|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists recommendation CASCADE |drop table if exists recommendation CASCADE 
+1764049333043|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists recommendation_contents CASCADE |drop table if exists recommendation_contents CASCADE 
+1764049333043|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists review CASCADE |drop table if exists review CASCADE 
+1764049333043|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists tag CASCADE |drop table if exists tag CASCADE 
+1764049333043|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists users CASCADE |drop table if exists users CASCADE 
+1764049333043|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti CASCADE |drop table if exists wbti CASCADE 
+1764049333044|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti_partners CASCADE |drop table if exists wbti_partners CASCADE 
+1764049333044|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation CASCADE |drop table if exists wbti_recommendation CASCADE 
+1764049333044|0|statement|connection 39|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation_contents CASCADE |drop table if exists wbti_recommendation_contents CASCADE 
+1764049333044|0|statement|connection 39|url jdbc:h2:mem:testdb|drop sequence if exists hibernate_sequence|drop sequence if exists hibernate_sequence
+1764120816522|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists admin_user CASCADE |drop table if exists admin_user CASCADE 
+1764120816523|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists app_version CASCADE |drop table if exists app_version CASCADE 
+1764120816525|1|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists comment CASCADE |drop table if exists comment CASCADE 
+1764120816525|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists company CASCADE |drop table if exists company CASCADE 
+1764120816525|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists content CASCADE |drop table if exists content CASCADE 
+1764120816525|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists content_price CASCADE |drop table if exists content_price CASCADE 
+1764120816525|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists content_favorite CASCADE |drop table if exists content_favorite CASCADE 
+1764120816525|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists discount CASCADE |drop table if exists discount CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists event CASCADE |drop table if exists event CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists faq CASCADE |drop table if exists faq CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists gathering CASCADE |drop table if exists gathering CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists gathering_member CASCADE |drop table if exists gathering_member CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists gathering_request CASCADE |drop table if exists gathering_request CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists gathering_favorite CASCADE |drop table if exists gathering_favorite CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists image CASCADE |drop table if exists image CASCADE 
+1764120816526|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists notice CASCADE |drop table if exists notice CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists push_history CASCADE |drop table if exists push_history CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists rank_content CASCADE |drop table if exists rank_content CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists recommendation CASCADE |drop table if exists recommendation CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists recommendation_contents CASCADE |drop table if exists recommendation_contents CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists review CASCADE |drop table if exists review CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists tag CASCADE |drop table if exists tag CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists users CASCADE |drop table if exists users CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists wbti CASCADE |drop table if exists wbti CASCADE 
+1764120816527|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists wbti_partners CASCADE |drop table if exists wbti_partners CASCADE 
+1764120816528|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation CASCADE |drop table if exists wbti_recommendation CASCADE 
+1764120816528|0|statement|connection 58|url jdbc:h2:mem:testdb|drop table if exists wbti_recommendation_contents CASCADE |drop table if exists wbti_recommendation_contents CASCADE 
+1764120816528|0|statement|connection 58|url jdbc:h2:mem:testdb|drop sequence if exists hibernate_sequence|drop sequence if exists hibernate_sequence
+1764120849709|2|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table comment drop constraint FKde3rfu96lep00br5ov0mdieyt|alter table comment drop constraint FKde3rfu96lep00br5ov0mdieyt
+1764120849711|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table comment drop constraint FKqm52p1v3o13hy268he0wcngr5|alter table comment drop constraint FKqm52p1v3o13hy268he0wcngr5
+1764120849712|1|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table content drop constraint FK7cpn2xkgm5qna4i0p54rdvdl4|alter table content drop constraint FK7cpn2xkgm5qna4i0p54rdvdl4
+1764120849713|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table content_price drop constraint FKip85g0aq3cie58rwm91fqmmmf|alter table content_price drop constraint FKip85g0aq3cie58rwm91fqmmmf
+1764120849713|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table content_favorite drop constraint FKpfp41whjpc0lfw43gyjpjigu3|alter table content_favorite drop constraint FKpfp41whjpc0lfw43gyjpjigu3
+1764120849714|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table content_favorite drop constraint FK2gwgedm9k77d0v0dlpwis0r3v|alter table content_favorite drop constraint FK2gwgedm9k77d0v0dlpwis0r3v
+1764120849715|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table discount drop constraint FKn4xsky52di3he0bu3gje0sa92|alter table discount drop constraint FKn4xsky52di3he0bu3gje0sa92
+1764120849715|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering drop constraint FK6vvnq3gks3guh3p002c4bs7ol|alter table gathering drop constraint FK6vvnq3gks3guh3p002c4bs7ol
+1764120849716|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering drop constraint FKhfewcf9y29m0l3u64awse9lto|alter table gathering drop constraint FKhfewcf9y29m0l3u64awse9lto
+1764120849716|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering_member drop constraint FK9nt828h7lfx92bjf5rhqosi3b|alter table gathering_member drop constraint FK9nt828h7lfx92bjf5rhqosi3b
+1764120849717|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering_member drop constraint FKcef2yvtduf1qtgynjym1cvu38|alter table gathering_member drop constraint FKcef2yvtduf1qtgynjym1cvu38
+1764120849718|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering_request drop constraint FKhrgk6cpg5lvb12skqoo70ecor|alter table gathering_request drop constraint FKhrgk6cpg5lvb12skqoo70ecor
+1764120849718|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering_request drop constraint FKreb8hxxvoi93jta7m6knxw2qn|alter table gathering_request drop constraint FKreb8hxxvoi93jta7m6knxw2qn
+1764120849719|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering_favorite drop constraint FKhr2xmmt5bdiqrtan5i9n3nlku|alter table gathering_favorite drop constraint FKhr2xmmt5bdiqrtan5i9n3nlku
+1764120849719|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table gathering_favorite drop constraint FKn6efxyr22yrbf04x47dkj8tj|alter table gathering_favorite drop constraint FKn6efxyr22yrbf04x47dkj8tj
+1764120849719|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table rank_content drop constraint FKpxfyi8wf3j4ormv8pvta9yci5|alter table rank_content drop constraint FKpxfyi8wf3j4ormv8pvta9yci5
+1764120849720|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table recommendation_contents drop constraint FKcofpggmqx7fhhvqvdmn1257sa|alter table recommendation_contents drop constraint FKcofpggmqx7fhhvqvdmn1257sa
+1764120849720|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table recommendation_contents drop constraint FKcnwpu61hgq2x9so0tggraf45y|alter table recommendation_contents drop constraint FKcnwpu61hgq2x9so0tggraf45y
+1764120849720|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table review drop constraint FKhwr0hod04ukbt80ty4u0lubo6|alter table review drop constraint FKhwr0hod04ukbt80ty4u0lubo6
+1764120849721|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table review drop constraint FK6cpw2nlklblpvc7hyt7ko6v3e|alter table review drop constraint FK6cpw2nlklblpvc7hyt7ko6v3e
+1764120849721|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table wbti_partners drop constraint FKtdrv01q20pkhxfn5rlwrmay6s|alter table wbti_partners drop constraint FKtdrv01q20pkhxfn5rlwrmay6s
+1764120849721|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table wbti_partners drop constraint FKhgtkgxyc1pixgxmn01uba5kbx|alter table wbti_partners drop constraint FKhgtkgxyc1pixgxmn01uba5kbx
+1764120849722|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table wbti_recommendation_contents drop constraint FK1co4kmho6koh8gnjj48my68io|alter table wbti_recommendation_contents drop constraint FK1co4kmho6koh8gnjj48my68io
+1764120849722|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|alter table wbti_recommendation_contents drop constraint FKnuyc3o4foidg02vd34ye5f8kc|alter table wbti_recommendation_contents drop constraint FKnuyc3o4foidg02vd34ye5f8kc
+1764120849723|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists admin_user cascade|drop table if exists admin_user cascade
+1764120849723|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists app_version cascade|drop table if exists app_version cascade
+1764120849724|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists comment cascade|drop table if exists comment cascade
+1764120849724|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists company cascade|drop table if exists company cascade
+1764120849725|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists content cascade|drop table if exists content cascade
+1764120849725|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists content_price cascade|drop table if exists content_price cascade
+1764120849725|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists content_favorite cascade|drop table if exists content_favorite cascade
+1764120849726|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists discount cascade|drop table if exists discount cascade
+1764120849726|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists event cascade|drop table if exists event cascade
+1764120849727|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists faq cascade|drop table if exists faq cascade
+1764120849728|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists gathering cascade|drop table if exists gathering cascade
+1764120849728|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists gathering_member cascade|drop table if exists gathering_member cascade
+1764120849729|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists gathering_request cascade|drop table if exists gathering_request cascade
+1764120849729|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists gathering_favorite cascade|drop table if exists gathering_favorite cascade
+1764120849730|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists image cascade|drop table if exists image cascade
+1764120849730|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists notice cascade|drop table if exists notice cascade
+1764120849731|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists push_history cascade|drop table if exists push_history cascade
+1764120849731|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists rank_content cascade|drop table if exists rank_content cascade
+1764120849732|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists recommendation cascade|drop table if exists recommendation cascade
+1764120849732|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists recommendation_contents cascade|drop table if exists recommendation_contents cascade
+1764120849732|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists review cascade|drop table if exists review cascade
+1764120849733|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists tag cascade|drop table if exists tag cascade
+1764120849734|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists users cascade|drop table if exists users cascade
+1764120849734|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists wbti cascade|drop table if exists wbti cascade
+1764120849734|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists wbti_partners cascade|drop table if exists wbti_partners cascade
+1764120849735|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists wbti_recommendation cascade|drop table if exists wbti_recommendation cascade
+1764120849735|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop table if exists wbti_recommendation_contents cascade|drop table if exists wbti_recommendation_contents cascade
+1764120849735|0|statement|connection 58|url jdbc:postgresql://localhost:49756/testdb?sslmode=disable&loggerLevel=OFF|drop sequence if exists hibernate_sequence|drop sequence if exists hibernate_sequence

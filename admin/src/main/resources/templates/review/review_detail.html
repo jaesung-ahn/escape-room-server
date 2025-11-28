@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="~{layout/layout}">
+
+<th:block layout:fragment="css">
+
+
+</th:block>
+<th:block layout:fragment="script">
+
+</th:block>
+
+<div id="content" layout:fragment="content">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a th:href="@{/admin/main}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">리뷰 상세</li>
+    </ol>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            <span>리뷰 상세</span>
+        </div>
+        <div class="card-body row">
+
+            <div class="list_search_region">
+                <p>
+                </p>
+            </div>
+
+            <form role="form" th:object="${reviewForm}"
+                  method="post" style="width:1000px">
+            <div class="form-group">
+                <input  class="form-control" type="text"
+                        hidden
+                        th:field="*{id}">
+                <div class="table-responsive list-table-region">
+                <table class="table table-bordered table-hover table-striped" id="dataTable" width="100%" cellspacing="0">
+                    <tbody id="table_gathering_list">
+                        <tr>
+                            <td class="detail-left-td-info"> 사용자명<span style="color:red">*</span> </td>
+                            <td class="detail-content-td" colspan="1">
+                                <input class="form-control" type="text"
+                                       placeholder=""
+                                       th:field="*{writer}"
+                                       readonly >
+                            </td>
+                            <td class="detail-left-td-info"> 승인여부 </td>
+                            <td class="detail-content-td" colspan="1">
+                                <select th:field="*{isApproval}" class="form-control">
+                                    <option value="true" >승인</option>
+                                    <option value="false" >비승인</option>
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 놀거리명 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{contentName}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 별점 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{rating}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 참여자 수 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{joinNumber}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="detail-left-td-info"> 리뷰내용</td>
+                            <td class="detail-content-td" colspan="3">
+                                <div style="margin-top:0px; height:160px;">
+                                    <textarea class="form-control" type="text" style="height:100%;"
+                                              th:field="*{message}"
+                                              th:value="${message}" th:text="${message}"
+                                              readonly
+                                              placeholder="" ></textarea>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 동행 실제 일자</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{realGatherDate}"
+                                        placeholder=""
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="detail-left-td-info"> 이미지 </td>
+                            <td class="detail-content-td" colspan="3">
+                                <div th:each="reviewImage : ${reviewForm.reviewImages}" style="margin-bottom: 12px;">
+                                    <img id="imgId" th:src="${reviewImage}" alt="첨부이미지" th:if="${reviewImage != null}" />
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td class="detail-left-td-info"> 작성일</td>
+                            <td class="detail-content-td" colspan="3">
+                                <input  class="form-control" type="text"
+                                        th:field="*{createdAt}"
+                                        readonly
+                                >
+                            </td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+
+            </div>
+                <div style="width: 100%; height:60px;clear:both; text-align:center;">
+                    <button id="back-button" type="button" class="btn btn-secondary" >취소</button>
+                    <button id="submit-button" type="button" class="btn btn-primary" style=" margin-left:12px;">저장</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer small text-muted"></div>
+    </div>
+
+    <script type="text/javascript">
+
+    </script>
+
+    <script th:inline="javascript">
+
+    var review_id = [[${reviewForm.id}]];
+
+    $("#submit-button").click(function(){
+        if (confirm('승인 상태를 수정하시겠습니까?')) {
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                //contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+                traditional : true,
+                url: "/admin/review/save",
+                data: {
+                    'id': review_id,
+                    'isApproval': $('#isApproval').val()
+                },
+                success: function(response){
+                    console.log('response:', response);
+                    if(response.status == '0000'){
+                        alert('수정 되었습니다.');
+                        location.replace('/admin/review/list');
+                    }
+                    else{
+                      alert('서버 통신간 오류가 발생하였습니다.');
+                    }
+                },
+                error: function(request, status, error){
+                      console.log("error code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                      alert('서버 통신간 오류가 발생하였습니다.');
+                }
+            });
+        }
+
+    });
+
+    </script>
+</div>
+
+</html>

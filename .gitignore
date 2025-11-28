@@ -37,6 +37,10 @@ common/src/main/generated/*
 
 ### VS Code ###
 .vscode/
+
+### Claude Code ###
+.claude/
+
 # Sensitive configuration files
 **/resources-local/
 **/resources-dev/

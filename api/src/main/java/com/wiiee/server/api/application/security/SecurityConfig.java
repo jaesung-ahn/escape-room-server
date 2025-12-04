@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 @RequiredArgsConstructor
@@ -47,6 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/jwt/reissue").permitAll()
                 .requestMatchers("/api/util/**").permitAll()
                 .requestMatchers("/api/image/**").permitAll()
+                .requestMatchers(GET, "/api/user/check-nickname", "/api/user/*").permitAll()
                 .requestMatchers(POST, "/api/user/login/**", "/api/user").permitAll()
                 .anyRequest().authenticated()
         );

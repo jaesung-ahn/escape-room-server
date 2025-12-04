@@ -3,9 +3,9 @@ package com.wiiee.server.api.application.user;
 import com.wiiee.server.api.domain.util.LocalDateTimeUtil;
 import com.wiiee.server.common.domain.common.City;
 import com.wiiee.server.common.domain.common.State;
-import com.wiiee.server.common.domain.gathering.GenderType;
 import com.wiiee.server.common.domain.user.Profile;
 import com.wiiee.server.common.domain.user.User;
+import com.wiiee.server.common.domain.user.UserGenderType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Value;
@@ -42,6 +42,9 @@ public class UserModel {
         String cityName = city != null ? city.getName() : null;
         String stateName = city != null ? State.valueOf(city.getParentCode()).getName() : null;
         String ageGroup = profile.getBirthDate() != null ? LocalDateTimeUtil.getAgeGroup(profile.getBirthDate()) : null;
+        UserGenderType userGenderType = profile.getUserGenderType();
+        String userGenderName = userGenderType != null ? userGenderType.getName() : null;
+        String zamfitTestName = profile.getWbti() != null ? profile.getWbti().getName() : null;
 
         return UserModel.builder()
                 .id(user.getId())
@@ -50,9 +53,9 @@ public class UserModel {
 //                .image(profileUrl)
                 .state(stateName)
                 .city(cityName)
-                .userGender(profile.getUserGenderType().getName())
+                .userGender(userGenderName)
                 .ageGroup(ageGroup)
-                .zamfitTest(profile.getWbti().getName())
+                .zamfitTest(zamfitTestName)
                 .build();
     }
 

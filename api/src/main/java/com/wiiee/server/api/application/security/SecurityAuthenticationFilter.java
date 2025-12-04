@@ -46,8 +46,7 @@ public class SecurityAuthenticationFilter extends OncePerRequestFilter {
             log.error("ACCESS TOKEN EXPIRED {} | {}", accessToken, e.getMessage());
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
-            log.error("JWT FILTER INTERNAL ERROR : {} | {}", accessToken, e.getMessage());
-            e.printStackTrace();
+            log.error("JWT FILTER INTERNAL ERROR : {} | {}", accessToken, e.getMessage(), e);
             return;
         }
 

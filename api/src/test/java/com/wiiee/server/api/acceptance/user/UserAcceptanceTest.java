@@ -94,7 +94,19 @@ class UserAcceptanceTest extends AcceptanceTest {
     void getUser() {
         // given: 기존 회원 생성
         String nickname = "조회유저";
-        Integer userId = 회원가입_후_ID_반환("getuser@example.com", nickname, "password123!");
+        ExtractableResponse<Response> signupResponse = 회원가입_요청("getuser@example.com", nickname, "password123!");
+
+        // 회원가입 성공 확인
+        signupResponse.response()
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("code", equalTo(200));
+
+        // ID 추출
+        Integer userId = signupResponse.path("data.id");
+        if (userId == null) {
+            throw new AssertionError("회원가입 응답에 data.id가 없습니다. 응답: " + signupResponse.asString());
+        }
 
         // when: 유저 조회
         ExtractableResponse<Response> response = 유저_조회_요청(userId);

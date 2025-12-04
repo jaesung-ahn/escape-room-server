@@ -169,7 +169,6 @@ public class GatheringService {
         }
 
         int memberSize = gathering.getGatheringMembers().size();
-        System.out.println("memberSize = " + memberSize);
         if (memberSize == gathering.getGatheringInfo().getMaxPeople()) {
             throw new CustomException(StatusCode.ERROR_RECRUIT_MAX_MB_CODE,
                     StatusCode.ERROR_RECRUIT_MAX_MB_MSG, null);
@@ -198,9 +197,6 @@ public class GatheringService {
                     .gathering(gathering)
                     .requestReason(requestReason)
                     .build();
-            System.out.println("gatheringRequest = " + gatheringRequest.getId());
-            System.out.println("gatheringRequest = " + gatheringRequest.getRequestReason());
-            System.out.println("gatheringRequest = " + gatheringRequest.getRequestUser());
 
             GatheringRequest savedGatheringRequest = gatheringRequestRepository.save(gatheringRequest);
 
@@ -257,11 +253,9 @@ public class GatheringService {
 
             log.info("response.body():" + (response.body() != null ? response.body().string() : null));
         } catch (IOException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
+                log.error("Failed to send push notification", e);
         } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
+            log.error("Unexpected error while sending push notification", e);
         }
     }
 
@@ -326,7 +320,6 @@ public class GatheringService {
         }
 
         int memberSize = unproxyGathering.getGatheringMembers().size();
-        System.out.println("memberSize = " + memberSize);
         if (memberSize == unproxyGathering.getGatheringInfo().getMaxPeople()) {
             throw new CustomException(StatusCode.ERROR_RECRUIT_MAX_MB_CODE,
                     StatusCode.ERROR_RECRUIT_MAX_MB_MSG, null);
@@ -382,11 +375,9 @@ public class GatheringService {
 
             log.info("response.body():" + (response.body() != null ? response.body().string() : null));
         } catch (IOException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
+            log.error("Failed to send push notification", e);
         } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
+            log.error("Unexpected error while sending push notification", e);
         }
     }
 

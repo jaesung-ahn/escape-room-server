@@ -36,9 +36,6 @@ public class ApiResponse<T> {
 
     // 예외 발생으로 API 에러시 반환
     public static ApiResponse<?> error(int code, String message, List<String> errorDetails) {
-        System.out.println("call ApiResponse.error");
-        System.out.println("code = " + code);
-        System.out.println("message = " + message);
         return new ApiResponse<>(code, message, errorDetails, null);
     }
 }

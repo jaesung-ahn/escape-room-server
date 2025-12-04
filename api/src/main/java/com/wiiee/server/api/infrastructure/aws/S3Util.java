@@ -74,14 +74,12 @@ public class S3Util {
                 try (FileOutputStream fos = new FileOutputStream(convertFile)) {  //  FileOutputStream : 데이터를 파일에 스트림으로 저장하기 위함
                     fos.write(file.getBytes());
                 } catch (IOException e) {
-                    log.info("[S3Uploader] 로컬에 이미지 업로드 실패하였습니다.");
-                    e.printStackTrace();
+                    log.error("[S3Uploader] 로컬에 이미지 업로드 실패하였습니다.", e);
                 }
                 return Optional.of(convertFile);
             }
         } catch (IOException e) {
-            log.info("[S3Uploader] 로컬에 파일 열기 작업을 실패하였습니다.");
-            e.printStackTrace();
+            log.error("[S3Uploader] 로컬에 파일 열기 작업을 실패하였습니다.", e);
         }
         return Optional.empty();
     }

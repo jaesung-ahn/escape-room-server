@@ -119,12 +119,12 @@ Level 4: 동행 관련 기능
 ```
 1. ✅ Image          - 이미지 업로드/조회 (선택적)
 2. ✅ User           - 회원가입/로그인/프로필
-3. ⬜ AdminUser      - 관리자 인증 (필요시)
+3. ⬜ AdminUser      - 관리자 인증 (API 없음, 스킵)
 ```
 
 ### Phase 2: 업체 및 컨텐츠
 ```
-4. ✅ Company        - 업체 CRUD
+4. ⬜ Company        - 업체 CRUD
    └─ Depends: (optional) AdminUser, Image IDs
 
 5. ⬜ Content        - 테마/방 CRUD

@@ -20,15 +20,15 @@ public class ImageRestController {
 
     private final ImageService imageService;
 
-    @Operation(summary = "이미지 등록")
+    @Operation(summary = "이미지 등록 (파일 업로드)")
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<ImageModel> postImage(@Validated @ModelAttribute ImagePostRequestDTO.File dto) {
         final var imageAdded = imageService.createNewImage("image", dto.getImageFile());
         return ApiResponse.success(ImageModel.fromImage(imageAdded));
     }
 
-    @Operation(summary = "이미지 등록(URL)")
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @Operation(summary = "이미지 등록 (URL)")
+    @PostMapping(value = "/url", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<ImageModel> postImageURL(@Validated @ModelAttribute ImagePostRequestDTO.URL dto) {
         final var imageAdded = imageService.createNewImage(dto.getUrl());
         return ApiResponse.success(ImageModel.fromImage(imageAdded));

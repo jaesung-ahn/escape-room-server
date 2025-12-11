@@ -1,37 +1,21 @@
 package com.wiiee.server.api.acceptance.image;
 
 import com.wiiee.server.api.AcceptanceTest;
-import com.wiiee.server.api.infrastructure.aws.S3Util;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 import java.io.File;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 
 @DisplayName("Image API 인수 테스트")
 class ImageAcceptanceTest extends AcceptanceTest {
-
-    @MockBean
-    private S3Util s3Util;
-
-    @BeforeEach
-    void setUpMock() {
-        // S3 업로드를 모킹하여 테스트용 URL 반환
-        given(s3Util.upload(anyString(), any()))
-                .willReturn("https://s3.amazonaws.com/test-bucket/test-image.jpg");
-    }
 
     @Test
     @DisplayName("URL로 이미지 등록")
@@ -99,7 +83,7 @@ class ImageAcceptanceTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .queryParam("url", url)
                 .when()
-                .post("/api/image")
+                .post("/api/image/url")
                 .then()
                 .extract();
     }
@@ -129,6 +113,7 @@ class ImageAcceptanceTest extends AcceptanceTest {
      */
     private ExtractableResponse<Response> 파일로_이미지_업로드_요청(File file) {
         return RestAssured.given()
+                .contentType(ContentType.MULTIPART)
                 .multiPart("imageFile", file, "image/jpeg")
                 .when()
                 .post("/api/image")

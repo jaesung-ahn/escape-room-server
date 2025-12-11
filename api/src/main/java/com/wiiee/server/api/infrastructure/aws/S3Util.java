@@ -24,7 +24,7 @@ public class S3Util {
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
 
-    private final static String IMAGE_EXTENSION = ".jpg";
+    private static final String IMAGE_EXTENSION = ".jpg";
 
     public String upload(String dirName, MultipartFile multipartFile) {
         File uploadFile = convert(multipartFile)

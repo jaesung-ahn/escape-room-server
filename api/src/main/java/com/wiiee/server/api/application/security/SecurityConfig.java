@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/image/**").permitAll()
                 .requestMatchers(GET, "/api/user/check-nickname", "/api/user/*").permitAll()
                 .requestMatchers(POST, "/api/user/login/**", "/api/user").permitAll()
+                .requestMatchers(POST, "/api/company").permitAll()  // 테스트용 업체 생성
                 .anyRequest().authenticated()
         );
 

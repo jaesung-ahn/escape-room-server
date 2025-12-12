@@ -80,8 +80,7 @@ public class ContentRestController {
     @Operation(summary = "내 컨텐츠 찜리스트 조회", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(value = "/favorite", produces = APPLICATION_JSON_VALUE)
     public ApiResponse<MultipleContentFavoriteModel> getMyFavoritesWithContent(@Parameter(hidden = true) @AuthUser User user,
-                                                                               @RequestParam Long userId,
                                                                                @ModelAttribute PageRequestDTO dto) {
-        return ApiResponse.success(contentFavoriteService.getMyFavoritesWithContent(userId, dto));
+        return ApiResponse.success(contentFavoriteService.getMyFavoritesWithContent(user.getId(), dto));
     }
 }

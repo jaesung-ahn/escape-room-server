@@ -47,10 +47,7 @@ public class ContentSimpleModel {
         // 평점 처리 repository 단에서 처리하는게 좋지만 list 조회에서 avg 구하는게 복잡해서 모델단에서 처리
         Double ratingAvg = content.getReviews()
                 .stream()
-                .filter(review -> {
-                    if (review.isApproval() == true) {return true;}
-                    return false;
-                } )
+                .filter(Review::isApproval)
                 .mapToDouble(Review::getRating)
                 .average()
                 .orElse(-1);

@@ -322,7 +322,6 @@ class ContentAcceptanceTest extends AcceptanceTest {
         return RestAssured.given()
                 .log().all()
                 .header("Authorization", "Bearer " + accessToken)
-                .queryParam("userId", testUserId)
                 .queryParam("page", 1)
                 .queryParam("size", 10)
                 .when()

@@ -34,7 +34,7 @@ public class ContentFavoriteCustomRepositoryImpl implements ContentFavoriteCusto
                 "       ct.play_time                         as playTime " +
                 "from content ct " +
                 "join company cp on ct.company_id = cp.company_id " +
-                "join content_favorite cf on ct.content_id = cf.content_id and user_id = ? " +
+                "join content_favorite cf on ct.content_id = cf.content_id and cf.user_id = ? " +
                 "order by cf.created_at desc " +
                 "limit ? offset ?;";
 
@@ -49,7 +49,7 @@ public class ContentFavoriteCustomRepositoryImpl implements ContentFavoriteCusto
                 .map(row -> new ContentSimpleModel(
                         BigInteger.valueOf(((Number) row[0]).longValue()),  // id
                         (String) row[1],                                      // imageUrl
-                        ((BigDecimal) row[2]).doubleValue(),                 // ratingAvg
+                        ((Number) row[2]).doubleValue(),                     // ratingAvg
                         (String) row[3],                                      // companyName
                         (String) row[4],                                      // state
                         (String) row[5],                                      // city

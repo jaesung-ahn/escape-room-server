@@ -24,6 +24,9 @@ public class ImageService {
     }
 
     public Image getImageById(Long id) {
+        if (id == null) {
+            return new Image("");
+        }
         return imageRepository.findById(id)
                 .orElse(new Image(""));
     }

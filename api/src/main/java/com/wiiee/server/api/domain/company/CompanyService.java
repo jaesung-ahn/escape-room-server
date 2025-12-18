@@ -57,11 +57,11 @@ public class CompanyService {
     public List<CompanySimpleModel> getCompanySimpleModelsByCompanies(List<Company> companies) {
         return companies.stream().map(company ->
                 CompanySimpleModel.fromCompanyAndImage(company,
-                        imageService.getImageById(company.getBasicInfo().getImageIds().stream().findFirst().orElse(0L)))).collect(Collectors.toList());
+                        imageService.getImageById(company.getBasicInfo().getRepresentativeImageId()))).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public CompanySimpleModel getCompanySimpleModelByCompany(Company company) {
-        return CompanySimpleModel.fromCompanyAndImage(company, imageService.getImageById(company.getBasicInfo().getImageIds().stream().findFirst().orElse(0L)));
+        return CompanySimpleModel.fromCompanyAndImage(company, imageService.getImageById(company.getBasicInfo().getRepresentativeImageId()));
     }
 }

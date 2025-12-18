@@ -107,7 +107,7 @@ public class ContentService {
         //TODO: 기본이미지 등록
         return contents.stream().map(content ->
                 ContentSimpleModel.fromContentAndImage(content,
-                        imageService.getImageById(content.getContentBasicInfo().getImageIds().stream().findFirst().orElse(0L))
+                        imageService.getImageById(content.getContentBasicInfo().getRepresentativeImageId())
                         )
         ).collect(Collectors.toList());
     }
@@ -123,7 +123,7 @@ public class ContentService {
     @Transactional(readOnly = true)
     public ContentSimpleModel getContentSimpleModelByContent(Content content) {
         return ContentSimpleModel.fromContentAndImage(content,
-                imageService.getImageById(content.getContentBasicInfo().getImageIds().stream().findFirst().orElse(0L))
+                imageService.getImageById(content.getContentBasicInfo().getRepresentativeImageId())
                 );
     }
 

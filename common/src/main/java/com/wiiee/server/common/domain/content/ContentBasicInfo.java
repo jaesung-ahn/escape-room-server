@@ -94,4 +94,18 @@ public class ContentBasicInfo {
     public ContentBasicInfo(String name) {
         this.name = name;
     }
+
+    /**
+     * 대표 이미지 ID를 반환합니다.
+     * imageIds가 비어있거나 null인 경우 null을 반환하여
+     * 호출자가 안전하게 처리할 수 있도록 합니다.
+     *
+     * @return 첫 번째 이미지 ID, 없으면 null
+     */
+    public Long getRepresentativeImageId() {
+        if (imageIds == null || imageIds.isEmpty()) {
+            return null;
+        }
+        return imageIds.get(0);
+    }
 }

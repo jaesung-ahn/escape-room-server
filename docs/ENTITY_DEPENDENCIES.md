@@ -124,10 +124,10 @@ Level 4: 동행 관련 기능
 
 ### Phase 2: 업체 및 컨텐츠
 ```
-4. ⬜ Company        - 업체 CRUD
+4. ✅ Company        - 업체 CRUD
    └─ Depends: (optional) AdminUser, Image IDs
 
-5. ⬜ Content        - 테마/방 CRUD
+5. ✅ Content        - 테마/방 CRUD
    └─ Depends: Company (required)
 ```
 
@@ -148,7 +148,7 @@ Level 4: 동행 관련 기능
 
 ### Phase 4: 동행 모집
 ```
-10. ⬜ Gathering     - 동행 모집 게시글 CRUD
+10. ✅ Gathering     - 동행 모집 게시글 CRUD
     └─ Depends: User, Content
 ```
 

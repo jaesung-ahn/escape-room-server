@@ -423,19 +423,17 @@ public class GatheringService {
 
         List<GatheringListModel> orgMyGatheringList = myGatheringList.stream()
                 .map(gathering -> {
-                    Image contentImage = null;
-                    if (gathering.getContent().getContentBasicInfo().getImageIds() != null) {
-                        contentImage = imageService.getImageById(gathering.getContent().getContentBasicInfo().getImageIds().get(0));
-                    }
+                    Long representativeImageId = gathering.getContent().getContentBasicInfo().getRepresentativeImageId();
+                    Image contentImage = imageService.getImageById(representativeImageId);
                     return GatheringListModel.fromGatheringWithContentSimpleModel(gathering,
                             GatheringListContentModel.fromContentAndImage(gathering.getContent(), contentImage));
-                }).collect(Collectors.toList());
+                }).toList();
 
         log.info("orgMyGatheringList:" + orgMyGatheringList);
 
         List<GatheringListModel> createdList = orgMyGatheringList.stream()
                 .filter(gathering -> gathering.getLeaderId().equals(userId))
-                .collect(Collectors.toList());
+                .toList();
 
         List<Integer> gatheringStatusCheckList = new ArrayList<>();
         gatheringStatusCheckList.add(GatheringStatus.RECRUITING.getCode());
@@ -443,11 +441,11 @@ public class GatheringService {
 
         List<GatheringListModel> ingList = orgMyGatheringList.stream()
                 .filter(gathering -> gatheringStatusCheckList.contains(gathering.getGatheringStatusCode() ) )
-                .collect(Collectors.toList());
+                .toList();
 
         List<GatheringListModel> endList = orgMyGatheringList.stream()
                 .filter(gathering -> gathering.getGatheringStatusCode().equals(GatheringStatus.RECRUIT_COMPLETED.getCode()))
-                .collect(Collectors.toList());
+                .toList();
 
         return GatheringMyListResponseDTO.builder()
                 .createdList(createdList)

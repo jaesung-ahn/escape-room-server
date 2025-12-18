@@ -95,7 +95,7 @@ public class ReviewService {
     private List<ReviewSimpleModel> getReviewSimpleModelByReviewsAndUserId(Long userId, List<Review> reviews) {
         return reviews.stream().
                 map(review -> ReviewSimpleModel.fromReviewAndImage(review, userId,
-                        imageService.getImageById(Optional.ofNullable(review.getImageIds()).orElse(List.of()).stream().findFirst().orElse(0L)),
+                        imageService.getImageById(review.getRepresentativeImageId()),
                         imageService.getImageById(Optional.ofNullable(review.getWriter().getProfile().getProfileImageId()).orElse(0L)))
                         )
                 .collect(toList());

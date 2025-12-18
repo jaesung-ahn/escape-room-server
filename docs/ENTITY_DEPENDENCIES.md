@@ -133,16 +133,16 @@ Level 4: 동행 관련 기능
 
 ### Phase 3: 컨텐츠 부가 기능
 ```
-6. ⬜ ContentPrice   - 가격 정보 CRUD
+6. ⬜ ContentPrice   - 가격 정보 CRUD (API 없음, 스킵)
    └─ Depends: Content
 
-7. ⬜ Review         - 리뷰 작성/조회/수정
+7. ✅ Review         - 리뷰 작성/조회/수정
    └─ Depends: User, Content
 
-8. ⬜ ContentFavorite - 즐겨찾기 추가/제거
+8. ✅ ContentFavorite - 즐겨찾기 추가/제거 (ContentAcceptanceTest에 포함)
    └─ Depends: User, Content
 
-9. ⬜ Discount       - 할인 정보 CRUD
+9. ⬜ Discount       - 할인 정보 CRUD (API 없음, 스킵)
    └─ Depends: Content
 ```
 

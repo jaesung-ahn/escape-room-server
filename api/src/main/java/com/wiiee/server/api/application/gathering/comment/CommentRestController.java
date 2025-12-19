@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class CommentRestController {
     @Operation(summary = "동행 모집 댓글 등록", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping(value = "/gathering/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<CommentModel> postComment(@PathVariable("id") Long gatheringId,
-                                                 @RequestBody CommentPostRequestDTO dto,
+                                                 @Valid @RequestBody CommentPostRequestDTO dto,
                                                  @Parameter(hidden = true) @AuthUser User user) {
         return ApiResponse.success(commentService.createComment(gatheringId, user.getId(), dto));
     }
@@ -40,7 +41,7 @@ public class CommentRestController {
     @Operation(summary = "동행 모집 댓글 수정", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<CommentModel> putComment(@PathVariable("id") Long commentId,
-                                                @RequestBody CommentPutRequestDTO dto,
+                                                @Valid @RequestBody CommentPutRequestDTO dto,
                                                 @Parameter(hidden = true) @AuthUser User user) {
         return ApiResponse.success(commentService.update(commentId, user.getId(), dto));
     }

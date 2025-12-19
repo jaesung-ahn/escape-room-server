@@ -29,9 +29,14 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final ImageService imageService;
+    private final com.wiiee.server.api.domain.gathering.GatheringRepository gatheringRepository;
 
     @Transactional
     public CommentModel createComment(Long gatheringId, Long userId, CommentPostRequestDTO dto) {
+        // Gathering 존재 여부 확인
+        gatheringRepository.findById(gatheringId)
+                .orElseThrow(() -> new CustomException(GatheringCommentErrorCode.ERROR_GATHERING_NOT_FOUND));
+
         User writer = userService.findById(userId);
         UserProfileResponseDTO userResponse = getUserResponse(writer);
         if (dto.getParentCommentId() != null) {

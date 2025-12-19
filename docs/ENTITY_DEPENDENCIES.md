@@ -113,6 +113,17 @@ Level 4: 동행 관련 기능
 | GatheringFavorite | User, Gathering | - |
 | Comment | User, Gathering | - |
 
+## 📈 테스트 진행 현황
+
+**전체 진행률**: 7/14 완료 (50%)
+
+- ✅ **완료** (7): Image, User, Company, Content, Review, Gathering, Comment
+- ⬜ **미완료** (7): AdminUser (API 없음), ContentPrice (API 없음), Discount (API 없음), GatheringMember, GatheringRequest, GatheringFavorite, ContentFavorite (ContentAcceptanceTest에 포함됨)
+
+**최근 업데이트**: 2025-12-19 - Comment 테스트 완료
+
+---
+
 ## 🎯 Acceptance 테스트 작성 권장 순서
 
 ### Phase 1: 기반 엔티티 (의존성 없음)
@@ -160,9 +171,70 @@ Level 4: 동행 관련 기능
 12. ⬜ GatheringRequest  - 참가 요청/승인
     └─ Depends: User, Gathering
 
-13. ⬜ Comment           - 댓글 작성/수정/삭제
+13. ✅ Comment           - 댓글 작성/수정/삭제 (14개 테스트)
     └─ Depends: User, Gathering
+    └─ Test: CommentAcceptanceTest
+       ├─ 기본 CRUD (등록/조회/수정/삭제)
+       ├─ 대댓글 계층 구조
+       ├─ 권한 검증 (본인만 수정/삭제)
+       ├─ Soft Delete 동작 확인
+       └─ 완전한 예외 처리 (validation, 존재 여부 등)
 
 14. ⬜ GatheringFavorite - 동행 즐겨찾기
     └─ Depends: User, Gathering
 ```
+
+---
+
+## 📝 완료된 테스트 상세 정보
+
+### Comment (댓글) - CommentAcceptanceTest ✅
+
+**파일 위치**: `api/src/test/java/com/wiiee/server/api/acceptance/comment/CommentAcceptanceTest.java`
+
+**테스트 개수**: 14개
+
+**API 엔드포인트**:
+- `POST /api/comment/gathering/{id}` - 댓글/대댓글 등록
+- `GET /api/comment/gathering/{id}` - 댓글 목록 조회
+- `PUT /api/comment/{id}` - 댓글 수정
+- `DELETE /api/comment/{id}` - 댓글 삭제
+
+**테스트 케이스**:
+
+#### 1. 기본 CRUD (4개)
+- ✅ `createComment` - 댓글 등록
+- ✅ `getComments` - 댓글 목록 조회
+- ✅ `updateComment` - 댓글 수정
+- ✅ `deleteComment` - 댓글 삭제
+
+#### 2. 대댓글 기능 (2개)
+- ✅ `createReplyComment` - 대댓글 등록
+- ✅ `getCommentsWithReplies` - 대댓글이 포함된 댓글 목록 조회
+  - 부모 댓글의 `children` 배열 검증
+  - `isParent` 플래그 확인
+
+#### 3. 권한 검증 (2개)
+- ✅ `updateComment_notOwner` - 다른 사용자의 댓글 수정 실패 (IllegalArgumentException)
+- ✅ `deleteComment_notOwner` - 다른 사용자의 댓글 삭제 실패 (CustomException 7001)
+
+#### 4. 예외 처리 (6개)
+- ✅ `createComment_unauthorized` - 인증 없이 댓글 등록 실패 (401/403)
+- ✅ `createComment_gatheringNotFound` - 존재하지 않는 동행에 댓글 등록 실패 (7002)
+- ✅ `createComment_emptyMessage` - 빈 메시지로 댓글 등록 실패 (400, @NotBlank)
+- ✅ `getComments_afterDelete` - 삭제된 댓글 조회 시 Soft Delete 확인 (deleted=true)
+- ✅ `updateComment_notFound` - 존재하지 않는 댓글 수정 실패 (400/404)
+- ✅ `deleteComment_notFound` - 존재하지 않는 댓글 삭제 실패 (400/404)
+
+**서버 개선 사항**:
+- ✅ `@Valid` 어노테이션 추가 → Request DTO validation 활성화
+- ✅ Gathering 존재 여부 검증 로직 추가
+- ✅ `ERROR_GATHERING_NOT_FOUND` 에러 코드 추가 (7002)
+
+**특이사항**:
+- Soft Delete 패턴 사용 (`deleted` 플래그, `deletedAt` 타임스탬프)
+- 대댓글 계층 구조 (부모-자식 관계)
+- Comment 엔티티에서 권한 검증 (`IllegalArgumentException`)
+- CommentService에서 추가 권한 검증 (`CustomException`)
+
+---

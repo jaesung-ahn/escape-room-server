@@ -276,10 +276,16 @@ public class GatheringService {
 
         final Gathering unproxyGathering = Hibernate.unproxy(gatheringRequest.getGathering(), Gathering.class);
 
+        // 권한 검증: 호스트 또는 신청자만 조회 가능
+        boolean isHost = unproxyGathering.getLeader().getId().equals(userId);
+        boolean isApplicant = gatheringRequest.getRequestUser().getId().equals(userId);
+        if (!isHost && !isApplicant) {
+            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_REQUEST_NOT_ACCESSIBLE);
+        }
+
         // 동행모집 호스트이며,
         // 참가서 상태가 '주최자 확인 전' 상태인 경우만 '주최자 확인 됨' 으로 변경
-        if (unproxyGathering.getLeader().getId().equals(userId) &&
-                gatheringRequest.getGatheringRequestStatus().equals(GatheringRequestStatus.UNVERIFIED)) {
+        if (isHost && gatheringRequest.getGatheringRequestStatus().equals(GatheringRequestStatus.UNVERIFIED)) {
             gatheringRequest.updateRequestStatus(GatheringRequestStatus.VERIFIED);
         }
 
@@ -315,8 +321,7 @@ public class GatheringService {
         final Gathering unproxyGathering = Hibernate.unproxy(gathering, Gathering.class);
 
         if (unproxyGathering.getLeader().getId() != userId) {
-            throw new CustomException(8115,
-                    "호스트가 아닌 유저는 없는 권한 입니다.", null);
+            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_NOT_HOST);
         }
 
         int memberSize = unproxyGathering.getGatheringMembers().size();

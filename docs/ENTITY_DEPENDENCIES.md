@@ -1,6 +1,8 @@
 # 엔티티 의존 관계 분석
 
-> Wiiee 프로젝트의 엔티티 간 의존 관계를 분석하여 Acceptance 테스트 작성 순서를 정의합니다.
+> Wiiee 프로젝트의 엔티티 간 의존 관계를 분석합니다.
+
+> **참고**: Acceptance 테스트 진행 현황 및 상세 정보는 [TESTING_PROGRESS.md](./TESTING_PROGRESS.md)를 참조하세요.
 
 ## 📊 엔티티 의존 관계 다이어그램
 
@@ -113,128 +115,9 @@ Level 4: 동행 관련 기능
 | GatheringFavorite | User, Gathering | - |
 | Comment | User, Gathering | - |
 
-## 📈 테스트 진행 현황
-
-**전체 진행률**: 7/14 완료 (50%)
-
-- ✅ **완료** (7): Image, User, Company, Content, Review, Gathering, Comment
-- ⬜ **미완료** (7): AdminUser (API 없음), ContentPrice (API 없음), Discount (API 없음), GatheringMember, GatheringRequest, GatheringFavorite, ContentFavorite (ContentAcceptanceTest에 포함됨)
-
-**최근 업데이트**: 2025-12-19 - Comment 테스트 완료
-
 ---
 
-## 🎯 Acceptance 테스트 작성 권장 순서
+## 📚 관련 문서
 
-### Phase 1: 기반 엔티티 (의존성 없음)
-```
-1. ✅ Image          - 이미지 업로드/조회 (선택적)
-2. ✅ User           - 회원가입/로그인/프로필
-3. ⬜ AdminUser      - 관리자 인증 (API 없음, 스킵)
-```
-
-### Phase 2: 업체 및 컨텐츠
-```
-4. ✅ Company        - 업체 CRUD
-   └─ Depends: (optional) AdminUser, Image IDs
-
-5. ✅ Content        - 테마/방 CRUD
-   └─ Depends: Company (required)
-```
-
-### Phase 3: 컨텐츠 부가 기능
-```
-6. ⬜ ContentPrice   - 가격 정보 CRUD (API 없음, 스킵)
-   └─ Depends: Content
-
-7. ✅ Review         - 리뷰 작성/조회/수정
-   └─ Depends: User, Content
-
-8. ✅ ContentFavorite - 즐겨찾기 추가/제거 (ContentAcceptanceTest에 포함)
-   └─ Depends: User, Content
-
-9. ⬜ Discount       - 할인 정보 CRUD (API 없음, 스킵)
-   └─ Depends: Content
-```
-
-### Phase 4: 동행 모집
-```
-10. ✅ Gathering     - 동행 모집 게시글 CRUD
-    └─ Depends: User, Content
-```
-
-### Phase 5: 동행 부가 기능
-```
-11. ⬜ GatheringMember   - 멤버 가입/탈퇴
-    └─ Depends: User, Gathering
-
-12. ⬜ GatheringRequest  - 참가 요청/승인
-    └─ Depends: User, Gathering
-
-13. ✅ Comment           - 댓글 작성/수정/삭제 (14개 테스트)
-    └─ Depends: User, Gathering
-    └─ Test: CommentAcceptanceTest
-       ├─ 기본 CRUD (등록/조회/수정/삭제)
-       ├─ 대댓글 계층 구조
-       ├─ 권한 검증 (본인만 수정/삭제)
-       ├─ Soft Delete 동작 확인
-       └─ 완전한 예외 처리 (validation, 존재 여부 등)
-
-14. ⬜ GatheringFavorite - 동행 즐겨찾기
-    └─ Depends: User, Gathering
-```
-
----
-
-## 📝 완료된 테스트 상세 정보
-
-### Comment (댓글) - CommentAcceptanceTest ✅
-
-**파일 위치**: `api/src/test/java/com/wiiee/server/api/acceptance/comment/CommentAcceptanceTest.java`
-
-**테스트 개수**: 14개
-
-**API 엔드포인트**:
-- `POST /api/comment/gathering/{id}` - 댓글/대댓글 등록
-- `GET /api/comment/gathering/{id}` - 댓글 목록 조회
-- `PUT /api/comment/{id}` - 댓글 수정
-- `DELETE /api/comment/{id}` - 댓글 삭제
-
-**테스트 케이스**:
-
-#### 1. 기본 CRUD (4개)
-- ✅ `createComment` - 댓글 등록
-- ✅ `getComments` - 댓글 목록 조회
-- ✅ `updateComment` - 댓글 수정
-- ✅ `deleteComment` - 댓글 삭제
-
-#### 2. 대댓글 기능 (2개)
-- ✅ `createReplyComment` - 대댓글 등록
-- ✅ `getCommentsWithReplies` - 대댓글이 포함된 댓글 목록 조회
-  - 부모 댓글의 `children` 배열 검증
-  - `isParent` 플래그 확인
-
-#### 3. 권한 검증 (2개)
-- ✅ `updateComment_notOwner` - 다른 사용자의 댓글 수정 실패 (IllegalArgumentException)
-- ✅ `deleteComment_notOwner` - 다른 사용자의 댓글 삭제 실패 (CustomException 7001)
-
-#### 4. 예외 처리 (6개)
-- ✅ `createComment_unauthorized` - 인증 없이 댓글 등록 실패 (401/403)
-- ✅ `createComment_gatheringNotFound` - 존재하지 않는 동행에 댓글 등록 실패 (7002)
-- ✅ `createComment_emptyMessage` - 빈 메시지로 댓글 등록 실패 (400, @NotBlank)
-- ✅ `getComments_afterDelete` - 삭제된 댓글 조회 시 Soft Delete 확인 (deleted=true)
-- ✅ `updateComment_notFound` - 존재하지 않는 댓글 수정 실패 (400/404)
-- ✅ `deleteComment_notFound` - 존재하지 않는 댓글 삭제 실패 (400/404)
-
-**서버 개선 사항**:
-- ✅ `@Valid` 어노테이션 추가 → Request DTO validation 활성화
-- ✅ Gathering 존재 여부 검증 로직 추가
-- ✅ `ERROR_GATHERING_NOT_FOUND` 에러 코드 추가 (7002)
-
-**특이사항**:
-- Soft Delete 패턴 사용 (`deleted` 플래그, `deletedAt` 타임스탬프)
-- 대댓글 계층 구조 (부모-자식 관계)
-- Comment 엔티티에서 권한 검증 (`IllegalArgumentException`)
-- CommentService에서 추가 권한 검증 (`CustomException`)
-
----
+- [테스트 진행 현황](./TESTING_PROGRESS.md) - Acceptance 테스트 작성 진행 상황 및 상세 정보
+- [테스트 문제 해결 가이드](./TESTING_TROUBLESHOOTING.md) - 테스트 작성 시 발생하는 일반적인 문제 및 해결책

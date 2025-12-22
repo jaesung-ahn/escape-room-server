@@ -11,6 +11,8 @@ public enum GatheringErrorCode implements ErrorCodeInterface {
     ERROR_NOT_ALLOWED_OPEN_CHAT_URL(8120, "허용되지 않은 오픈채팅 url입니다."),
     ERROR_NOT_ALLOWED_UNDER_THE_CURRENT_MEMBER(8121, "현재 수락된 멤버 수보다 적은 최대인원수로 변경할 수 없습니다."),
     ERROR_HOPE_DATE_NOT_ALLOWED_BEFORE_NOW(8122, "동행 희망일은 현재보다 빠른 날짜로 변경할 수 없습니다."),
+    ERROR_GATHERING_REQUEST_NOT_ACCESSIBLE(8123, "참가서 조회 권한이 없습니다. (호스트 또는 신청자만 가능)"),
+    ERROR_GATHERING_NOT_HOST(8124, "호스트만 수행할 수 있는 작업입니다."),
     ;
 
     private final int code;

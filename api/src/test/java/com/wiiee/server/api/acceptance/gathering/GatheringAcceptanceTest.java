@@ -126,20 +126,178 @@ class GatheringAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("동행 참가 신청")
-    void applyGathering() {
-        // given: 다른 사용자의 동행 모집 생성
+    @DisplayName("동행 참가 신청 - 선착순 (즉시 멤버 추가)")
+    void applyGathering_firstCome() {
+        // given: 다른 사용자의 동행 모집 생성 (선착순)
         Map<String, Object> anotherUserResponse = 회원가입_후_응답_반환("leader@example.com", "방장", "pass123!");
         String leaderToken = (String) anotherUserResponse.get("accessToken");
 
-        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집합니다", "참가해주세요", leaderToken);
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집합니다", "참가해주세요", leaderToken, 1); // recruitTypeCode: 1 (선착순)
 
         // when: 참가 신청 요청
         String requestReason = "참가하고 싶습니다!";
         ExtractableResponse<Response> response = 동행_참가_신청_요청(gatheringId, requestReason);
 
-        // then: 성공 응답
+        // then: 성공 응답 (즉시 멤버로 추가됨)
         동행_참가_신청_성공_확인(response);
+    }
+
+    @Test
+    @DisplayName("동행 참가 신청 - 승낙제 (참가서 생성)")
+    void applyGathering_confirm() {
+        // given: 호스트의 동행 모집 생성 (승낙제)
+        Map<String, Object> hostResponse = 회원가입_후_응답_반환("host@example.com", "호스트", "pass123!");
+        String hostToken = (String) hostResponse.get("accessToken");
+
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "승낙제 모집", "승인 필요", hostToken, 0); // recruitTypeCode: 0 (승낙제)
+
+        // when: 참가 신청 요청
+        String requestReason = "참가하고 싶어요!";
+        ExtractableResponse<Response> response = 동행_참가_신청_요청(gatheringId, requestReason);
+
+        // then: 성공 응답 (GatheringRequest 생성됨, 즉시 멤버로는 추가 안됨)
+        동행_참가_신청_성공_확인(response);
+    }
+
+    @Test
+    @DisplayName("참가서 상세 조회 - 승낙제")
+    void getGatheringRequestDetail() {
+        // given: 호스트와 신청자 생성
+        Map<String, Object> hostResponse = 회원가입_후_응답_반환("host2@example.com", "방장2", "pass123!");
+        String hostToken = (String) hostResponse.get("accessToken");
+
+        Map<String, Object> applicantResponse = 회원가입_후_응답_반환("applicant@example.com", "신청자", "pass123!");
+        String applicantToken = (String) applicantResponse.get("accessToken");
+
+        // 승낙제 동행 생성 및 참가 신청
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집", "참가 신청 환영", hostToken, 0);
+        String requestReason = "참가하고 싶어요";
+        동행_참가_신청_요청_with_token(gatheringId, requestReason, applicantToken);
+
+        // 참가서 ID 조회
+        Long requestId = 최근_참가서_ID_조회(gatheringId, hostToken, applicantToken);
+
+        // when: 호스트가 참가서 상세 조회
+        ExtractableResponse<Response> response = 참가서_상세_조회_요청(requestId, hostToken);
+
+        // then: 성공 응답
+        참가서_상세_조회_성공_확인(response, requestReason);
+    }
+
+    @Test
+    @DisplayName("참가서 수락 - 승낙제")
+    void confirmGatheringRequest_approval() {
+        // given: 호스트와 신청자 생성
+        Map<String, Object> hostResponse = 회원가입_후_응답_반환("host3@example.com", "방장3", "pass123!");
+        String hostToken = (String) hostResponse.get("accessToken");
+
+        Map<String, Object> applicantResponse = 회원가입_후_응답_반환("applicant2@example.com", "신청자2", "pass123!");
+        String applicantToken = (String) applicantResponse.get("accessToken");
+
+        // 승낙제 동행 생성 및 참가 신청
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집", "수락 테스트", hostToken, 0);
+        동행_참가_신청_요청_with_token(gatheringId, "참가 희망", applicantToken);
+        Long requestId = 최근_참가서_ID_조회(gatheringId, hostToken, applicantToken);
+
+        // when: 호스트가 참가서 수락
+        ExtractableResponse<Response> response = 참가서_수락_요청(requestId, hostToken);
+
+        // then: 성공 응답
+        참가서_처리_성공_확인(response);
+    }
+
+    @Test
+    @DisplayName("참가서 거절 - 승낙제")
+    void confirmGatheringRequest_reject() {
+        // given: 호스트와 신청자 생성
+        Map<String, Object> hostResponse = 회원가입_후_응답_반환("host4@example.com", "방장4", "pass123!");
+        String hostToken = (String) hostResponse.get("accessToken");
+
+        Map<String, Object> applicantResponse = 회원가입_후_응답_반환("applicant3@example.com", "신청자3", "pass123!");
+        String applicantToken = (String) applicantResponse.get("accessToken");
+
+        // 승낙제 동행 생성 및 참가 신청
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집", "거절 테스트", hostToken, 0);
+        동행_참가_신청_요청_with_token(gatheringId, "참가 희망", applicantToken);
+        Long requestId = 최근_참가서_ID_조회(gatheringId, hostToken, applicantToken);
+
+        // when: 호스트가 참가서 거절
+        ExtractableResponse<Response> response = 참가서_거절_요청(requestId, hostToken);
+
+        // then: 성공 응답
+        참가서_처리_성공_확인(response);
+    }
+
+    @Test
+    @DisplayName("참가서 취소 - 승낙제")
+    void cancelGatheringRequest() {
+        // given: 호스트와 신청자 생성
+        Map<String, Object> hostResponse = 회원가입_후_응답_반환("host5@example.com", "방장5", "pass123!");
+        String hostToken = (String) hostResponse.get("accessToken");
+
+        Map<String, Object> applicantResponse = 회원가입_후_응답_반환("applicant4@example.com", "신청자4", "pass123!");
+        String applicantToken = (String) applicantResponse.get("accessToken");
+
+        // 승낙제 동행 생성 및 참가 신청
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집", "취소 테스트", hostToken, 0);
+        동행_참가_신청_요청_with_token(gatheringId, "참가 희망", applicantToken);
+        Long requestId = 최근_참가서_ID_조회(gatheringId, hostToken, applicantToken);
+
+        // when: 신청자가 참가서 취소
+        ExtractableResponse<Response> response = 참가서_취소_요청(requestId, applicantToken);
+
+        // then: 성공 응답
+        참가서_취소_성공_확인(response);
+    }
+
+    @Test
+    @DisplayName("참가서 조회 - 권한 없음 (다른 사용자)")
+    void getGatheringRequestDetail_forbidden() {
+        // given: 호스트, 신청자, 제3자 생성
+        Map<String, Object> hostResponse = 회원가입_후_응답_반환("host6@example.com", "방장6", "pass123!");
+        String hostToken = (String) hostResponse.get("accessToken");
+
+        Map<String, Object> applicantResponse = 회원가입_후_응답_반환("applicant5@example.com", "신청자5", "pass123!");
+        String applicantToken = (String) applicantResponse.get("accessToken");
+
+        Map<String, Object> otherUserResponse = 회원가입_후_응답_반환("other@example.com", "제3자", "pass123!");
+        String otherToken = (String) otherUserResponse.get("accessToken");
+
+        // 승낙제 동행 생성 및 참가 신청
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집", "권한 테스트", hostToken, 0);
+        동행_참가_신청_요청_with_token(gatheringId, "참가 희망", applicantToken);
+        Long requestId = 최근_참가서_ID_조회(gatheringId, hostToken, applicantToken);
+
+        // when: 제3자가 참가서 조회 시도
+        ExtractableResponse<Response> response = 참가서_상세_조회_요청(requestId, otherToken);
+
+        // then: 8123 에러 (권한 없음)
+        참가서_조회_권한_없음_확인(response);
+    }
+
+    @Test
+    @DisplayName("참가서 수락 - 권한 없음 (호스트 아님)")
+    void confirmGatheringRequest_notHost() {
+        // given: 호스트, 신청자, 제3자 생성
+        Map<String, Object> hostResponse = 회원가입_후_응답_반환("host7@example.com", "방장7", "pass123!");
+        String hostToken = (String) hostResponse.get("accessToken");
+
+        Map<String, Object> applicantResponse = 회원가입_후_응답_반환("applicant6@example.com", "신청자6", "pass123!");
+        String applicantToken = (String) applicantResponse.get("accessToken");
+
+        Map<String, Object> otherUserResponse = 회원가입_후_응답_반환("other2@example.com", "제3자2", "pass123!");
+        String otherToken = (String) otherUserResponse.get("accessToken");
+
+        // 승낙제 동행 생성 및 참가 신청
+        Long gatheringId = 동행_모집_등록_후_ID_반환_with_token(testContentId, "동행 모집", "권한 테스트", hostToken, 0);
+        동행_참가_신청_요청_with_token(gatheringId, "참가 희망", applicantToken);
+        Long requestId = 최근_참가서_ID_조회(gatheringId, hostToken, applicantToken);
+
+        // when: 제3자가 참가서 수락 시도
+        ExtractableResponse<Response> response = 참가서_수락_요청(requestId, otherToken);
+
+        // then: 8124 에러 (호스트만 가능)
+        참가서_수락_권한_없음_확인(response);
     }
 
     @Test
@@ -353,9 +511,31 @@ class GatheringAcceptanceTest extends AcceptanceTest {
 
     /**
      * 동행 모집 등록 후 ID 반환 (특정 토큰 사용)
+     * @deprecated Use 동행_모집_등록_후_ID_반환_with_token(Long, String, String, String, int) instead
      */
+    @Deprecated
     private Long 동행_모집_등록_후_ID_반환_with_token(Long contentId, String title, String information, String token) {
-        Map<String, Object> request = 동행_모집_등록_요청_바디(title, information);
+        return 동행_모집_등록_후_ID_반환_with_token(contentId, title, information, token, 1); // 기본값: 선착순
+    }
+
+    /**
+     * 동행 모집 등록 후 ID 반환 (특정 토큰 사용, recruitTypeCode 지정)
+     * @param recruitTypeCode 0: 승낙제, 1: 선착순
+     */
+    private Long 동행_모집_등록_후_ID_반환_with_token(Long contentId, String title, String information, String token, int recruitTypeCode) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("contentId", contentId);
+        request.put("title", title);
+        request.put("information", information);
+        request.put("stateCode", 1);
+        request.put("cityCode", 1);
+        request.put("recruitTypeCode", recruitTypeCode);  // 매개변수로 받음
+        request.put("maxPeople", 4);
+        request.put("genderTypeCode", 1);
+        request.put("isDateAgreement", false);
+        request.put("hopeDate", LocalDate.now().plusDays(7).toString());
+        request.put("kakaoOpenChatUrl", "https://open.kakao.com/test");
+        request.put("ageGroupCodes", List.of(1, 2, 3));
 
         Number gatheringId = RestAssured.given()
                 .header("Authorization", "Bearer " + token)
@@ -500,6 +680,130 @@ class GatheringAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    // ===== GatheringRequest 관련 헬퍼 메서드 =====
+
+    /**
+     * 동행 참가 신청 요청 (특정 토큰 사용)
+     */
+    private ExtractableResponse<Response> 동행_참가_신청_요청_with_token(Long gatheringId, String requestReason, String token) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("gatheringId", gatheringId);
+        request.put("requestReason", requestReason);
+
+        return RestAssured.given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/gathering/apply")
+                .then()
+                .extract();
+    }
+
+    /**
+     * 최근 참가서 ID 조회
+     * 호스트가 동행을 조회할 때는 waitingMembers에서 추출
+     * 신청자가 동행을 조회할 때는 gatheringRequestId 필드 사용
+     */
+    private Long 최근_참가서_ID_조회(Long gatheringId, String hostToken, String applicantToken) {
+        // 호스트 토큰으로 조회 시 waitingMembers에서 추출
+        ExtractableResponse<Response> hostResponse = RestAssured.given()
+                .header("Authorization", "Bearer " + hostToken)
+                .when()
+                .get("/api/gathering/" + gatheringId)
+                .then()
+                .extract();
+
+        List<Map<String, Object>> waitingMembers = hostResponse.path("data.waitingMembers");
+        if (waitingMembers != null && !waitingMembers.isEmpty()) {
+            Object id = waitingMembers.get(0).get("gatheringReqeustId");  // 오타: Reqeust (서버 코드에 오타가 있음)
+            if (id instanceof Number) {
+                return ((Number) id).longValue();
+            }
+        }
+
+        // 신청자 토큰으로 조회 시 gatheringRequestId 필드 사용
+        ExtractableResponse<Response> applicantResponse = RestAssured.given()
+                .header("Authorization", "Bearer " + applicantToken)
+                .when()
+                .get("/api/gathering/" + gatheringId)
+                .then()
+                .extract();
+
+        Object requestId = applicantResponse.path("data.gatheringRequestId");
+        if (requestId instanceof Number) {
+            return ((Number) requestId).longValue();
+        }
+
+        throw new AssertionError("참가서 ID를 찾을 수 없습니다.\n호스트 응답: " + hostResponse.asString()
+                + "\n신청자 응답: " + applicantResponse.asString());
+    }
+
+    /**
+     * 참가서 상세 조회 요청
+     */
+    private ExtractableResponse<Response> 참가서_상세_조회_요청(Long requestId, String token) {
+        return RestAssured.given()
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .get("/api/gathering/requests/" + requestId)
+                .then()
+                .extract();
+    }
+
+    /**
+     * 참가서 수락 요청
+     */
+    private ExtractableResponse<Response> 참가서_수락_요청(Long requestId, String token) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("gatheringRequestId", requestId);
+        request.put("gatheringRequestStatus", "APPROVAL");
+
+        return RestAssured.given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/gathering/confirm")
+                .then()
+                .extract();
+    }
+
+    /**
+     * 참가서 거절 요청
+     */
+    private ExtractableResponse<Response> 참가서_거절_요청(Long requestId, String token) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("gatheringRequestId", requestId);
+        request.put("gatheringRequestStatus", "REJECT");
+
+        return RestAssured.given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/gathering/confirm")
+                .then()
+                .extract();
+    }
+
+    /**
+     * 참가서 취소 요청
+     */
+    private ExtractableResponse<Response> 참가서_취소_요청(Long requestId, String token) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("gatheringRequestId", requestId);
+
+        return RestAssured.given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/gathering/cancel")
+                .then()
+                .extract();
+    }
+
     // ===== 검증 메서드 (응답 확인) =====
 
     /**
@@ -611,5 +915,61 @@ class GatheringAcceptanceTest extends AcceptanceTest {
                 .body("data.ingList", notNullValue())
                 .body("data.createdList", notNullValue())
                 .body("data.endedList", notNullValue());
+    }
+
+    // ===== GatheringRequest 검증 메서드 =====
+
+    /**
+     * 참가서 상세 조회 성공 확인
+     */
+    private void 참가서_상세_조회_성공_확인(ExtractableResponse<Response> response, String expectedReason) {
+        response.response()
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("code", equalTo(200))
+                .body("data.gatheringRequestId", notNullValue())
+                .body("data.reqReason", equalTo(expectedReason));
+    }
+
+    /**
+     * 참가서 처리(수락/거절) 성공 확인
+     */
+    private void 참가서_처리_성공_확인(ExtractableResponse<Response> response) {
+        response.response()
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("code", equalTo(200));
+    }
+
+    /**
+     * 참가서 취소 성공 확인
+     */
+    private void 참가서_취소_성공_확인(ExtractableResponse<Response> response) {
+        response.response()
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("code", equalTo(200));
+    }
+
+    /**
+     * 참가서 조회 권한 없음 확인 (8123 에러)
+     */
+    private void 참가서_조회_권한_없음_확인(ExtractableResponse<Response> response) {
+        response.response()
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("code", equalTo(8123))
+                .body("message", equalTo("참가서 조회 권한이 없습니다. (호스트 또는 신청자만 가능)"));
+    }
+
+    /**
+     * 참가서 수락 권한 없음 확인 (8124 에러)
+     */
+    private void 참가서_수락_권한_없음_확인(ExtractableResponse<Response> response) {
+        response.response()
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("code", equalTo(8124))
+                .body("message", equalTo("호스트만 수행할 수 있는 작업입니다."));
     }
 }

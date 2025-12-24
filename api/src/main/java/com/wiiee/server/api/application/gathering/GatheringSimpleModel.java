@@ -3,6 +3,7 @@ package com.wiiee.server.api.application.gathering;
 import com.wiiee.server.api.application.content.ContentSimpleModel;
 import com.wiiee.server.api.application.gathering.member.MemberModel;
 import com.wiiee.server.api.application.user.UserModel;
+import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.domain.util.LocalDateTimeUtil;
 import com.wiiee.server.common.domain.gathering.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -74,7 +75,7 @@ public class GatheringSimpleModel {
 
 
 
-    public static GatheringSimpleModel fromGatheringWithContentSimpleModel(Gathering gathering, ContentSimpleModel content) {
+    public static GatheringSimpleModel fromGatheringWithContentSimpleModel(Gathering gathering, ContentSimpleModel content, ImageService imageService) {
         GatheringInfo gatheringInfo = gathering.getGatheringInfo();
 
         GatheringStatus gatheringStatus = gatheringInfo.getGatheringStatus();
@@ -119,7 +120,10 @@ public class GatheringSimpleModel {
                 .createdAt(LocalDateTimeUtil.getDateFormat(gathering.getCreatedAt()))
                 .bookmarkCnt(0)
                 .commentCnt(0)
-                .members(gathering.getGatheringMembers().stream().map(MemberModel::fromMember).collect(toList()))
+                .members(gathering.getGatheringMembers().stream().map(member -> {
+                    String profileImageUrl = imageService.getImageById(member.getUser().getProfile().getProfileImageId()).getUrl();
+                    return MemberModel.fromMember(member, profileImageUrl);
+                }).collect(toList()))
                 .build();
     }
 

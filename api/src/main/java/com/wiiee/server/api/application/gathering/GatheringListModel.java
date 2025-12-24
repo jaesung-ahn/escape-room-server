@@ -2,6 +2,7 @@ package com.wiiee.server.api.application.gathering;
 
 import com.wiiee.server.api.application.gathering.member.MemberModel;
 import com.wiiee.server.api.application.gathering.mgr.GatheringManager;
+import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.domain.util.LocalDateTimeUtil;
 import com.wiiee.server.common.domain.gathering.Gathering;
 import com.wiiee.server.common.domain.gathering.GatheringInfo;
@@ -65,7 +66,7 @@ public class GatheringListModel {
     @Schema(description = "동행 멤버")
     List<MemberModel> members;
 
-    public static GatheringListModel fromGatheringWithContentSimpleModel(Gathering gathering, GatheringListContentModel content) {
+    public static GatheringListModel fromGatheringWithContentSimpleModel(Gathering gathering, GatheringListContentModel content, ImageService imageService) {
         GatheringInfo gatheringInfo = gathering.getGatheringInfo();
 
         Integer maxPeople = gatheringInfo.getMaxPeople();
@@ -95,7 +96,10 @@ public class GatheringListModel {
                 .commentCnt(0)
                 .leaderId(gathering.getLeader().getId())
                 .members(
-                        gathering.getGatheringMembers().stream().map(MemberModel::fromMember)
+                        gathering.getGatheringMembers().stream().map(member -> {
+                            String profileImageUrl = imageService.getImageById(member.getUser().getProfile().getProfileImageId()).getUrl();
+                            return MemberModel.fromMember(member, profileImageUrl);
+                        })
                                 .sorted(Comparator.comparing(MemberModel::getIsOwner).reversed())
                                 .collect(toList())
                 )

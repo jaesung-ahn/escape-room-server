@@ -74,7 +74,7 @@ public class GatheringService {
         Image userImage = imageService.getImageById(imageId);
         return GatheringModel.fromGatheringWithContentModel(
                 userId, createdGathering, contentService.getContentModelByContent(content), userImage,
-                this.getWaitingMember(createdGathering), 0L
+                this.getWaitingMember(createdGathering), 0L, imageService
         );
     }
 
@@ -121,7 +121,7 @@ public class GatheringService {
 
         return GatheringModel.fromGatheringWithContentModel(
             userId, gathering, contentService.getContentModelByContent(gathering.getContent()), userImage,
-                this.getWaitingMember(gathering), unverifiedGatherCnt
+                this.getWaitingMember(gathering), unverifiedGatherCnt, imageService
         );
     }
 
@@ -145,7 +145,7 @@ public class GatheringService {
                         dto.getSize())
         );
         final var gatheringModels = gatherings.stream().map(gathering ->
-                GatheringSimpleModel.fromGatheringWithContentSimpleModel(gathering, contentService.getContentSimpleModelByContent(gathering.getContent())))
+                GatheringSimpleModel.fromGatheringWithContentSimpleModel(gathering, contentService.getContentSimpleModelByContent(gathering.getContent()), imageService))
                 .collect(Collectors.toList());
         return MultipleGatheringModel.fromGatherings(gatheringModels, gatherings.getTotalElements(), gatherings.hasNext());
     }
@@ -431,7 +431,7 @@ public class GatheringService {
                     Long representativeImageId = gathering.getContent().getContentBasicInfo().getRepresentativeImageId();
                     Image contentImage = imageService.getImageById(representativeImageId);
                     return GatheringListModel.fromGatheringWithContentSimpleModel(gathering,
-                            GatheringListContentModel.fromContentAndImage(gathering.getContent(), contentImage));
+                            GatheringListContentModel.fromContentAndImage(gathering.getContent(), contentImage), imageService);
                 }).toList();
 
         log.info("orgMyGatheringList:" + orgMyGatheringList);

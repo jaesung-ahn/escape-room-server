@@ -25,13 +25,13 @@ public class MemberModel {
     @Schema(description = "동행모집 리더 유무")
     Boolean isOwner;
 
-    public static MemberModel fromMember(GatheringMember gatheringMember) {
+    public static MemberModel fromMember(GatheringMember gatheringMember, String profileImageUrl) {
         UserSimpleModel userSimpleModel = UserSimpleModel.fromUser(gatheringMember.getUser());
         return MemberModel.builder()
                 .id(gatheringMember.getId())
                 .gatheringId(gatheringMember.getGathering().getId())
                 .userId(userSimpleModel.getId())
-                .userProfileImageUrl(builder().userProfileImageUrl)
+                .userProfileImageUrl(profileImageUrl)
                 .userNickname(userSimpleModel.getNickname())
                 .isOwner(gatheringMember.getGathering().getLeader().getId().equals(gatheringMember.getUser().getId()))
                 .build();

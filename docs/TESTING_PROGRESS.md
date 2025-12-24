@@ -4,13 +4,12 @@
 
 ## 📈 테스트 진행 현황
 
-**전체 진행률**: 10/14 완료 (71%)
+**전체 진행률**: 12/14 완료 (86%)
 
-- ✅ **완료** (10): Image, User, Company, Content, Review, Gathering, Comment, GatheringRequest, GatheringFavorite, ContentFavorite
-- ⬜ **미완료** (4): AdminUser (API 없음), ContentPrice (API 없음), Discount (API 없음), GatheringMember
-- ⚠️ **참고**: GatheringMember는 참가 신청 승인 시 자동 생성되므로 GatheringRequestAcceptanceTest에서 간접적으로 테스트됨
+- ✅ **완료** (12): Image, User, Company, Content, Review, Gathering, Comment, GatheringRequest, GatheringFavorite, ContentFavorite, GatheringMember, Wbti
+- ⬜ **미완료** (2): AdminUser (API 없음), ContentPrice (API 없음), Discount (API 없음)
 
-**최근 업데이트**: 2025-12-22 - GatheringRequest 권한 검증 추가 완료
+**최근 업데이트**: 2025-12-22 - GatheringMember 및 Wbti Acceptance 테스트 추가 완료
 
 ---
 
@@ -210,5 +209,73 @@
 - 대댓글 계층 구조 (부모-자식 관계)
 - Comment 엔티티에서 권한 검증 (`IllegalArgumentException`)
 - CommentService에서 추가 권한 검증 (`CustomException`)
+
+---
+
+### GatheringMember (동행 멤버) - MemberAcceptanceTest ✅
+
+**파일 위치**: `api/src/test/java/com/wiiee/server/api/acceptance/member/MemberAcceptanceTest.java`
+
+**테스트 개수**: 7개
+
+**API 엔드포인트**:
+- `POST /api/member/gathering/{id}` - 멤버 등록
+- `PUT /api/member/{id}` - 멤버 상태 수정
+
+**테스트 케이스**:
+
+#### 1. 멤버 등록 (2개)
+- ✅ `addMember` - 멤버 등록 성공
+- ✅ `addMember_duplicate` - 중복 등록 실패
+
+#### 2. 멤버 상태 수정 (3개)
+- ✅ `updateMember_approval` - 상태를 승인(1)로 변경
+- ✅ `updateMember_waiting` - 상태를 대기(0)로 변경
+- ✅ `updateMember_reject` - 상태를 거절(2)로 변경
+
+#### 3. 예외 처리 (2개)
+- ✅ `addMember_unauthorized` - 인증 없이 등록 실패
+- ✅ `updateMember_notFound` - 존재하지 않는 멤버 수정 실패
+
+**서버 개선 사항**:
+- ✅ MemberService에 `memberRepository.save()` 추가하여 ID 즉시 생성
+- ✅ MemberModel의 `userProfileImageUrl` 버그 수정 (2025-12-24)
+  - ImageService를 통해 User 프로필 이미지 URL 로드
+  - null-safe 처리 (profileImageId가 null이거나 이미지가 없으면 빈 URL 반환)
+  - MemberModel, GatheringModel, GatheringListModel, GatheringSimpleModel 모두 수정
+
+**특이사항**:
+- Status 열거형: WAITING(0), APPROVAL(1), REJECT(2)
+- 멤버는 Gathering.addMember()를 통해 생성됨
+- 중복 멤버 등록 시 RuntimeException 발생
+
+---
+
+### Wbti (잼핏테스트) - WbtiAcceptanceTest ✅
+
+**파일 위치**: `api/src/test/java/com/wiiee/server/api/acceptance/wbti/WbtiAcceptanceTest.java`
+
+**테스트 개수**: 4개
+
+**API 엔드포인트**:
+- `GET /api/wbti` - WBTI 목록 조회
+- `POST /api/wbti` - 사용자 WBTI 저장
+
+**테스트 케이스**:
+
+#### 1. WBTI 조회 (1개)
+- ✅ `getWbtiList` - WBTI 목록 조회
+
+#### 2. WBTI 저장 (1개)
+- ✅ `saveWbti` - WBTI 저장 성공
+
+#### 3. 예외 처리 (2개)
+- ✅ `saveWbti_notFound` - 존재하지 않는 WBTI ID 저장 실패
+- ✅ `getWbtiList_unauthorized` - 인증 없이 조회 실패
+
+**특이사항**:
+- WBTI는 데이터베이스에 미리 존재해야 함
+- 사용자의 프로필에 WBTI를 저장
+- WbtiSimpleResponseDTO에 이미지 URL 포함
 
 ---

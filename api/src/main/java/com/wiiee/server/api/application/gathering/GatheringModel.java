@@ -5,6 +5,7 @@ import com.wiiee.server.api.application.gathering.member.MemberModel;
 import com.wiiee.server.api.application.gathering.member.WaitingMemberModel;
 import com.wiiee.server.api.application.gathering.mgr.GatheringManager;
 import com.wiiee.server.api.application.user.UserProfileResponseDTO;
+import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.common.domain.common.Image;
 import com.wiiee.server.common.domain.gathering.AgeGroup;
 import com.wiiee.server.common.domain.gathering.Gathering;
@@ -77,9 +78,12 @@ public class GatheringModel {
 
     public static GatheringModel fromGatheringWithContentModel(Long userId, Gathering gathering, ContentModel content,
                                                                Image userImage, List<WaitingMemberModel> waitingMembers,
-                                                               Long unverifiedGatherCnt) {
+                                                               Long unverifiedGatherCnt, ImageService imageService) {
         GatheringInfo gatheringInfo = gathering.getGatheringInfo();
-        List<MemberModel> members = gathering.getGatheringMembers().stream().map(MemberModel::fromMember).collect(toList());
+        List<MemberModel> members = gathering.getGatheringMembers().stream().map(member -> {
+            String profileImageUrl = imageService.getImageById(member.getUser().getProfile().getProfileImageId()).getUrl();
+            return MemberModel.fromMember(member, profileImageUrl);
+        }).collect(toList());
         members.sort(Comparator.comparing(MemberModel::getIsOwner).reversed());
 
         Optional<WaitingMemberModel> waitingMember = waitingMembers.stream().filter(waitingMemberModel -> waitingMemberModel.getUserId().equals(userId)).findFirst();

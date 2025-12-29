@@ -46,3 +46,8 @@ common/src/main/generated/*
 **/resources-dev/
 **/firebase/*.json
 claudedocs/
+
+# Environment variables with secrets
+.env
+.env.local
+.env.*.local

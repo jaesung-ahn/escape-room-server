@@ -6,6 +6,7 @@ import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +23,14 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-    // JWT HS256 requires at least 256 bits (32 bytes) secret key
-    private final String JWT_SECRET_KEY = Base64.getEncoder().encodeToString("qjawlals-test-secret-key-for-jwt-token-min-32-bytes".getBytes());
+    @Value("${jwt.secret}")
+    private String jwtSecretKey;
 
-    private final long ACCESS_TOKEN_EXPIRATION_MS = 120 * 60 * 1000L;
-    private final long REFRESH_TOKEN_EXPIRATION_MS = 2 * 24 * 60 * 60 * 1000L;
+    @Value("${jwt.access-token-expiration-ms}")
+    private long accessTokenExpirationMs;
+
+    @Value("${jwt.refresh-token-expiration-ms}")
+    private long refreshTokenExpirationMs;
 
     private final SecurityUserDetailService securityUserDetailService;
 
@@ -36,8 +39,8 @@ public class JwtTokenProvider {
         claims.put("email", email);
 
         Date now = new Date();
-        Date accessDate = new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION_MS);
-        Date refreshDate = new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION_MS);
+        Date accessDate = new Date(now.getTime() + accessTokenExpirationMs);
+        Date refreshDate = new Date(now.getTime() + refreshTokenExpirationMs);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return JwtModel.builder()
@@ -53,7 +56,7 @@ public class JwtTokenProvider {
                 .issuedAt(now)
                 .claims(claims)
                 .expiration(expirationDate)
-                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes()))
+                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtSecretKey.getBytes()))
                 .compact();
     }
 
@@ -96,7 +99,7 @@ public class JwtTokenProvider {
 
     public Jws<Claims> extractAllClaims(String token) throws ExpiredJwtException {
         return Jwts.parser()
-                .verifyWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes()))
+                .verifyWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtSecretKey.getBytes()))
                 .build()
                 .parseSignedClaims(token);
     }

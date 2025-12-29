@@ -1,6 +1,9 @@
 # Local Development Configuration
 # H2 in-memory database with no external dependencies
 
+jwt:
+  secret: cWphd2xhbHMtdGVzdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tbWluLTMyLWJ5dGVz  # Base64 encoded local dev key
+
 spring:
 #  datasource:
 #    driver-class-name: org.h2.Driver

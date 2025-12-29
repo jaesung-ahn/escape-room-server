@@ -1,6 +1,12 @@
 # Test Configuration
 # Default: H2 in-memory database
 # AcceptanceTest classes: Override with PostgreSQL Testcontainers via @DynamicPropertySource
+
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tbWluLTMyLWJ5dGVzLXRlc3Rpbmc=  # Base64 encoded test key
+  access-token-expiration-ms: 7200000
+  refresh-token-expiration-ms: 172800000
+
 spring:
   profiles:
     active: test

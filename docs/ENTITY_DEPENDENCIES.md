@@ -2,9 +2,7 @@
 
 > Wiiee 프로젝트의 엔티티 간 의존 관계를 분석합니다.
 
-> **참고**: Acceptance 테스트 진행 현황 및 상세 정보는 [TESTING_PROGRESS.md](./TESTING_PROGRESS.md)를 참조하세요.
-
-## 📊 엔티티 의존 관계 다이어그램
+## 엔티티 의존 관계 다이어그램
 
 ```
 Level 0: 독립 엔티티 (의존성 없음)
@@ -68,7 +66,7 @@ Level 4: 동행 관련 기능
     └── Gathering (required)
 ```
 
-## 🔑 주요 의존 관계 특징
+## 주요 의존 관계 특징
 
 ### 1. Image 엔티티
 - **관계 타입**: Loose Coupling (느슨한 결합)
@@ -96,7 +94,7 @@ Level 4: 동행 관련 기능
 - **Content 의존**: 특정 방탈출 컨텐츠에 대한 동행 모집
 - **User 의존**: 방장 (leader) 필수
 
-## 📋 엔티티별 필수 의존성 요약
+## 엔티티별 필수 의존성 요약
 
 | 엔티티 | 필수 의존성 | 선택적 의존성 |
 |--------|------------|--------------|
@@ -114,10 +112,3 @@ Level 4: 동행 관련 기능
 | GatheringRequest | User, Gathering | - |
 | GatheringFavorite | User, Gathering | - |
 | Comment | User, Gathering | - |
-
----
-
-## 📚 관련 문서
-
-- [테스트 진행 현황](./TESTING_PROGRESS.md) - Acceptance 테스트 작성 진행 상황 및 상세 정보
-- [테스트 문제 해결 가이드](./TESTING_TROUBLESHOOTING.md) - 테스트 작성 시 발생하는 일반적인 문제 및 해결책

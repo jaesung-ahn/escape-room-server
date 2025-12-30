@@ -1,6 +1,8 @@
 package com.wiiee.server.api.acceptance.wbti;
 
 import com.wiiee.server.api.AcceptanceTest;
+import com.wiiee.server.api.domain.wbti.WbtiRepository;
+import com.wiiee.server.common.domain.wbti.Wbti;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -8,6 +10,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
@@ -18,10 +21,19 @@ import static org.hamcrest.Matchers.*;
 @DisplayName("Wbti API 인수 테스트")
 class WbtiAcceptanceTest extends AcceptanceTest {
 
+    @Autowired
+    private WbtiRepository wbtiRepository;
+
     private String accessToken;
+    private Long testWbtiId;
 
     @BeforeEach
     void setUpData() {
+        // Wbti 테스트 데이터 생성
+        Wbti testWbti = new Wbti("테스트 잼핏", null, "테스트,잼핏", "테스트용 잼핏 설명");
+        testWbti = wbtiRepository.save(testWbti);
+        testWbtiId = testWbti.getId();
+
         // User 생성 및 토큰 발급
         Map<String, Object> userResponse = 회원가입_후_응답_반환("wbti_user@example.com", "WBTI테스터", "pass123!");
         accessToken = (String) userResponse.get("accessToken");
@@ -61,14 +73,11 @@ class WbtiAcceptanceTest extends AcceptanceTest {
         // when: 잘못된 WBTI ID로 저장 시도
         ExtractableResponse<Response> response = WBTI_저장_요청(invalidWbtiId);
 
-        // then: 실패 응답
+        // then: CustomException으로 에러 코드 반환
         response.response()
                 .then()
-                .statusCode(anyOf(
-                        equalTo(HttpStatus.BAD_REQUEST.value()),
-                        equalTo(HttpStatus.NOT_FOUND.value()),
-                        equalTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                ));
+                .statusCode(HttpStatus.OK.value())
+                .body("code", equalTo(8120));  // ERROR_NO_EXIST_ZAMFIT_TEXT_CODE
     }
 
     @Test
@@ -129,8 +138,8 @@ class WbtiAcceptanceTest extends AcceptanceTest {
      */
     private Long WBTI_목록에서_첫번째_ID_가져오기() {
         ExtractableResponse<Response> response = WBTI_목록_조회_요청();
-        Number wbtiId = response.path("data.wbtis[0].id");
-        return wbtiId != null ? wbtiId.longValue() : 1L;  // 없으면 기본값 1
+        Number wbtiId = response.path("data.zamfitTest[0].id");
+        return wbtiId != null ? wbtiId.longValue() : testWbtiId;  // 없으면 테스트 데이터 ID
     }
 
     /**
@@ -160,7 +169,7 @@ class WbtiAcceptanceTest extends AcceptanceTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("code", equalTo(200))
-                .body("data.wbtis", notNullValue());
+                .body("data.zamfitTest", notNullValue());
     }
 
     /**

@@ -3,6 +3,8 @@ package com.wiiee.server.api.application.exception;
 import com.wiiee.server.api.application.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +27,20 @@ public class ApiExceptionHandler {
     public ApiResponse<?> handleCustomException(CustomException ce, WebRequest request) {
         log.error("CustomException occurred: code={}, message={}", ce.getCode(), ce.getMessage(), ce);
         return ApiResponse.error(ce.getCode(), ce.getMessage(), ce.getErrorDetails());
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ApiResponse<?> handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
+        log.error("AccessDeniedException at {}: {}", request.getRequestURI(), e.getMessage(), e);
+        return ApiResponse.error(HttpStatus.FORBIDDEN.value(), "해당 리소스에 접근할 권한이 없습니다.", Arrays.asList(request.getRequestURI()));
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthenticationException.class)
+    public ApiResponse<?> handleAuthenticationException(AuthenticationException e, HttpServletRequest request) {
+        log.error("AuthenticationException at {}: {}", request.getRequestURI(), e.getMessage(), e);
+        return ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다.", Arrays.asList(request.getRequestURI()));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

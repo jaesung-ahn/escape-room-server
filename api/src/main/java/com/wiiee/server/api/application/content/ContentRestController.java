@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ public class ContentRestController {
     private final ContentFavoriteService contentFavoriteService;
 
     @Operation(summary = "[테스트용] 컨텐츠 생성", security = {@SecurityRequirement(name = "Authorization")})
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<ContentModel> postContent(@Validated @RequestBody ContentPostRequestDTO dto) {
         return ApiResponse.success(contentService.createNewContent(dto));

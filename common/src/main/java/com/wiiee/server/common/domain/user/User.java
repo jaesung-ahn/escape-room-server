@@ -42,24 +42,31 @@ public class User extends BaseEntity {
     @Column(length = 300)
     private String pushToken;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
     @Builder(access = PROTECTED)
-    private User(String email, Password password, Profile profile, String refreshToken) {
+    private User(String email, Password password, Profile profile, String refreshToken, UserRole role) {
         this.email = email;
         this.password = password;
         this.profile = profile;
         this.refreshToken = refreshToken;
+        this.role = role != null ? role : UserRole.USER;
     }
 
     public User(Long id, String email, String nickname) {
         this.id = id;
         this.email = email;
         this.profile = new Profile(nickname);
+        this.role = UserRole.USER;
     }
 
     public User(String email, String nickname, Password password) {
         this.email = email;
         this.profile = new Profile(nickname);
         this.password = password;
+        this.role = UserRole.USER;
     }
 
     public static User of(String email, String nickname) {
@@ -68,6 +75,7 @@ public class User extends BaseEntity {
                 .profile(new Profile(nickname))
                 .password(null)
                 .refreshToken(null)
+                .role(UserRole.USER)
                 .build();
     }
 
@@ -77,6 +85,7 @@ public class User extends BaseEntity {
                 .profile(Profile.signUpSnsProfile(memberType, userOS))
                 .password(null)
                 .refreshToken(null)
+                .role(UserRole.USER)
                 .build();
     }
 
@@ -87,6 +96,17 @@ public class User extends BaseEntity {
                 .profile(new Profile(nickname, memberType, userGenderType, null, age, city, birthDate, userOs))
                 .password(null)
                 .refreshToken(null)
+                .role(UserRole.USER)
+                .build();
+    }
+
+    public static User ofWithRole(String email, String nickname, Password password, UserRole role) {
+        return User.builder()
+                .email(email)
+                .profile(new Profile(nickname))
+                .password(password)
+                .refreshToken(null)
+                .role(role)
                 .build();
     }
 

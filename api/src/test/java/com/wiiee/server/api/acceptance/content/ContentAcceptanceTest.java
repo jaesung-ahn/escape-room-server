@@ -2,7 +2,12 @@ package com.wiiee.server.api.acceptance.content;
 
 import com.wiiee.server.api.AcceptanceTest;
 import com.wiiee.server.api.domain.admin.AdminRepository;
+import com.wiiee.server.api.domain.user.UserRepository;
+import com.wiiee.server.api.infrastructure.jwt.JwtTokenProvider;
 import com.wiiee.server.common.domain.admin.AdminUser;
+import com.wiiee.server.common.domain.user.Password;
+import com.wiiee.server.common.domain.user.User;
+import com.wiiee.server.common.domain.user.UserRole;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -12,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -26,9 +32,18 @@ class ContentAcceptanceTest extends AcceptanceTest {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private Long testCompanyId;
-    private String accessToken;
-    private Long testUserId;
+    private String accessToken;  // 일반 USER 토큰
+    private String adminToken;   // ADMIN 토큰
 
     @BeforeEach
     void setUpData() {
@@ -36,13 +51,18 @@ class ContentAcceptanceTest extends AcceptanceTest {
         AdminUser admin = AdminUser.of("content_test_admin@wiiee.com", "admin123!");
         Long adminId = adminRepository.save(admin).getId();
 
-        // 2. Company 생성 (Content가 속할 업체)
+        // 2. ADMIN 역할 사용자 생성 및 토큰 발급
+        Password adminPassword = Password.of("password123!", passwordEncoder);
+        User adminUser = User.ofWithRole("admin@example.com", "adminUser", adminPassword, UserRole.ADMIN);
+        User savedAdminUser = userRepository.save(adminUser);
+        adminToken = jwtTokenProvider.createToken(savedAdminUser.getEmail()).getAccessToken();
+
+        // 3. Company 생성 (Content가 속할 업체) - ADMIN 권한 필요
         testCompanyId = 업체_생성_후_ID_반환(adminId, "테스트 방탈출");
 
-        // 3. User 생성 및 토큰 발급 (인증 필요)
+        // 4. 일반 User 생성 및 토큰 발급 (인증 필요)
         Map<String, Object> userResponse = 회원가입_후_응답_반환("content_user@example.com", "컨텐츠테스터", "pass123!");
         accessToken = (String) userResponse.get("accessToken");
-        testUserId = ((Number) userResponse.get("userId")).longValue();
     }
 
     // ===== 테스트 케이스 =====
@@ -203,6 +223,7 @@ class ContentAcceptanceTest extends AcceptanceTest {
         request.put("account", "1234567890");
 
         Number companyId = RestAssured.given()
+                .header("Authorization", "Bearer " + adminToken)  // ADMIN 토큰 추가
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -239,7 +260,7 @@ class ContentAcceptanceTest extends AcceptanceTest {
 
         return RestAssured.given()
                 .log().all()  // 요청 로깅
-                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization", "Bearer " + adminToken)  // ADMIN 권한 필요
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()

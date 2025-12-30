@@ -2,7 +2,12 @@ package com.wiiee.server.api.acceptance.company;
 
 import com.wiiee.server.api.AcceptanceTest;
 import com.wiiee.server.api.domain.admin.AdminRepository;
+import com.wiiee.server.api.domain.user.UserRepository;
+import com.wiiee.server.api.infrastructure.jwt.JwtTokenProvider;
 import com.wiiee.server.common.domain.admin.AdminUser;
+import com.wiiee.server.common.domain.user.Password;
+import com.wiiee.server.common.domain.user.User;
+import com.wiiee.server.common.domain.user.UserRole;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -12,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +31,31 @@ class CompanyAcceptanceTest extends AcceptanceTest {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private Long testAdminId;
+    private String adminToken;  // ADMIN 권한 토큰
 
     @BeforeEach
     void setUpAdmin() {
         // AcceptanceTest의 setUp이 먼저 실행되어 DB 정리됨
-        // 각 테스트마다 AdminUser 생성
+        // AdminUser 생성
         AdminUser admin = AdminUser.of("test_admin@wiiee.com", "admin123!");
         AdminUser savedAdmin = adminRepository.save(admin);
         testAdminId = savedAdmin.getId();
+
+        // ADMIN 역할 사용자 생성 및 토큰 발급
+        Password adminPassword = Password.of("password123!", passwordEncoder);
+        User adminUser = User.ofWithRole("admin@example.com", "adminUser", adminPassword, UserRole.ADMIN);
+        User savedAdminUser = userRepository.save(adminUser);
+        adminToken = jwtTokenProvider.createToken(savedAdminUser.getEmail()).getAccessToken();
     }
 
     // ===== 테스트 케이스 =====
@@ -127,7 +149,7 @@ class CompanyAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * 업체 생성 요청
+     * 업체 생성 요청 (ADMIN 권한 필요)
      */
     private ExtractableResponse<Response> 업체_생성_요청(String name) {
         Map<String, Object> request = new HashMap<>();
@@ -155,6 +177,7 @@ class CompanyAcceptanceTest extends AcceptanceTest {
         request.put("account", "1234567890");
 
         return RestAssured.given()
+                .header("Authorization", "Bearer " + adminToken)  // ADMIN 토큰 추가
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()

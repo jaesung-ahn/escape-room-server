@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpMethod.POST;
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final SecurityAuthenticationFilter securityAuthenticationFilter;
@@ -50,7 +52,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/image/**").permitAll()
                 .requestMatchers(GET, "/api/user/check-nickname", "/api/user/*").permitAll()
                 .requestMatchers(POST, "/api/user/login/**", "/api/user").permitAll()
-                .requestMatchers(POST, "/api/company").permitAll()  // 테스트용 업체 생성
                 .anyRequest().authenticated()
         );
 

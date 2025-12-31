@@ -7,6 +7,7 @@ import com.wiiee.server.api.domain.content.review.ReviewRepository;
 import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.domain.recommendation.WbtiRecommendationService;
 import com.wiiee.server.api.domain.user.UserService;
+import com.wiiee.server.common.domain.common.Image;
 import com.wiiee.server.common.domain.content.Content;
 import com.wiiee.server.common.domain.content.RankContent;
 import lombok.RequiredArgsConstructor;
@@ -100,16 +101,29 @@ public class ContentService {
     }
 
     /**
-     *  놀거리 기본 모델 리스트 생성
+     *  놀거리 기본 모델 리스트 생성 (N+1 최적화: 이미지 배치 조회)
      **/
     @Transactional(readOnly = true)
     public List<ContentSimpleModel> getContentSimpleModelsByContents(List<Content> contents) {
-        //TODO: 기본이미지 등록
-        return contents.stream().map(content ->
-                ContentSimpleModel.fromContentAndImage(content,
-                        imageService.getImageById(content.getContentBasicInfo().getRepresentativeImageId())
-                        )
-        ).collect(Collectors.toList());
+        // 1. 모든 대표 이미지 ID 수집
+        List<Long> imageIds = contents.stream()
+                .map(content -> content.getContentBasicInfo().getRepresentativeImageId())
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 2. 이미지 배치 조회 및 Map 변환 (O(1) 조회를 위해)
+        Map<Long, Image> imageMap = imageService.findByIdsIn(imageIds).stream()
+                .collect(Collectors.toMap(Image::getId, image -> image));
+
+        // 3. ContentSimpleModel 생성 (이미지는 Map에서 O(1)로 조회)
+        return contents.stream()
+                .map(content -> {
+                    Long imageId = content.getContentBasicInfo().getRepresentativeImageId();
+                    Image image = imageId != null ? imageMap.getOrDefault(imageId, new Image("")) : new Image("");
+                    return ContentSimpleModel.fromContentAndImage(content, image);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

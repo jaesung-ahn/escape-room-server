@@ -26,7 +26,7 @@ public class RecommendationService {
 
     @Transactional(readOnly = true)
     public List<RecommendationModel> getRecommendations() {
-        List<Recommendation> recommendations = recommendationRepository.findAll();
+        List<Recommendation> recommendations = recommendationRepository.findAllWithContents();
         return recommendations.stream().map(recommendation ->
                     RecommendationModel.fromRecommendationAndContentSimpleModels(
                             recommendation.getRecommendationInfo().getCategoryName(),

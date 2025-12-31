@@ -7,6 +7,10 @@ jwt:
   access-token-expiration-ms: 7200000
   refresh-token-expiration-ms: 172800000
 
+local:
+  server:
+    port: 8081  # For tests
+
 spring:
   profiles:
     active: test

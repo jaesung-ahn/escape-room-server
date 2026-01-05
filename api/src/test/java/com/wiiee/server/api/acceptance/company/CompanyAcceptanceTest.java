@@ -26,7 +26,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.*;
 
 @DisplayName("Company API 인수 테스트")
-class CompanyAcceptanceTest extends AcceptanceTest {
+public class CompanyAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private AdminRepository adminRepository;
@@ -127,7 +127,59 @@ class CompanyAcceptanceTest extends AcceptanceTest {
         업체_리스트_조회_성공_확인(response, 3);
     }
 
-    // ===== 헬퍼 메서드 (HTTP 요청) =====
+    // ===== Public Static 헬퍼 메서드 (다른 테스트에서 사용) =====
+
+    /**
+     * 업체 생성 (기본 메소드)
+     * 모든 업체 생성 관련 메소드의 기반이 되는 메소드
+     *
+     * @param adminToken ADMIN 권한 토큰
+     * @param adminId AdminUser ID
+     * @param name 업체명
+     * @return ExtractableResponse - 필요한 정보를 자유롭게 추출 가능
+     */
+    public static ExtractableResponse<Response> 업체_생성(String adminToken, Long adminId, String name) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("adminId", adminId);
+        request.put("name", name);
+        request.put("stateCode", 1);
+        request.put("cityCode", 1);
+        request.put("address", "테스트 주소");
+        request.put("detailAddress", "상세 주소");
+        request.put("notice", "영업 중");
+        request.put("contact", "02-1234-5678");
+        request.put("url", "https://test.com");
+        request.put("isOperated", true);
+        request.put("businessDayCodes", List.of(1, 2, 3, 4, 5, 6, 7));
+        request.put("isAlwaysOperated", true);
+        request.put("imageIds", List.of());
+        request.put("registrationImageId", 0L);
+        request.put("businessNumber", "123-45-67890");
+        request.put("representativeName", "대표자");
+        request.put("repContractNumber", "010-1111-2222");
+        request.put("chargeContractNumber", "010-3333-4444");
+        request.put("bankCode", 1);
+        request.put("account", "1234567890");
+
+        return RestAssured.given()
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/company")
+                .then()
+                .extract();
+    }
+
+    /**
+     * 업체 생성 후 ID 반환
+     */
+    public static Long 업체_생성_후_ID_반환(String adminToken, Long adminId, String name) {
+        Number companyId = 업체_생성(adminToken, adminId, name).path("data.companyId");
+        return companyId != null ? companyId.longValue() : null;
+    }
+
+    // ===== Private 헬퍼 메서드 (현재 테스트 클래스 내부용) =====
 
     /**
      * 회원가입 후 토큰 발급
@@ -149,50 +201,17 @@ class CompanyAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * 업체 생성 요청 (ADMIN 권한 필요)
+     * 업체 생성 요청 (기본 메소드 재사용)
      */
     private ExtractableResponse<Response> 업체_생성_요청(String name) {
-        Map<String, Object> request = new HashMap<>();
-        request.put("adminId", testAdminId);  // 테스트용 AdminUser ID
-        request.put("name", name);
-        request.put("stateCode", 1);  // 서울
-        request.put("cityCode", 1);   // 강남구
-        request.put("address", "테헤란로 123");
-        request.put("detailAddress", "2층");
-        request.put("notice", "영업 중입니다");
-        request.put("contact", "02-1234-5678");
-        request.put("url", "https://wiiee.com");
-        request.put("isOperated", true);
-        request.put("businessDayCodes", List.of(1, 2, 3, 4, 5, 6, 7));  // 매일 영업
-        request.put("isAlwaysOperated", true);  // 연중무휴
-        request.put("imageIds", List.of());
-
-        // 사업자 정보
-        request.put("registrationImageId", 0L);  // 사업자등록증 이미지 (선택)
-        request.put("businessNumber", "123-45-67890");
-        request.put("representativeName", "홍길동");
-        request.put("repContractNumber", "010-1234-5678");
-        request.put("chargeContractNumber", "010-9876-5432");
-        request.put("bankCode", 1);  // 은행 코드 (Bank enum)
-        request.put("account", "1234567890");
-
-        return RestAssured.given()
-                .header("Authorization", "Bearer " + adminToken)  // ADMIN 토큰 추가
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/api/company")
-                .then()
-                .extract();
+        return 업체_생성(adminToken, testAdminId, name);
     }
 
     /**
-     * 업체 생성 후 ID 반환
+     * 업체 생성 후 ID 반환 (기본 메소드 재사용)
      */
     private Long 업체_생성_후_ID_반환(String name) {
-        ExtractableResponse<Response> response = 업체_생성_요청(name);
-        Number companyId = response.path("data.companyId");
-        return companyId != null ? companyId.longValue() : null;
+        return 업체_생성_후_ID_반환(adminToken, testAdminId, name);
     }
 
     /**
@@ -234,7 +253,7 @@ class CompanyAcceptanceTest extends AcceptanceTest {
                 .body("data.state", equalTo("서울특별시"))
                 .body("data.city", equalTo("강남구"))
                 .body("data.contact", equalTo("02-1234-5678"))
-                .body("data.url", equalTo("https://wiiee.com"));
+                .body("data.url", equalTo("https://test.com"));
     }
 
     /**

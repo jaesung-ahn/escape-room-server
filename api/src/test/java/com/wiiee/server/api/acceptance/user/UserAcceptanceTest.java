@@ -15,7 +15,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.*;
 
 @DisplayName("User API 인수 테스트")
-class UserAcceptanceTest extends AcceptanceTest {
+public class UserAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("일반 회원가입")
@@ -128,12 +128,15 @@ class UserAcceptanceTest extends AcceptanceTest {
         로그아웃_성공_확인(response);
     }
 
-    // ===== 헬퍼 메서드 =====
+    // ===== Public Static 헬퍼 메서드 (다른 테스트에서 사용) =====
 
     /**
-     * 회원가입 요청
+     * 회원가입 (기본 메소드)
+     * 모든 회원가입 관련 메소드의 기반이 되는 메소드
+     *
+     * @return ExtractableResponse - 필요한 정보를 자유롭게 추출 가능
      */
-    private ExtractableResponse<Response> 회원가입_요청(String email, String nickname, String password) {
+    public static ExtractableResponse<Response> 회원가입(String email, String nickname, String password) {
         Map<String, Object> request = new HashMap<>();
         request.put("email", email);
         request.put("nickname", nickname);
@@ -149,19 +152,39 @@ class UserAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * 회원가입 후 토큰 발급
+     * 회원가입 후 응답 반환 (accessToken, userId 포함)
      */
-    private String 회원가입_후_토큰_발급(String email, String nickname, String password) {
-        return 회원가입_요청(email, nickname, password)
-                .path("data.accessToken");
+    public static Map<String, Object> 회원가입_후_응답_반환(String email, String nickname, String password) {
+        ExtractableResponse<Response> response = 회원가입(email, nickname, password);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("accessToken", response.path("data.accessToken"));
+        result.put("userId", response.path("data.id"));
+        return result;
     }
 
     /**
-     * 회원가입 후 ID 반환
+     * 회원가입 후 토큰만 반환
      */
-    private Integer 회원가입_후_ID_반환(String email, String nickname, String password) {
-        return 회원가입_요청(email, nickname, password)
-                .path("data.id");
+    public static String 회원가입_후_토큰_발급(String email, String nickname, String password) {
+        return 회원가입(email, nickname, password).path("data.accessToken");
+    }
+
+    /**
+     * 회원가입 후 ID만 반환
+     */
+    public static Long 회원가입_후_ID_반환(String email, String nickname, String password) {
+        Number userId = 회원가입(email, nickname, password).path("data.id");
+        return userId != null ? userId.longValue() : null;
+    }
+
+    // ===== Private 헬퍼 메서드 (현재 테스트 클래스 내부용) =====
+
+    /**
+     * 회원가입 요청 (기본 메소드 재사용)
+     */
+    private ExtractableResponse<Response> 회원가입_요청(String email, String nickname, String password) {
+        return 회원가입(email, nickname, password);
     }
 
     /**

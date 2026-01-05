@@ -1,6 +1,9 @@
 package com.wiiee.server.api.acceptance.gathering;
 
 import com.wiiee.server.api.AcceptanceTest;
+import com.wiiee.server.api.acceptance.company.CompanyAcceptanceTest;
+import com.wiiee.server.api.acceptance.content.ContentAcceptanceTest;
+import com.wiiee.server.api.acceptance.user.UserAcceptanceTest;
 import com.wiiee.server.api.domain.admin.AdminRepository;
 import com.wiiee.server.api.domain.user.UserRepository;
 import com.wiiee.server.api.infrastructure.jwt.JwtTokenProvider;
@@ -27,7 +30,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.*;
 
 @DisplayName("Gathering API 인수 테스트")
-class GatheringAcceptanceTest extends AcceptanceTest {
+public class GatheringAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private AdminRepository adminRepository;
@@ -386,104 +389,72 @@ class GatheringAcceptanceTest extends AcceptanceTest {
                 .statusCode(anyOf(equalTo(HttpStatus.UNAUTHORIZED.value()), equalTo(HttpStatus.FORBIDDEN.value())));
     }
 
-    // ===== 헬퍼 메서드 (HTTP 요청) =====
+    // ===== Public Static 헬퍼 메서드 (다른 테스트에서 사용) =====
 
     /**
-     * 회원가입 후 응답 반환 (토큰과 userId 포함)
+     * 동행 모집 등록 (기본 메소드)
+     * 모든 동행 모집 관련 메소드의 기반이 되는 메소드
+     *
+     * @param accessToken 사용자 토큰
+     * @param contentId 컨텐츠 ID
+     * @param title 동행 제목
+     * @param information 동행 설명
+     * @return ExtractableResponse - 필요한 정보를 자유롭게 추출 가능
      */
-    private Map<String, Object> 회원가입_후_응답_반환(String email, String nickname, String password) {
+    public static ExtractableResponse<Response> 동행_모집_등록(String accessToken, Long contentId, String title, String information) {
         Map<String, Object> request = new HashMap<>();
-        request.put("email", email);
-        request.put("nickname", nickname);
-        request.put("password", password);
-
-        ExtractableResponse<Response> response = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/api/user")
-                .then()
-                .extract();
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("accessToken", response.path("data.accessToken"));
-        result.put("userId", response.path("data.id"));
-        return result;
-    }
-
-    /**
-     * 업체 생성 후 ID 반환 (ADMIN 권한 필요)
-     */
-    private Long 업체_생성_후_ID_반환(Long adminId, String name) {
-        Map<String, Object> request = new HashMap<>();
-        request.put("adminId", adminId);
-        request.put("name", name);
+        request.put("contentId", contentId);
+        request.put("title", title);
+        request.put("information", information);
         request.put("stateCode", 1);
         request.put("cityCode", 1);
-        request.put("address", "테스트 주소");
-        request.put("detailAddress", "상세 주소");
-        request.put("notice", "영업 중");
-        request.put("contact", "02-1234-5678");
-        request.put("url", "https://test.com");
-        request.put("isOperated", true);
-        request.put("businessDayCodes", List.of(1, 2, 3, 4, 5, 6, 7));
-        request.put("isAlwaysOperated", true);
-        request.put("imageIds", List.of());
-        request.put("registrationImageId", 0L);
-        request.put("businessNumber", "123-45-67890");
-        request.put("representativeName", "대표자");
-        request.put("repContractNumber", "010-1111-2222");
-        request.put("chargeContractNumber", "010-3333-4444");
-        request.put("bankCode", 1);
-        request.put("account", "1234567890");
+        request.put("recruitTypeCode", 1);
+        request.put("maxPeople", 4);
+        request.put("genderTypeCode", 1);
+        request.put("isDateAgreement", false);
+        request.put("hopeDate", LocalDate.now().plusDays(7).toString());
+        request.put("kakaoOpenChatUrl", "https://open.kakao.com/test");
+        request.put("ageGroupCodes", List.of(1, 2, 3));
 
-        Number companyId = RestAssured.given()
-                .header("Authorization", "Bearer " + adminToken)  // ADMIN 토큰 추가
+        return RestAssured.given()
+                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/api/company")
+                .post("/api/gathering")
                 .then()
-                .extract()
-                .path("data.companyId");
-
-        return companyId != null ? companyId.longValue() : null;
+                .extract();
     }
 
     /**
-     * 컨텐츠 생성 후 ID 반환 (ADMIN 권한 필요)
+     * 동행 모집 등록 후 ID 반환
+     */
+    public static Long 동행_모집_등록_후_ID_반환(String accessToken, Long contentId, String title, String information) {
+        Number gatheringId = 동행_모집_등록(accessToken, contentId, title, information).path("data.id");
+        return gatheringId != null ? gatheringId.longValue() : null;
+    }
+
+    // ===== Private 헬퍼 메서드 (현재 테스트 클래스 내부용) =====
+
+    /**
+     * 회원가입 후 응답 반환 (기본 메소드 재사용)
+     */
+    private Map<String, Object> 회원가입_후_응답_반환(String email, String nickname, String password) {
+        return UserAcceptanceTest.회원가입_후_응답_반환(email, nickname, password);
+    }
+
+    /**
+     * 업체 생성 후 ID 반환 (기본 메소드 재사용)
+     */
+    private Long 업체_생성_후_ID_반환(Long adminId, String name) {
+        return CompanyAcceptanceTest.업체_생성_후_ID_반환(adminToken, adminId, name);
+    }
+
+    /**
+     * 컨텐츠 생성 후 ID 반환 (기본 메소드 재사용)
      */
     private Long 컨텐츠_생성_후_ID_반환(String name) {
-        Map<String, Object> request = new HashMap<>();
-        request.put("companyId", testCompanyId);
-        request.put("name", name);
-        request.put("genreCode", 1);
-        request.put("imageIds", List.of());
-        request.put("minPeople", 2);
-        request.put("maxPeople", 6);
-        request.put("information", "재미있는 방탈출 게임");
-        request.put("playTime", 60);
-        request.put("activityLevelCode", 2);
-        request.put("escapeTypeCode", 1);
-        request.put("isCaution", false);
-        request.put("difficultyCode", 3);
-        request.put("isNoEscapeType", false);
-        request.put("isNew", true);
-        request.put("newDisplayExpirationDate", LocalDate.now().plusMonths(1).toString());
-        request.put("isOperated", true);
-        request.put("priceList", List.of());
-
-        Number contentId = RestAssured.given()
-                .header("Authorization", "Bearer " + adminToken)  // ADMIN 토큰 사용
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/api/content")
-                .then()
-                .extract()
-                .path("data.id");
-
-        return contentId != null ? contentId.longValue() : null;
+        return ContentAcceptanceTest.컨텐츠_생성_후_ID_반환(adminToken, testCompanyId, name);
     }
 
     /**
@@ -507,27 +478,17 @@ class GatheringAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * 동행 모집 등록 요청
+     * 동행 모집 등록 요청 (기본 메소드 재사용)
      */
     private ExtractableResponse<Response> 동행_모집_등록_요청(Long contentId, String title, String information) {
-        Map<String, Object> request = 동행_모집_등록_요청_바디(title, information);
-
-        return RestAssured.given()
-                .header("Authorization", "Bearer " + accessToken)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/api/gathering")
-                .then()
-                .extract();
+        return 동행_모집_등록(accessToken, contentId, title, information);
     }
 
     /**
-     * 동행 모집 등록 후 ID 반환
+     * 동행 모집 등록 후 ID 반환 (기본 메소드 재사용)
      */
     private Long 동행_모집_등록_후_ID_반환(Long contentId, String title, String information) {
-        Number gatheringId = 동행_모집_등록_요청(contentId, title, information).path("data.id");
-        return gatheringId != null ? gatheringId.longValue() : null;
+        return 동행_모집_등록_후_ID_반환(accessToken, contentId, title, information);
     }
 
     /**

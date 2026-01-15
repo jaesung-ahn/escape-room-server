@@ -1,11 +1,13 @@
 package com.wiiee.server.api.domain.user;
 
 import com.wiiee.server.api.application.content.ContentSimpleModel;
-import com.wiiee.server.api.application.exception.CustomException;
+import com.wiiee.server.api.application.exception.ConflictException;
+import com.wiiee.server.api.application.exception.ForbiddenException;
+import com.wiiee.server.api.application.exception.ResourceNotFoundException;
+import com.wiiee.server.api.domain.code.UserErrorCode;
 import com.wiiee.server.api.application.recommendation.RecommendationModel;
 import com.wiiee.server.api.application.user.*;
 import com.wiiee.server.api.domain.admin.AdminRepository;
-import com.wiiee.server.api.domain.code.StatusCode;
 import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.domain.wbti.WbtiService;
 import com.wiiee.server.api.infrastructure.external.kakao.KakaoApiService;
@@ -65,7 +67,7 @@ public class UserService {
             // 같은 이메일 체크 후 있으면 아래 에러메시지 리턴
             userRepository.findByEmail(snsRequestDto.getEmail()).ifPresent(
                     u -> {
-                        throw new RuntimeException("이미 존재하는 이메일입니다.");
+                        throw new ConflictException(UserErrorCode.ERROR_EMAIL_ALREADY_EXISTS);
                     }
             );
 
@@ -75,7 +77,7 @@ public class UserService {
             isSignUp = true;
         }
 
-        final var user = findUser.orElseThrow(() -> new RuntimeException("로그인 실패되었습니다."));
+        final var user = findUser.orElseThrow(() -> new ResourceNotFoundException("로그인 실패되었습니다."));
 
         if (!isSignUp) {
             // 마지막 로그인 방문 업데이트
@@ -84,14 +86,13 @@ public class UserService {
 
         // 유저가 탈퇴 등 정상인 경우가 아닌 경우 에러 처리
         if (user.getProfile().getUserStatus().equals(UserStatus.WITHDRAWAL)) {
-            throw new CustomException(StatusCode.ERROR_WITHDRAWAL_USER_CODE,
-                                      StatusCode.ERROR_WITHDRAWAL_USER_MSG, null);
+            throw new ForbiddenException(UserErrorCode.ERROR_USER_WITHDRAWN);
         }
         else if (user.getProfile().getUserStatus().equals(UserStatus.BLOCK)) {
-            throw new RuntimeException("차단된 유저입니다.");
+            throw new ForbiddenException(UserErrorCode.ERROR_USER_BLOCKED);
         }
         else if (user.getProfile().getUserStatus().equals(UserStatus.DORMANT)) {
-            throw new RuntimeException("현재 휴면 상태입니다. 고객센터에 문의해 휴면 해제바랍니다.");
+            throw new ForbiddenException(UserErrorCode.ERROR_USER_DORMANT);
         }
 
         final var jwtModel = jwtTokenProvider.createToken(user.getEmail());
@@ -101,7 +102,7 @@ public class UserService {
 
     @Transactional
     public void updateUser(Long userId, UserUpdateRequest request) {
-        final var findUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("로그인 실패"));
+        final var findUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("로그인 실패"));
 
         findUser.updateUser(userId, request);
         request.getWbtiId()
@@ -121,7 +122,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public AdminUser findAdminById(long adminId) {
-        return adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("존재하지 않는 관리자"));
+        return adminRepository.findById(adminId).orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 관리자"));
     }
 
     @Transactional
@@ -136,7 +137,7 @@ public class UserService {
     @Transactional
     public UserSignupEtcResponseDTO updateUserSignupEtc(UserSignupEtcRequestDTO.UserSignupEtcRequest requestDTO) {
         Optional<User> findUser = userRepository.findById(requestDTO.getUserId());
-        User user = findUser.orElseThrow(() -> new RuntimeException("찾을 수 없는 유저입니다."));
+        User user = findUser.orElseThrow(() -> new ResourceNotFoundException("찾을 수 없는 유저입니다."));
         user.updateUserSignupEtc(requestDTO.getNickname(), requestDTO.getUserGenderType(), requestDTO.getBirthDate(),
                 requestDTO.getCity());
 
@@ -150,7 +151,7 @@ public class UserService {
      */
     @Transactional
     public void updateSettingUserInfo(Long userId, updateSettingUserInfoRequestDTO requestDTO) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("찾을 수 없는 유저입니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("찾을 수 없는 유저입니다."));
         user.updateSettingUserInfo(requestDTO.getUserGenderType(), requestDTO.getBirthDate());
     }
 

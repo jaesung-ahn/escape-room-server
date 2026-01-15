@@ -4,6 +4,8 @@ import com.wiiee.server.api.application.common.PageRequestDTO;
 import com.wiiee.server.api.application.content.favorite.ContentFavoriteModel;
 import com.wiiee.server.api.application.content.favorite.ContentFavoriteSimpleModel;
 import com.wiiee.server.api.application.content.favorite.MultipleContentFavoriteModel;
+import com.wiiee.server.api.application.exception.ConflictException;
+import com.wiiee.server.api.domain.code.ContentErrorCode;
 import com.wiiee.server.api.domain.content.ContentService;
 import com.wiiee.server.api.domain.user.UserService;
 import com.wiiee.server.common.domain.content.favorite.ContentFavorite;
@@ -38,7 +40,7 @@ public class ContentFavoriteService {
         final var content = contentService.findById(contentId).orElseThrow();
 
         if(contentFavoriteRepository.existsByContentAndUser(content, user)) {
-            throw new RuntimeException("이미 찜한 컨텐츠입니다.");
+            throw new ConflictException(ContentErrorCode.ERROR_CONTENT_ALREADY_FAVORITED);
         }
 
         contentFavoriteRepository.save(ContentFavorite.of(content, user));

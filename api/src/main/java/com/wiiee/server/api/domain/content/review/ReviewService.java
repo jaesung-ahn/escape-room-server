@@ -3,6 +3,8 @@ package com.wiiee.server.api.domain.content.review;
 import com.wiiee.server.api.application.common.PageRequestDTO;
 import com.wiiee.server.api.application.content.review.*;
 import com.wiiee.server.api.application.exception.CustomException;
+import com.wiiee.server.api.application.exception.ForbiddenException;
+import com.wiiee.server.api.domain.code.ReviewErrorCode;
 import com.wiiee.server.api.domain.content.ContentService;
 import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.domain.slack.SlackService;
@@ -76,7 +78,7 @@ public class ReviewService {
         final var user = userService.findById(userId);
         final var targetReview = reviewRepository.findById(reviewId).orElseThrow();
         if (!targetReview.getWriter().equals(user)) {
-            throw new RuntimeException("해당 리뷰 수정 권한이 없습니다.");
+            throw new ForbiddenException(ReviewErrorCode.ERROR_REVIEW_UPDATE_PERMISSION_DENIED);
         }
         targetReview.updateReview(dto.getMessage(), dto.getRating(), dto.getImageIds());
         return ReviewModel.fromReviewAndImages(targetReview, userId, imageService.findByIdsIn(targetReview.getImageIds()));
@@ -87,7 +89,7 @@ public class ReviewService {
         final var user = userService.findById(userId);
         final var targetReview = reviewRepository.findById(reviewId).orElseThrow();
         if (!targetReview.getWriter().equals(user)) {
-            throw new RuntimeException("해당 리뷰 삭제 권한이 없습니다.");
+            throw new ForbiddenException(ReviewErrorCode.ERROR_REVIEW_DELETE_PERMISSION_DENIED);
         }
         reviewRepository.deleteById(reviewId);
     }

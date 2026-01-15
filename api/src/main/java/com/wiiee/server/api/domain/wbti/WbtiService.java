@@ -1,8 +1,8 @@
 package com.wiiee.server.api.domain.wbti;
 
-import com.wiiee.server.api.application.exception.CustomException;
+import com.wiiee.server.api.application.exception.ResourceNotFoundException;
 import com.wiiee.server.api.application.wbti.WbtiSimpleResponseDTO;
-import com.wiiee.server.api.domain.code.StatusCode;
+import com.wiiee.server.api.domain.code.WbtiErrorCode;
 import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.infrastructure.repository.user.UserCustomRepository;
 import com.wiiee.server.common.domain.wbti.Wbti;
@@ -52,8 +52,7 @@ public class WbtiService {
     @Modifying
     public void saveWbti(Long userId, Long wbtiId) {
         Wbti wbti = wbtiRepository.findById(wbtiId).orElseThrow(
-                () -> new CustomException(StatusCode.ERROR_NO_EXIST_ZAMFIT_TEXT_CODE,
-                        StatusCode.ERROR_NO_EXIST_ZAMFIT_TEXT_MSG, null)
+                () -> new ResourceNotFoundException(WbtiErrorCode.ERROR_WBTI_NOT_FOUND)
         );
         userCustomRepository.saveWbti(userId, wbti);
     }

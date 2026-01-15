@@ -1,6 +1,6 @@
 package com.wiiee.server.api.application.gathering.mgr;
 
-import com.wiiee.server.api.application.exception.CustomException;
+import com.wiiee.server.api.application.exception.BadRequestException;
 import com.wiiee.server.api.domain.code.GatheringErrorCode;
 import com.wiiee.server.common.domain.gathering.GatheringInfo;
 import com.wiiee.server.common.domain.gathering.GatheringStatus;
@@ -53,7 +53,7 @@ public class GatheringManager {
      */
     public static boolean checkKakaoOpenUrl(String url) {
         if (url != null && !url.startsWith("https://open.kakao.com/")) {
-            throw new CustomException(GatheringErrorCode.ERROR_NOT_ALLOWED_OPEN_CHAT_URL);
+            throw new BadRequestException(GatheringErrorCode.ERROR_NOT_ALLOWED_OPEN_CHAT_URL);
         }
         else return url != null && url.startsWith("https://open.kakao.com/");
     }

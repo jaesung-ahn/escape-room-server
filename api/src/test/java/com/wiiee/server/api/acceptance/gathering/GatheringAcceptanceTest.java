@@ -939,7 +939,7 @@ public class GatheringAcceptanceTest extends AcceptanceTest {
     private void 참가서_조회_권한_없음_확인(ExtractableResponse<Response> response) {
         response.response()
                 .then()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.FORBIDDEN.value())
                 .body("code", equalTo(8123))
                 .body("message", equalTo("참가서 조회 권한이 없습니다. (호스트 또는 신청자만 가능)"));
     }
@@ -950,7 +950,7 @@ public class GatheringAcceptanceTest extends AcceptanceTest {
     private void 참가서_수락_권한_없음_확인(ExtractableResponse<Response> response) {
         response.response()
                 .then()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.FORBIDDEN.value())
                 .body("code", equalTo(8124))
                 .body("message", equalTo("호스트만 수행할 수 있는 작업입니다."));
     }

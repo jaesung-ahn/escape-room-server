@@ -1,6 +1,8 @@
 package com.wiiee.server.api.domain.gathering.member;
 
+import com.wiiee.server.api.application.exception.ConflictException;
 import com.wiiee.server.api.application.gathering.member.MemberModel;
+import com.wiiee.server.api.domain.code.GatheringErrorCode;
 import com.wiiee.server.api.domain.gathering.GatheringService;
 import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.domain.user.UserService;
@@ -22,7 +24,7 @@ public class MemberService {
         final var user = userService.findById(userId);
         final var gathering = gatheringService.findById(gatheringId);
         if (gathering.isContainUser(userId)) {
-            throw new RuntimeException("멤버 등록이 불가능한 유저입니다.");
+            throw new ConflictException(GatheringErrorCode.ERROR_MEMBER_REGISTRATION_NOT_ALLOWED);
         }
         final var member = gathering.addMember(user);
         memberRepository.save(member);  // ID 생성을 위해 명시적으로 저장

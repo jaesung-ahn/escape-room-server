@@ -149,10 +149,10 @@ class MemberAcceptanceTest extends AcceptanceTest {
         // when: 같은 사용자로 다시 멤버 등록 시도
         ExtractableResponse<Response> response = 멤버_등록_요청(testGatheringId, newUserToken);
 
-        // then: 실패 응답 (400 또는 500)
+        // then: 실패 응답 (409 Conflict)
         response.response()
                 .then()
-                .statusCode(anyOf(equalTo(HttpStatus.BAD_REQUEST.value()), equalTo(HttpStatus.INTERNAL_SERVER_ERROR.value())));
+                .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test

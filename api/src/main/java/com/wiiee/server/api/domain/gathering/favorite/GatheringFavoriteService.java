@@ -1,8 +1,10 @@
 package com.wiiee.server.api.domain.gathering.favorite;
 
 import com.wiiee.server.api.application.common.PageRequestDTO;
+import com.wiiee.server.api.application.exception.ConflictException;
 import com.wiiee.server.api.application.gathering.favorite.GatheringFavoriteModel;
 import com.wiiee.server.api.application.gathering.favorite.MultipleGatheringFavoriteModel;
+import com.wiiee.server.api.domain.code.GatheringErrorCode;
 import com.wiiee.server.api.domain.gathering.GatheringService;
 import com.wiiee.server.api.domain.user.UserService;
 import com.wiiee.server.common.domain.gathering.favorite.GatheringFavorite;
@@ -36,7 +38,7 @@ public class GatheringFavoriteService {
         final var gathering = gatheringService.findById(gatheringId);
 
         if (gatheringFavoriteRepository.existsByGatheringAndUser(gathering, user)) {
-            throw new RuntimeException("이미 찜한 동행모집입니다.");
+            throw new ConflictException(GatheringErrorCode.ERROR_GATHERING_ALREADY_FAVORITED);
         }
 
         gatheringFavoriteRepository.save(GatheringFavorite.of(gathering, user));

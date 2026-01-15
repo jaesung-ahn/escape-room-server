@@ -3,6 +3,7 @@ package com.wiiee.server.api.application.exception;
 import com.wiiee.server.api.application.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +22,15 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ApiResponse<?>> handleApiException(ApiException ae, WebRequest request) {
+        log.error("ApiException occurred: status={}, code={}, message={}",
+                ae.getHttpStatus(), ae.getCode(), ae.getMessage(), ae);
+        return ResponseEntity
+                .status(ae.getHttpStatus())
+                .body(ApiResponse.error(ae.getCode(), ae.getMessage(), ae.getErrorDetails()));
+    }
 
     @ExceptionHandler(CustomException.class)
     @ResponseBody

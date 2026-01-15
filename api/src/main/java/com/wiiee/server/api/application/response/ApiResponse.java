@@ -1,8 +1,8 @@
 package com.wiiee.server.api.application.response;
 
-import com.wiiee.server.api.domain.code.StatusCode;
 import com.wiiee.server.api.domain.util.LocalDateTimeUtil;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -27,11 +27,11 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(StatusCode.OK_CODE, null, null, data);
+        return new ApiResponse<>(HttpStatus.OK.value(), null, null, data);
     }
 
     public static ApiResponse<Void> successWithNoData() {
-        return new ApiResponse<>(StatusCode.OK_CODE, null, null, null);
+        return new ApiResponse<>(HttpStatus.OK.value(), null, null, null);
     }
 
     // 예외 발생으로 API 에러시 반환

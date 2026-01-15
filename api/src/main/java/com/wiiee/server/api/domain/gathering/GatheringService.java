@@ -1,13 +1,15 @@
 package com.wiiee.server.api.domain.gathering;
 
 import com.google.common.net.HttpHeaders;
-import com.wiiee.server.api.application.exception.CustomException;
+import com.wiiee.server.api.application.exception.BadRequestException;
+import com.wiiee.server.api.application.exception.ConflictException;
+import com.wiiee.server.api.application.exception.ForbiddenException;
+import com.wiiee.server.api.application.exception.ResourceNotFoundException;
 import com.wiiee.server.api.application.gathering.*;
 import com.wiiee.server.api.application.gathering.member.WaitingMemberModel;
 import com.wiiee.server.api.application.gathering.mgr.GatheringManager;
 import com.wiiee.server.api.application.user.UserProfileResponseDTO;
 import com.wiiee.server.api.domain.code.GatheringErrorCode;
-import com.wiiee.server.api.domain.code.StatusCode;
 import com.wiiee.server.api.domain.content.ContentService;
 import com.wiiee.server.api.domain.gathering.comment.CommentService;
 import com.wiiee.server.api.domain.image.ImageService;
@@ -88,15 +90,15 @@ public class GatheringService {
 
         Gathering gathering = findById(dto.getGatheringId());
         if (!gathering.getLeader().getId().equals(userId)){
-            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_IS_NOT_MINE);
+            throw new ForbiddenException(GatheringErrorCode.ERROR_GATHERING_IS_NOT_MINE);
         }
 
         if (dto.getHopeDate() != null && LocalDate.now().isAfter(dto.getHopeDate())) {
-            throw new CustomException(GatheringErrorCode.ERROR_HOPE_DATE_NOT_ALLOWED_BEFORE_NOW);
+            throw new BadRequestException(GatheringErrorCode.ERROR_HOPE_DATE_NOT_ALLOWED_BEFORE_NOW);
         }
 
         if (gathering.getGatheringMembers().size() > dto.getMaxPeople()) {
-            throw new CustomException(GatheringErrorCode.ERROR_NOT_ALLOWED_UNDER_THE_CURRENT_MEMBER);
+            throw new BadRequestException(GatheringErrorCode.ERROR_NOT_ALLOWED_UNDER_THE_CURRENT_MEMBER);
         }
 
         gathering.getGatheringInfo().updateGatheringInfo(dto.getTitle(), dto.getInformation(), dto.getStateCode(),
@@ -112,7 +114,7 @@ public class GatheringService {
         final var gathering = gatheringRepository.findById(id).orElseThrow();
 
         if (gathering.getDeleted()) {
-            throw new CustomException(GatheringErrorCode.ERROR_DELETED_GATHERING);
+            throw new ResourceNotFoundException(GatheringErrorCode.ERROR_DELETED_GATHERING);
         }
 
         Long imageId = gathering.getLeader().getProfile().getProfileImageId() != null ? gathering.getLeader().getProfile().getProfileImageId() : null;
@@ -160,31 +162,26 @@ public class GatheringService {
         Gathering gathering = findById(gatheringId);
 
         if (gathering.getGatheringInfo().getGatheringStatus().equals(GatheringStatus.RECRUIT_COMPLETED)) {
-            throw new CustomException(StatusCode.ERROR_RECRUIT_COMPLETED_CODE,
-                    StatusCode.ERROR_RECRUIT_COMPLETED_MSG, null);
+            throw new ConflictException(GatheringErrorCode.ERROR_RECRUIT_COMPLETED);
         }
         else if (gathering.getGatheringInfo().getGatheringStatus().equals(GatheringStatus.RECRUIT_EXPIRED)) {
-            throw new CustomException(StatusCode.ERROR_RECRUIT_EXPIRED_CODE,
-                    StatusCode.ERROR_RECRUIT_EXPIRED_MSG, null);
+            throw new ConflictException(GatheringErrorCode.ERROR_RECRUIT_EXPIRED);
         }
 
         int memberSize = gathering.getGatheringMembers().size();
         if (memberSize == gathering.getGatheringInfo().getMaxPeople()) {
-            throw new CustomException(StatusCode.ERROR_RECRUIT_MAX_MB_CODE,
-                    StatusCode.ERROR_RECRUIT_MAX_MB_MSG, null);
+            throw new ConflictException(GatheringErrorCode.ERROR_RECRUIT_MAX_MEMBER);
         }
         // 같은 동행모집의 같은 멤버가 중복 신청하는 경우
         if (gathering.getGatheringMembers().stream().anyMatch(gatheringMember -> gatheringMember.getUser().equals(user))) {
-            throw new CustomException(StatusCode.ERROR_RECRUIT_SAME_REQUSER_CODE,
-                    StatusCode.ERROR_RECRUIT_SAME_REQUSER_MSG, null);
+            throw new ConflictException(GatheringErrorCode.ERROR_RECRUIT_ALREADY_APPLIED);
         }
 
         // 승낙제에서 같은 사용자의 동행모집 신청서 존재하는데 신청하는 경우
         if (RecruitType.CONFIRM.equals(gathering.getGatheringInfo().getRecruitType())) {
 
             if (gatheringRequestRepository.findAllByGathering(gathering).stream().anyMatch(gatheringRequest -> gatheringRequest.getRequestUser().equals(user))) {
-                throw new CustomException(StatusCode.ERROR_RECRUIT_SAME_REQUSER_CODE,
-                        StatusCode.ERROR_RECRUIT_SAME_REQUSER_MSG, null);
+                throw new ConflictException(GatheringErrorCode.ERROR_RECRUIT_ALREADY_APPLIED);
             }
 
         }
@@ -280,7 +277,7 @@ public class GatheringService {
         boolean isHost = unproxyGathering.getLeader().getId().equals(userId);
         boolean isApplicant = gatheringRequest.getRequestUser().getId().equals(userId);
         if (!isHost && !isApplicant) {
-            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_REQUEST_NOT_ACCESSIBLE);
+            throw new ForbiddenException(GatheringErrorCode.ERROR_GATHERING_REQUEST_NOT_ACCESSIBLE);
         }
 
         // 동행모집 호스트이며,
@@ -305,14 +302,12 @@ public class GatheringService {
 
         if (gatheringConfirmReqDTO.getGatheringRequestStatus().equals(GatheringRequestStatus.UNVERIFIED) ||
                 gatheringConfirmReqDTO.getGatheringRequestStatus().equals(GatheringRequestStatus.VERIFIED) ) {
-            throw new CustomException(StatusCode.ERROR_REQUEST_CODE,
-                    StatusCode.ERROR_REQUEST_MSG, null);
+            throw new BadRequestException("잘못된 요청입니다.");
         }
 
         if (gatheringRequest.getGatheringRequestStatus().equals(GatheringRequestStatus.APPROVAL) ||
                 gatheringRequest.getGatheringRequestStatus().equals(GatheringRequestStatus.REJECT)) {
-            throw new CustomException(StatusCode.ERROR_GATHERING_REQUEST_STATUS_CODE,
-                    StatusCode.ERROR_GATHERING_REQUEST_STATUS_MSG, null);
+            throw new ConflictException(GatheringErrorCode.ERROR_GATHERING_REQUEST_INVALID_STATUS);
         }
 
         final User requestUser = gatheringRequest.getRequestUser();
@@ -321,19 +316,17 @@ public class GatheringService {
         final Gathering unproxyGathering = Hibernate.unproxy(gathering, Gathering.class);
 
         if (unproxyGathering.getLeader().getId() != userId) {
-            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_NOT_HOST);
+            throw new ForbiddenException(GatheringErrorCode.ERROR_GATHERING_NOT_HOST);
         }
 
         int memberSize = unproxyGathering.getGatheringMembers().size();
         if (memberSize == unproxyGathering.getGatheringInfo().getMaxPeople()) {
-            throw new CustomException(StatusCode.ERROR_RECRUIT_MAX_MB_CODE,
-                    StatusCode.ERROR_RECRUIT_MAX_MB_MSG, null);
+            throw new ConflictException(GatheringErrorCode.ERROR_RECRUIT_MAX_MEMBER);
         }
 
         if (unproxyGathering.getGatheringMembers().stream().anyMatch(gatheringMember ->
                 gatheringMember.getUser().equals(unproxyRequestUser)) ) {
-            throw new CustomException(StatusCode.ERROR_GATHERING_ALREADY_EXIST_MEMBER_CODE,
-                    StatusCode.ERROR_GATHERING_ALREADY_EXIST_MEMBER_MSG, null);
+            throw new ConflictException(GatheringErrorCode.ERROR_GATHERING_MEMBER_ALREADY_EXISTS);
         }
 
         if (gatheringConfirmReqDTO.getGatheringRequestStatus().equals(GatheringRequestStatus.APPROVAL)) {
@@ -403,13 +396,13 @@ public class GatheringService {
 
         // 본인 동행모집 참가서인지 확인
         if (unproxyOrgRequestUser.getId() != userId) {
-            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_REQUEST_IS_NOT_YOUR_REQ);
+            throw new ForbiddenException(GatheringErrorCode.ERROR_GATHERING_REQUEST_IS_NOT_YOUR_REQ);
         }
         // 동행모집 참가서 상태가 '호스트 확인 전', '호스트 확인 됨' 두 상태가 아닌 경우 예외처리
         if (!(gatheringRequest.getGatheringRequestStatus().equals(GatheringRequestStatus.UNVERIFIED) ||
                 gatheringRequest.getGatheringRequestStatus().equals(GatheringRequestStatus.VERIFIED))
         ) {
-            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_REQUEST_IS_NON_CANCELLABLE);
+            throw new BadRequestException(GatheringErrorCode.ERROR_GATHERING_REQUEST_IS_NON_CANCELLABLE);
         }
 
         // 요청자 취소 상태로 변경
@@ -482,7 +475,7 @@ public class GatheringService {
     // 동행모집의 호스트인지 검사
     private void checkGatheringHost(long userId, Gathering gathering) {
         if (!gathering.getLeader().getId().equals(userId)) {
-            throw new CustomException(GatheringErrorCode.ERROR_GATHERING_IS_NOT_MINE);
+            throw new ForbiddenException(GatheringErrorCode.ERROR_GATHERING_IS_NOT_MINE);
         }
     }
 

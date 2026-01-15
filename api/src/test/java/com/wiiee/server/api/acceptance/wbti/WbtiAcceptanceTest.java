@@ -73,11 +73,11 @@ class WbtiAcceptanceTest extends AcceptanceTest {
         // when: 잘못된 WBTI ID로 저장 시도
         ExtractableResponse<Response> response = WBTI_저장_요청(invalidWbtiId);
 
-        // then: CustomException으로 에러 코드 반환
+        // then: ResourceNotFoundException으로 에러 코드 반환
         response.response()
                 .then()
-                .statusCode(HttpStatus.OK.value())
-                .body("code", equalTo(8120));  // ERROR_NO_EXIST_ZAMFIT_TEXT_CODE
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("code", equalTo(8120));  // ERROR_WBTI_NOT_FOUND
     }
 
     @Test

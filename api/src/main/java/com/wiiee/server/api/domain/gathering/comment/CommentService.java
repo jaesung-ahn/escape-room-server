@@ -1,7 +1,8 @@
 package com.wiiee.server.api.domain.gathering.comment;
 
 import com.wiiee.server.api.application.common.PageRequestDTO;
-import com.wiiee.server.api.application.exception.CustomException;
+import com.wiiee.server.api.application.exception.ForbiddenException;
+import com.wiiee.server.api.application.exception.ResourceNotFoundException;
 import com.wiiee.server.api.application.gathering.comment.CommentModel;
 import com.wiiee.server.api.application.gathering.comment.CommentPostRequestDTO;
 import com.wiiee.server.api.application.gathering.comment.CommentPutRequestDTO;
@@ -35,7 +36,7 @@ public class CommentService {
     public CommentModel createComment(Long gatheringId, Long userId, CommentPostRequestDTO dto) {
         // Gathering 존재 여부 확인
         gatheringRepository.findById(gatheringId)
-                .orElseThrow(() -> new CustomException(GatheringCommentErrorCode.ERROR_GATHERING_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(GatheringCommentErrorCode.ERROR_GATHERING_NOT_FOUND));
 
         User writer = userService.findById(userId);
         UserProfileResponseDTO userResponse = getUserResponse(writer);
@@ -91,7 +92,7 @@ public class CommentService {
 
         final var comment = findById(commentId);
         if (!comment.getWriter().getId().equals(userId)) {
-            throw new CustomException(GatheringCommentErrorCode.ERROR_PERMISSION_NOT_ALLOWED);
+            throw new ForbiddenException(GatheringCommentErrorCode.ERROR_PERMISSION_NOT_ALLOWED);
         }
         comment.delete(userId);
     }

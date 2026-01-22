@@ -18,7 +18,9 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "review", indexes = {})
+@Table(name = "review", indexes = {
+    @Index(name = "idx_review_content_approval", columnList = "content_id, is_approval")
+})
 @Entity
 public class Review extends BaseEntity {
 
@@ -55,7 +57,7 @@ public class Review extends BaseEntity {
     private LocalDate realGatherDate;
 
     // 승인 여부
-    @Column(columnDefinition = "boolean default false")
+    @Column(name = "is_approval", columnDefinition = "boolean default false")
     private boolean isApproval = false;
 
     public Review(String message, User writer, Content content, Double rating, Integer joinNumber, List<Long> imageIds, LocalDate realGatherDate) {

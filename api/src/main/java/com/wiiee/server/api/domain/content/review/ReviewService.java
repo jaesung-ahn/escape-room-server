@@ -2,7 +2,6 @@ package com.wiiee.server.api.domain.content.review;
 
 import com.wiiee.server.api.application.common.PageRequestDTO;
 import com.wiiee.server.api.application.content.review.*;
-import com.wiiee.server.api.application.exception.CustomException;
 import com.wiiee.server.api.application.exception.ForbiddenException;
 import com.wiiee.server.api.domain.code.ReviewErrorCode;
 import com.wiiee.server.api.domain.content.ContentService;
@@ -109,7 +108,7 @@ public class ReviewService {
         final var user = userService.findById(userId);
         final var targetReview = reviewRepository.findById(reviewId).orElseThrow();
         if (!targetReview.getWriter().equals(user)) {
-            throw new CustomException(8124, "해당 리뷰 수정 권한이 없습니다.", null);
+            throw new ForbiddenException(ReviewErrorCode.ERROR_REVIEW_UPDATE_PERMISSION_DENIED);
         }
 
         targetReview.updateApproval(true);

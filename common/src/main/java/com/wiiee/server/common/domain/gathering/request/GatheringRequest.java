@@ -15,7 +15,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "gathering_request", indexes = {})
+@Table(name = "gathering_request", indexes = {
+    @Index(name = "idx_gathering_request_gathering_status", columnList = "gathering_id, gathering_request_status")
+})
 @Entity
 public class GatheringRequest extends DefaultEntity {
 
@@ -36,6 +38,7 @@ public class GatheringRequest extends DefaultEntity {
     @ManyToOne(fetch = LAZY)
     private Gathering gathering;
 
+    @Column(name = "gathering_request_status")
     @Enumerated(value = EnumType.STRING)
     private GatheringRequestStatus gatheringRequestStatus;
 

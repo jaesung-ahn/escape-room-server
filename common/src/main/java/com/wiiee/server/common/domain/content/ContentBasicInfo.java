@@ -22,6 +22,7 @@ public class ContentBasicInfo {
 
     private String name;
 
+    @Column(name = "is_operated")
     private Boolean isOperated;
 
     @Type(ListArrayType.class)

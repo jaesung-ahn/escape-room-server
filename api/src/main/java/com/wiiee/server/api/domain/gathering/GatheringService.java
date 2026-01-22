@@ -258,12 +258,29 @@ public class GatheringService {
 
     @Transactional(readOnly = true)
     public List<WaitingMemberModel> getWaitingMember(Gathering gathering) {
-        return gatheringRequestRepository.findAllByGathering(gathering).stream().map(
-                gatheringRequest -> {
-                    String url = imageService.getImageById(gatheringRequest.getRequestUser().getProfile().getProfileImageId()).getUrl();
+        List<GatheringRequest> requests = gatheringRequestRepository.findAllByGathering(gathering);
+
+        // 프로필 이미지 ID 수집
+        List<Long> imageIds = requests.stream()
+                .map(req -> req.getRequestUser().getProfile().getProfileImageId())
+                .filter(id -> id != null)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 배치로 이미지 조회 및 Map 변환
+        HashMap<Long, Image> imageMap = imageService.findByIdsIn(imageIds).stream()
+                .collect(Collectors.toMap(Image::getId, img -> img, (a, b) -> a, HashMap::new));
+
+        // WaitingMemberModel 생성
+        return requests.stream()
+                .map(gatheringRequest -> {
+                    Long profileImageId = gatheringRequest.getRequestUser().getProfile().getProfileImageId();
+                    String url = profileImageId != null && imageMap.containsKey(profileImageId)
+                            ? imageMap.get(profileImageId).getUrl()
+                            : null;
                     return WaitingMemberModel.fromGatheringRequest(gatheringRequest, url);
-                }
-        ).collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -489,8 +506,15 @@ public class GatheringService {
 
         // 참여로 된 멤버 있는지 검사
         GatheringMember gatheringMember = gatheringRepository.findGatheringMember(gathering, user);
+        if (gatheringMember == null) {
+            throw new ForbiddenException(GatheringErrorCode.ERROR_GATHERING_MEMBER_NOT_FOUND);
+        }
 
         GatheringRequest gatheringRequest = gatheringRequestRepository.findApprovedGatheringRequest(gathering, user);
+        if (gatheringRequest == null) {
+            throw new ResourceNotFoundException(GatheringErrorCode.ERROR_APPROVED_REQUEST_NOT_FOUND);
+        }
+
         // 요청자 참여 취소 상태로 변경
         gatheringRequest.updateRequestStatus(GatheringRequestStatus.CANCELED_JOIN);
 

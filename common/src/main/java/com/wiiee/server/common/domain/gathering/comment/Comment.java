@@ -5,6 +5,8 @@ import com.wiiee.server.common.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -17,7 +19,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "comment")
+@Table(name = "comment", indexes = {
+    @Index(name = "idx_comment_gathering_parent", columnList = "gathering_id, parent_id")
+})
 public class Comment extends BaseEntity {
 
     private static final String DELETE_MESSAGE = "삭제된 댓글입니다.";
@@ -27,7 +31,7 @@ public class Comment extends BaseEntity {
     @Column(name = "comment_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "gathering_id", nullable = false)
     private Long gatheringId;
 
     @ManyToOne(fetch = LAZY)
@@ -45,6 +49,7 @@ public class Comment extends BaseEntity {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent")
+    @Fetch(FetchMode.SUBSELECT)
     private List<Comment> children = new ArrayList<>();
 
     public Comment(Long gatheringId, User writer, String message) {
@@ -60,18 +65,11 @@ public class Comment extends BaseEntity {
         this.parent = parent;
     }
 
-    public void changeMessage(Long userId, String message) {
-        if (!writer.getId().equals(userId)) {
-            throw new IllegalArgumentException("작성자가 아닙니다.");
-        }
+    public void changeMessage(String message) {
         this.message = message;
     }
 
-    public void delete(Long userId) {
-        if (!writer.getId().equals(userId)) {
-            throw new IllegalArgumentException("작성자가 아닙니다.");
-        }
-
+    public void delete() {
         this.deleted = true;
         this.deletedAt = LocalDateTime.now();
     }

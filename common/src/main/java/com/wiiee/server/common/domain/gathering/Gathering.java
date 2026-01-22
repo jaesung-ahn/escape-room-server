@@ -19,7 +19,9 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "gathering", indexes = {})
+@Table(name = "gathering", indexes = {
+    @Index(name = "idx_gathering_user_deleted", columnList = "user_id, deleted")
+})
 @Entity
 public class Gathering extends BaseEntity {
 

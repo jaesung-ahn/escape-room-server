@@ -20,7 +20,9 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "content", indexes = {})
+@Table(name = "content", indexes = {
+    @Index(name = "idx_content_company_operated", columnList = "company_id, is_operated")
+})
 @Entity
 public class Content extends BaseEntity {
 

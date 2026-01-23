@@ -47,8 +47,9 @@ public class UserProfileResponseDTO {
         String cityName = city != null ? city.getName() : null;
         String stateName = city != null ? State.valueOf(city.getParentCode()).getName() : null;
         String userGenderType = profile.getUserGenderType() != null ? profile.getUserGenderType().getName() : null;
+        String profileImgUrl = userImage != null ? userImage.getUrl() : "";
         return new UserProfileResponseDTO(
-                user.getId(), profile.getNickname(), userImage.getUrl(),
+                user.getId(), profile.getNickname(), profileImgUrl,
                 wbtiName, ageGroup, userGenderType, stateName, cityName);
     }
 }

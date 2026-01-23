@@ -1,6 +1,7 @@
 package com.wiiee.server.api.domain.gathering.member;
 
 import com.wiiee.server.api.application.exception.ConflictException;
+import com.wiiee.server.api.application.exception.ForbiddenException;
 import com.wiiee.server.api.application.gathering.member.MemberModel;
 import com.wiiee.server.api.domain.code.GatheringErrorCode;
 import com.wiiee.server.api.domain.gathering.GatheringService;
@@ -33,8 +34,13 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberModel updateMember(Long memberId, Integer statusCode) {
+    public MemberModel updateMember(Long userId, Long memberId, Integer statusCode) {
         final var member = memberRepository.findById(memberId).orElseThrow();
+        boolean isMemberOwner = member.getUser().getId().equals(userId);
+        boolean isGatheringHost = member.getGathering().getLeader().getId().equals(userId);
+        if (!isMemberOwner && !isGatheringHost) {
+            throw new ForbiddenException(GatheringErrorCode.ERROR_MEMBER_UPDATE_PERMISSION_DENIED);
+        }
         member.updateStatus(statusCode);
         String profileImageUrl = imageService.getImageById(member.getUser().getProfile().getProfileImageId()).getUrl();
         return MemberModel.fromMember(member, profileImageUrl);

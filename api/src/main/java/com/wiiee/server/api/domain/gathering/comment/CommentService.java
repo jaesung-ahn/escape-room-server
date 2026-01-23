@@ -56,7 +56,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public MultipleCommentModel getComments(Long gatheringId, Long userId) {
-        List<Comment> comments = commentRepository.findAllByGatheringIdAndParentIsNullOrderByCreatedAtDesc(gatheringId);
+        List<Comment> comments = commentRepository.findAllWithChildrenByGatheringId(gatheringId);
 
         // 모든 댓글(부모 + 자식)의 작성자 프로필 이미지 ID 수집
         List<Long> imageIds = new ArrayList<>();

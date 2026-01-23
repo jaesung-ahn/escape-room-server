@@ -41,8 +41,9 @@ public class UserRestController {
 
     @Operation(summary = "유저 회원가입 나머지 정보 업데이트", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/signup-additional", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<UserSignupEtcResponseDTO> updateUserSignupEtc(@Validated @RequestBody UserSignupEtcRequestDTO dto) {
-        return ApiResponse.success(userService.updateUserSignupEtc(dto.toUpdateUserSignupEtc()));
+    public ApiResponse<UserSignupEtcResponseDTO> updateUserSignupEtc(@Parameter(hidden = true) @AuthUser User authUser,
+                                                                      @Validated @RequestBody UserSignupEtcRequestDTO dto) {
+        return ApiResponse.success(userService.updateUserSignupEtc(authUser.getId(), dto.toUpdateUserSignupEtc()));
     }
 
     @Operation(summary = "유저 회원정보 수정(설정화면)", security = {@SecurityRequirement(name = "Authorization")})
@@ -70,7 +71,7 @@ public class UserRestController {
     public ApiResponse<Void> putUser(@Parameter(hidden = true) @AuthUser User authUser,
                                           @Valid @RequestBody UserPutRequestDTO dto,
                                           @PathVariable("id") Long id) {
-        userService.updateUser(id, dto.toUpdateRequest());
+        userService.updateUser(authUser.getId(), id, dto.toUpdateRequest());
         return ApiResponse.successWithNoData();
     }
 

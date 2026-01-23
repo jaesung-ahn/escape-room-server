@@ -101,10 +101,14 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(Long userId, UserUpdateRequest request) {
-        final var findUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("로그인 실패"));
+    public void updateUser(Long authUserId, Long targetUserId, UserUpdateRequest request) {
+        if (!authUserId.equals(targetUserId)) {
+            throw new ForbiddenException(UserErrorCode.ERROR_USER_UPDATE_PERMISSION_DENIED);
+        }
 
-        findUser.updateUser(userId, request);
+        final var findUser = userRepository.findById(targetUserId).orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+
+        findUser.updateUser(targetUserId, request);
         request.getWbtiId()
                 .ifPresent(wbtiId -> findUser.getProfile()
                         .changeWbti(wbtiService.findById(wbtiId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 위비티아이 입니다."))));
@@ -135,7 +139,11 @@ public class UserService {
      * 회원가입 시 나머지 정보 입력
      */
     @Transactional
-    public UserSignupEtcResponseDTO updateUserSignupEtc(UserSignupEtcRequestDTO.UserSignupEtcRequest requestDTO) {
+    public UserSignupEtcResponseDTO updateUserSignupEtc(Long authUserId, UserSignupEtcRequestDTO.UserSignupEtcRequest requestDTO) {
+        if (!authUserId.equals(requestDTO.getUserId())) {
+            throw new ForbiddenException(UserErrorCode.ERROR_USER_UPDATE_PERMISSION_DENIED);
+        }
+
         Optional<User> findUser = userRepository.findById(requestDTO.getUserId());
         User user = findUser.orElseThrow(() -> new ResourceNotFoundException("찾을 수 없는 유저입니다."));
         user.updateUserSignupEtc(requestDTO.getNickname(), requestDTO.getUserGenderType(), requestDTO.getBirthDate(),

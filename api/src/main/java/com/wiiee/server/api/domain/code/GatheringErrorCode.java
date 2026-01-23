@@ -23,6 +23,7 @@ public enum GatheringErrorCode implements ErrorCodeInterface {
     ERROR_GATHERING_MEMBER_ALREADY_EXISTS(8115, "이미 존재하는 동행모집의 크루 입니다."),
     ERROR_GATHERING_MEMBER_NOT_FOUND(8127, "동행모집의 멤버가 아닙니다."),
     ERROR_APPROVED_REQUEST_NOT_FOUND(8128, "승인된 동행모집 신청서를 찾을 수 없습니다."),
+    ERROR_MEMBER_UPDATE_PERMISSION_DENIED(8129, "본인의 멤버 정보만 수정할 수 있습니다."),
     ;
 
     private final int code;

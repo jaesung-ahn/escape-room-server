@@ -8,6 +8,7 @@ public enum UserErrorCode implements ErrorCodeInterface {
     ERROR_USER_BLOCKED(1002, "차단된 유저입니다."),
     ERROR_USER_DORMANT(1003, "현재 휴면 상태입니다. 고객센터에 문의해 휴면 해제바랍니다."),
     ERROR_USER_WITHDRAWN(8100, "탈퇴한 유저입니다."),
+    ERROR_USER_UPDATE_PERMISSION_DENIED(1004, "본인의 정보만 수정할 수 있습니다."),
     ;
 
     private final int code;

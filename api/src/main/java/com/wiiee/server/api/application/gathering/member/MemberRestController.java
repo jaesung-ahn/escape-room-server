@@ -25,16 +25,16 @@ public class MemberRestController {
     @Operation(summary = "멤버 등록", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping(value = "/gathering/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<MemberModel> postMember(@Parameter(hidden = true) @AuthUser User user,
-                                                     @PathVariable("id") Long gatheringId) {
+                                               @PathVariable("id") Long gatheringId) {
         return ApiResponse.success(memberService.addMember(user.getId(), gatheringId));
     }
 
     @Operation(summary = "멤버 수정", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<MemberModel> putMember(@Parameter(hidden = true) @AuthUser User user,
-                                                 @PathVariable("id") Long id,
-                                                 @RequestParam Integer statusCode) {
-        return ApiResponse.success(memberService.updateMember(id, statusCode));
+                                              @PathVariable Long id,
+                                              @RequestParam Integer statusCode) {
+        return ApiResponse.success(memberService.updateMember(user.getId(), id, statusCode));
     }
 
 }

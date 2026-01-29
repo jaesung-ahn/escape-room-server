@@ -7,6 +7,8 @@ import com.wiiee.server.api.application.gathering.favorite.GatheringFavoritePost
 import com.wiiee.server.api.application.gathering.favorite.MultipleGatheringFavoriteModel;
 import com.wiiee.server.api.application.response.ApiResponse;
 import com.wiiee.server.api.application.security.AuthUser;
+import com.wiiee.server.api.domain.gathering.GatheringMemberService;
+import com.wiiee.server.api.domain.gathering.GatheringRequestService;
 import com.wiiee.server.api.domain.gathering.GatheringService;
 import com.wiiee.server.api.domain.gathering.favorite.GatheringFavoriteService;
 import com.wiiee.server.common.domain.user.User;
@@ -28,6 +30,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class GatheringRestController {
 
     private final GatheringService gatheringService;
+    private final GatheringRequestService gatheringRequestService;
+    private final GatheringMemberService gatheringMemberService;
     private final GatheringFavoriteService gatheringFavoriteService;
 
     @Operation(summary = "동행 모집 등록", security = {@SecurityRequirement(name = "Authorization")})
@@ -64,7 +68,7 @@ public class GatheringRestController {
     public ApiResponse<?> applyGathering(@Validated @RequestBody ApplyGatheringDTO dto,
                                          @Parameter(hidden = true) @AuthUser User user) {
 
-        gatheringService.applyGathering(dto.getGatheringId(), user.getId(), dto.getRequestReason());
+        gatheringRequestService.applyGathering(dto.getGatheringId(), user.getId(), dto.getRequestReason());
 
         return ApiResponse.successWithNoData();
     }
@@ -73,7 +77,7 @@ public class GatheringRestController {
     @GetMapping(value = "/requests/{requestId}", produces = APPLICATION_JSON_VALUE)
     public ApiResponse<GatheringRequestDetailResDTO> getGatheringRequestDetail(@PathVariable("requestId") Long requestId,
                                                                                @Parameter(hidden = true) @AuthUser User user) {
-        return ApiResponse.success(gatheringService.getGatheringRequestDetail(requestId, user.getId()));
+        return ApiResponse.success(gatheringRequestService.getGatheringRequestDetail(requestId, user.getId()));
     }
 
     @Operation(summary = "동행모집 참가서 수락, 거절(호스트만)", security = {@SecurityRequirement(name = "Authorization")})
@@ -81,7 +85,7 @@ public class GatheringRestController {
     public ApiResponse<?> confirmGatheringRequest(@Validated @RequestBody GatheringConfirmReqDTO dto,
                                                   @Parameter(hidden = true) @AuthUser User user) {
 
-        gatheringService.confirmGatheringRequest(dto, user.getId());
+        gatheringRequestService.confirmGatheringRequest(dto, user.getId());
 
         return ApiResponse.successWithNoData();
     }
@@ -121,7 +125,7 @@ public class GatheringRestController {
     public ApiResponse<?> cancelGatheringRequest(@Validated @RequestBody GatheringCancelReqDTO dto,
                                                  @Parameter(hidden = true) @AuthUser User user) {
 
-        gatheringService.cancelGatheringRequest(dto, user.getId());
+        gatheringRequestService.cancelGatheringRequest(dto, user.getId());
         return ApiResponse.successWithNoData();
     }
 
@@ -151,7 +155,7 @@ public class GatheringRestController {
     @DeleteMapping(value = "/{id}/members", produces = APPLICATION_JSON_VALUE)
     public ApiResponse<?> cancelJoinGathering(@PathVariable("id") Long id,
                                               @Parameter(hidden = true) @AuthUser User user) {
-        gatheringService.cancelJoinGathering(id, user.getId());
+        gatheringMemberService.cancelJoinGathering(id, user.getId());
         return ApiResponse.successWithNoData();
     }
 

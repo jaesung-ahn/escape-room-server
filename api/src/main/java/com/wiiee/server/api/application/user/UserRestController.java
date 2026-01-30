@@ -7,6 +7,9 @@ import com.wiiee.server.api.application.security.AuthUser;
 import com.wiiee.server.api.domain.content.ContentService;
 import com.wiiee.server.api.domain.recommendation.RecommendationService;
 import com.wiiee.server.api.domain.recommendation.WbtiRecommendationService;
+import com.wiiee.server.api.domain.user.AuthService;
+import com.wiiee.server.api.domain.user.UserProfileService;
+import com.wiiee.server.api.domain.user.UserRecommendationService;
 import com.wiiee.server.api.domain.user.UserService;
 import com.wiiee.server.common.domain.user.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +32,9 @@ import java.util.List;
 @RestController
 public class UserRestController {
     private final UserService userService;
+    private final AuthService authService;
+    private final UserProfileService userProfileService;
+    private final UserRecommendationService userRecommendationService;
     private final RecommendationService recommendationService;
     private final WbtiRecommendationService wbtiRecommendationService;
     private final ContentService contentService;
@@ -36,28 +42,28 @@ public class UserRestController {
     @Operation(summary = "카카오 로그인/회원가입")
     @PostMapping(value = "/login/kakao", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserWithTokenModel> kakaoLogin(@Validated @RequestBody UserSnsRequestDTO requestDTO) {
-        return ApiResponse.success(userService.kakaoLogin(requestDTO));
+        return ApiResponse.success(authService.kakaoLogin(requestDTO));
     }
 
     @Operation(summary = "유저 회원가입 나머지 정보 업데이트", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/signup-additional", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserSignupEtcResponseDTO> updateUserSignupEtc(@Parameter(hidden = true) @AuthUser User authUser,
                                                                       @Validated @RequestBody UserSignupEtcRequestDTO dto) {
-        return ApiResponse.success(userService.updateUserSignupEtc(authUser.getId(), dto.toUpdateUserSignupEtc()));
+        return ApiResponse.success(userProfileService.updateUserSignupEtc(authUser.getId(), dto.toUpdateUserSignupEtc()));
     }
 
     @Operation(summary = "유저 회원정보 수정(설정화면)", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/settings", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<?> updateSettingUserInfo(@Parameter(hidden = true) @AuthUser User user,
                                          @Validated @RequestBody updateSettingUserInfoRequestDTO dto) {
-        userService.updateSettingUserInfo(user.getId(), dto);
+        userProfileService.updateSettingUserInfo(user.getId(), dto);
         return ApiResponse.successWithNoData();
     }
 
     @Operation(summary = "마이페이지", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(value = "/my-page", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserMypageResponseDTO> getMyPage(@Parameter(hidden = true) @AuthUser User authUser) {
-        return ApiResponse.success(userService.getMyPage(authUser.getId()));
+        return ApiResponse.success(userProfileService.getMyPage(authUser.getId()));
     }
 
     @Operation(summary = "유저 확인")
@@ -71,21 +77,21 @@ public class UserRestController {
     public ApiResponse<Void> putUser(@Parameter(hidden = true) @AuthUser User authUser,
                                           @Valid @RequestBody UserPutRequestDTO dto,
                                           @PathVariable("id") Long id) {
-        userService.updateUser(authUser.getId(), id, dto.toUpdateRequest());
+        userProfileService.updateUser(authUser.getId(), id, dto.toUpdateRequest());
         return ApiResponse.successWithNoData();
     }
 
     @Operation(summary = "닉네임 중복 체크")
     @GetMapping(value = "/check-nickname")
     public ApiResponse<Boolean> checkNickname(@RequestParam String nickname) {
-        return ApiResponse.success(userService.checkNickname(nickname));
+        return ApiResponse.success(userProfileService.checkNickname(nickname));
     }
 
     @Operation(summary = "유저 푸시정보 변경", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/push-info", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<?> updateUserPushInfo(@Parameter(hidden = true) @AuthUser User user,
                                                    @Validated @RequestBody UserPushInfoRequestDTO dto) {
-        userService.updateUserPushInfo(user.getId(), dto);
+        userProfileService.updateUserPushInfo(user.getId(), dto);
         return ApiResponse.successWithNoData();
     }
 
@@ -99,7 +105,7 @@ public class UserRestController {
                     user.getProfile().getWbti().getId())
             );
         }
-        List<RecommendationModel> userRecommendationList = userService.getMyWbtiRecommends(user, contentSimpleModelList);
+        List<RecommendationModel> userRecommendationList = userRecommendationService.getMyWbtiRecommends(user, contentSimpleModelList);
         List<RecommendationModel> recommendationList = recommendationService.getRecommendations();
 
         Boolean isWbti = user.getProfile().getWbti() != null;
@@ -114,27 +120,27 @@ public class UserRestController {
     @Operation(summary = "일반 회원가입")
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserWithTokenModel> postUser(@RequestBody UserPostRequestDTO dto) {
-        return ApiResponse.success(userService.create(dto));
+        return ApiResponse.success(authService.signup(dto));
     }
 
     @Operation(summary = "일반 로그인")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserWithTokenModel> loginUser(@RequestBody UserLoginRequestDTO dto) {
-        return ApiResponse.success(userService.login(dto));
+        return ApiResponse.success(authService.login(dto));
     }
 
     @Operation(summary = "유저 푸시 알림설정 변경", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/push-notification", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<?> updateUserPushNoti(@Parameter(hidden = true) @AuthUser User user,
                                              @Validated @RequestBody UserPushNotiRequestDTO dto) {
-        userService.updateUserPushNoti(user.getId(), dto);
+        userProfileService.updateUserPushNoti(user.getId(), dto);
         return ApiResponse.successWithNoData();
     }
 
     @Operation(summary = "유저 로그아웃", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping(value = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<?> logout(@Parameter(hidden = true) @AuthUser User user) {
-        userService.logout(user.getId());
+        authService.logout(user.getId());
         return ApiResponse.successWithNoData();
     }
 }

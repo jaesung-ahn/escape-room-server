@@ -19,7 +19,7 @@ import com.wiiee.server.api.domain.gathering.comment.CommentService;
 import com.wiiee.server.api.domain.gathering.favorite.GatheringFavoriteService;
 import com.wiiee.server.api.domain.recommendation.RecommendationService;
 import com.wiiee.server.api.domain.recommendation.WbtiRecommendationService;
-import com.wiiee.server.api.domain.user.UserService;
+import com.wiiee.server.api.domain.user.UserProfileService;
 import com.wiiee.server.api.domain.util.LocalDateTimeUtil;
 import com.wiiee.server.common.domain.event.EventLocation;
 import com.wiiee.server.common.domain.user.User;
@@ -51,7 +51,7 @@ public class PageRestController {
     private final RecommendationService recommendationService;
     private final ContentFavoriteService contentFavoriteService;
     private final GatheringFavoriteService gatheringFavoriteService;
-    private final UserService userService;
+    private final UserProfileService userProfileService;
 
     @Operation(summary = "메인 페이지", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(value = "/main", produces = APPLICATION_JSON_VALUE)
@@ -150,7 +150,7 @@ public class PageRestController {
     @GetMapping(value = "/user/{id}", produces = APPLICATION_JSON_VALUE)
     public ApiResponse<UserDetailPageModel> getUserDetailPageModel(@PathVariable("id") Long userId,
                                                                    @Parameter(hidden = true) @AuthUser User user) {
-        final var myPage = userService.getMyPage(userId);
+        final var myPage = userProfileService.getMyPage(userId);
         final var reviews = reviewService.getReviewsByUserId(userId, PageRequestDTO.of(1, 5));
         final var gatherings = gatheringService.getMyGatheringList(userId);
         final var contentFavorites = contentFavoriteService.getMyFavoritesWithContent(userId, PageRequestDTO.of(1, 5));

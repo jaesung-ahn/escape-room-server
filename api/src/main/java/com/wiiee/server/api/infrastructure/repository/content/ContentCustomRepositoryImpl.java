@@ -119,6 +119,8 @@ public class ContentCustomRepositoryImpl implements ContentCustomRepository {
     @Override
     public List<RankContent> findAllMainHotContent(int limit) {
         return jpaQueryFactory.selectFrom(rankContent)
+                .join(rankContent.content, content).fetchJoin()
+                .join(content.company, company).fetchJoin()
                 .where(
                         rankContent.content.contentBasicInfo.isOperated.eq(true)
                 )

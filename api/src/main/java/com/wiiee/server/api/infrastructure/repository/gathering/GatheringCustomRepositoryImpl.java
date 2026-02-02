@@ -41,8 +41,8 @@ public class GatheringCustomRepositoryImpl implements GatheringCustomRepository 
                 .collect(Collectors.toList()) : null;
         final var list = jpaQueryFactory.select(gathering)
                 .from(gathering)
-                .join(gathering.content, content)
-                .join(gathering.content.company, company)
+                .join(gathering.content, content).fetchJoin()
+                .join(content.company, company).fetchJoin()
                 .where(
                         gathering.deleted.eq(false),
                         titleContains(dto.getTitle()),
@@ -97,6 +97,8 @@ public class GatheringCustomRepositoryImpl implements GatheringCustomRepository 
     public List<Gathering> findAllMyGathering(User user) {
         return jpaQueryFactory.select(gathering)
                 .from(gathering)
+                .join(gathering.content, content).fetchJoin()
+                .join(content.company, company).fetchJoin()
                 .join(gathering.gatheringMembers, gatheringMember)
                 .on(gatheringMember.user.eq(user))
                 .where(gathering.deleted.eq(false))

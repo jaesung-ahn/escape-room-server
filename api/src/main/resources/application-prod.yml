@@ -6,6 +6,10 @@ jwt:
   access-token-expiration-ms: 7200000  # 2 hours
   refresh-token-expiration-ms: 172800000  # 2 days
 
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://wiiee.app}
+  max-age: 3600
+
 spring:
   jpa:
     hibernate:

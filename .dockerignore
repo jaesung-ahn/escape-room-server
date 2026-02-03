@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+*.iml
+.vscode
+
+# Gradle
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
+
+# Build outputs (except what we need)
+**/build
+!api/build/libs
+
+# Documentation
+docs
+*.md
+
+# Environment files
+.env*
+*.properties
+
+# Claude
+.claude
+
+# Test files
+**/src/test
+
+# Logs
+*.log

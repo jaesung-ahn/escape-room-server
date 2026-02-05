@@ -1,0 +1,72 @@
+# Wiiee Escape Room Server - Local Development Environment
+# Usage: docker-compose up -d
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: wiiee-postgres
+    environment:
+      POSTGRES_DB: wiiee_db
+      POSTGRES_USER: wiiee
+      POSTGRES_PASSWORD: wiiee_local_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wiiee -d wiiee_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wiiee-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: wiiee-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wiiee-network
+
+  # API Server (optional - for full containerized environment)
+  # Uncomment to run API in Docker instead of locally
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: api/Dockerfile
+  #   container_name: wiiee-api
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
+  #     JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+  #     DB_URL: jdbc:postgresql://postgres:5432/wiiee_db
+  #     DB_USERNAME: wiiee
+  #     DB_PASSWORD: wiiee_local_password
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #   ports:
+  #     - "3781:3781"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - wiiee-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  wiiee-network:
+    driver: bridge

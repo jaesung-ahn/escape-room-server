@@ -4,6 +4,7 @@ import com.wiiee.server.api.application.recommendation.RecommendationModel;
 import com.wiiee.server.api.domain.content.ContentService;
 import com.wiiee.server.common.domain.recommendation.Recommendation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class RecommendationService {
                 contentService.getContentSimpleModelsByContents(recommendation.getContents()));
     }
 
+    @Cacheable(value = "recommendation", key = "'all'")
     @Transactional(readOnly = true)
     public List<RecommendationModel> getRecommendations() {
         List<Recommendation> recommendations = recommendationRepository.findAllWithContents();

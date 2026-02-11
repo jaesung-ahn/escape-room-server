@@ -11,11 +11,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @DisplayName("Wbti API 인수 테스트")
@@ -23,6 +26,9 @@ class WbtiAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private WbtiRepository wbtiRepository;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     private String accessToken;
     private Long testWbtiId;
@@ -78,6 +84,26 @@ class WbtiAcceptanceTest extends AcceptanceTest {
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .body("code", equalTo(8120));  // ERROR_WBTI_NOT_FOUND
+    }
+
+    @Test
+    @DisplayName("WBTI 목록 조회 - Redis 캐싱 동작 확인")
+    void getWbtiList_caching() {
+        // when: 첫 번째 호출 (DB 조회 후 캐시 저장)
+        WBTI_목록_조회_요청();
+
+        // then: Redis에 캐시가 저장되었는지 확인
+        Set<String> allKeys = redisTemplate.keys("*");
+        assertThat(allKeys).isNotEmpty();
+
+        // 캐시 키 확인 (wiiee:wbti::all 형태)
+        assertThat(allKeys).anyMatch(key -> key.contains("wbti"));
+
+        // when: 두 번째 호출 (캐시 히트)
+        ExtractableResponse<Response> response = WBTI_목록_조회_요청();
+
+        // then: 정상 응답
+        WBTI_목록_조회_성공_확인(response);
     }
 
     @Test

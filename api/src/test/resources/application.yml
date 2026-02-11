@@ -13,7 +13,7 @@ local:
 
 spring:
   profiles:
-    active: test
+    active: local
 
   datasource:
     driver-class-name: org.h2.Driver

@@ -11,6 +11,13 @@ cors:
   max-age: 3600
 
 spring:
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 3000ms
+
   jpa:
     hibernate:
       ddl-auto: validate  # Never auto-create/update schema in production

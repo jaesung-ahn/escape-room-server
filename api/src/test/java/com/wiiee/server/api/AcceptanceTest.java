@@ -10,7 +10,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,6 +28,7 @@ public abstract class AcceptanceTest {
     // @Container 방식은 IntelliJ와 Gradle에서 동작이 다를 수 있어 안정성 문제 발생
     // 수동으로 컨테이너를 시작하여 모든 환경에서 일관된 동작 보장
     static PostgreSQLContainer<?> postgres;
+    static GenericContainer<?> redis;
 
     static {
         postgres = new PostgreSQLContainer<>("postgres:12-alpine")
@@ -34,15 +37,24 @@ public abstract class AcceptanceTest {
                 .withPassword("test")
                 .withUrlParam("sslmode", "disable");
         postgres.start();
+
+        redis = new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
+                .withExposedPorts(6379);
+        redis.start();
     }
 
     @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        // PostgreSQL
         registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.PostgreSQLDialect");
+
+        // Redis
+        registry.add("spring.data.redis.host", redis::getHost);
+        registry.add("spring.data.redis.port", redis::getFirstMappedPort);
     }
 
     @LocalServerPort

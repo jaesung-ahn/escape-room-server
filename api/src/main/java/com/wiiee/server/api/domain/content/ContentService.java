@@ -11,6 +11,7 @@ import com.wiiee.server.common.domain.common.Image;
 import com.wiiee.server.common.domain.content.Content;
 import com.wiiee.server.common.domain.content.RankContent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -141,6 +142,7 @@ public class ContentService {
                 );
     }
 
+    @Cacheable(value = "content-hot", key = "'main'")
     @Transactional(readOnly = true)
     public List<ContentSimpleModel> getMainHotContentList() {
         List<RankContent> allMainHotContent = contentRepository.findAllMainHotContent(10);

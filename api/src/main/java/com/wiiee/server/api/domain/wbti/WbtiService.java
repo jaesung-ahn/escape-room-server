@@ -7,6 +7,7 @@ import com.wiiee.server.api.domain.image.ImageService;
 import com.wiiee.server.api.infrastructure.repository.user.UserCustomRepository;
 import com.wiiee.server.common.domain.wbti.Wbti;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ public class WbtiService {
         return wbtiRepository.findById(wbtiId);
     }
 
+    @Cacheable(value = "wbti", key = "'all'")
     @Transactional(readOnly = true)
     public List<WbtiSimpleResponseDTO> findAll() {
 

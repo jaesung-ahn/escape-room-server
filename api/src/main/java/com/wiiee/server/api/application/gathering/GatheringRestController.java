@@ -12,6 +12,7 @@ import com.wiiee.server.api.domain.gathering.GatheringRequestService;
 import com.wiiee.server.api.domain.gathering.GatheringService;
 import com.wiiee.server.api.domain.gathering.favorite.GatheringFavoriteService;
 import com.wiiee.server.common.domain.user.User;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,6 +36,7 @@ public class GatheringRestController {
     private final GatheringFavoriteService gatheringFavoriteService;
 
     @Operation(summary = "동행 모집 등록", security = {@SecurityRequirement(name = "Authorization")})
+    @RateLimiter(name = "createGathering")
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ApiResponse<GatheringModel> postGathering(@Validated @RequestBody GatheringPostRequestDTO dto,
                                                      @Parameter(hidden = true) @AuthUser User user) {

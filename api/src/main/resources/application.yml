@@ -8,3 +8,20 @@ jwt:
   secret: ${JWT_SECRET_KEY}
   access-token-expiration-ms: 7200000  # 2 hours
   refresh-token-expiration-ms: 172800000  # 2 days
+
+# Resilience4j Rate Limiter
+resilience4j:
+  ratelimiter:
+    instances:
+      login:
+        limit-for-period: 10
+        limit-refresh-period: 1m
+        timeout-duration: 0s
+      signup:
+        limit-for-period: 5
+        limit-refresh-period: 1h
+        timeout-duration: 0s
+      createGathering:
+        limit-for-period: 3
+        limit-refresh-period: 1m
+        timeout-duration: 0s

@@ -68,6 +68,11 @@ dependencies {
     // HTTP Client
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
+    // Resilience4j (Rate Limiting)
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+    implementation 'io.github.resilience4j:resilience4j-ratelimiter:2.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

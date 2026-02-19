@@ -12,6 +12,7 @@ import com.wiiee.server.api.domain.user.UserProfileService;
 import com.wiiee.server.api.domain.user.UserRecommendationService;
 import com.wiiee.server.api.domain.user.UserService;
 import com.wiiee.server.common.domain.user.User;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -22,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class UserRestController {
     private final ContentService contentService;
 
     @Operation(summary = "카카오 로그인/회원가입")
+    @RateLimiter(name = "login")
     @PostMapping(value = "/login/kakao", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserWithTokenModel> kakaoLogin(@Validated @RequestBody UserSnsRequestDTO requestDTO) {
         return ApiResponse.success(authService.kakaoLogin(requestDTO));
@@ -48,14 +51,14 @@ public class UserRestController {
     @Operation(summary = "유저 회원가입 나머지 정보 업데이트", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/signup-additional", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserSignupEtcResponseDTO> updateUserSignupEtc(@Parameter(hidden = true) @AuthUser User authUser,
-                                                                      @Validated @RequestBody UserSignupEtcRequestDTO dto) {
+                                                                     @Validated @RequestBody UserSignupEtcRequestDTO dto) {
         return ApiResponse.success(userProfileService.updateUserSignupEtc(authUser.getId(), dto.toUpdateUserSignupEtc()));
     }
 
     @Operation(summary = "유저 회원정보 수정(설정화면)", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/settings", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<?> updateSettingUserInfo(@Parameter(hidden = true) @AuthUser User user,
-                                         @Validated @RequestBody updateSettingUserInfoRequestDTO dto) {
+                                                @Validated @RequestBody updateSettingUserInfoRequestDTO dto) {
         userProfileService.updateSettingUserInfo(user.getId(), dto);
         return ApiResponse.successWithNoData();
     }
@@ -75,8 +78,8 @@ public class UserRestController {
     @Operation(summary = "유저 수정", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<Void> putUser(@Parameter(hidden = true) @AuthUser User authUser,
-                                          @Valid @RequestBody UserPutRequestDTO dto,
-                                          @PathVariable("id") Long id) {
+                                     @Valid @RequestBody UserPutRequestDTO dto,
+                                     @PathVariable("id") Long id) {
         userProfileService.updateUser(authUser.getId(), id, dto.toUpdateRequest());
         return ApiResponse.successWithNoData();
     }
@@ -90,7 +93,7 @@ public class UserRestController {
     @Operation(summary = "유저 푸시정보 변경", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping(value = "/push-info", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<?> updateUserPushInfo(@Parameter(hidden = true) @AuthUser User user,
-                                                   @Validated @RequestBody UserPushInfoRequestDTO dto) {
+                                             @Validated @RequestBody UserPushInfoRequestDTO dto) {
         userProfileService.updateUserPushInfo(user.getId(), dto);
         return ApiResponse.successWithNoData();
     }
@@ -118,12 +121,14 @@ public class UserRestController {
     }
 
     @Operation(summary = "일반 회원가입")
+    @RateLimiter(name = "signup")
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserWithTokenModel> postUser(@RequestBody UserPostRequestDTO dto) {
         return ApiResponse.success(authService.signup(dto));
     }
 
     @Operation(summary = "일반 로그인")
+    @RateLimiter(name = "login")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserWithTokenModel> loginUser(@RequestBody UserLoginRequestDTO dto) {
         return ApiResponse.success(authService.login(dto));

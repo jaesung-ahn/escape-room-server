@@ -5,9 +5,10 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.wiiee.server.api.config.properties.AwsS3Properties;
 import io.findify.s3mock.S3Mock;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,19 +17,12 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
 @Slf4j
+@RequiredArgsConstructor
 @Configuration
 @Profile({"local", "!test"})  // Only active in local, not in test
 public class S3MockConfig {
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-
-    @Value("${cloud.aws.credentials.accessKey}")
-    private String accessKey;
-
-    @Value("${cloud.aws.credentials.secretKey}")
-    private String secretKey;
-
+    private final AwsS3Properties awsS3Properties;
     private S3Mock s3Mock;
 
     @PostConstruct
@@ -61,10 +55,13 @@ public class S3MockConfig {
                 .withPathStyleAccessEnabled(true)
                 .withEndpointConfiguration(endpoint)
                 .withCredentials(new AWSStaticCredentialsProvider(
-                        new BasicAWSCredentials(accessKey, secretKey)))
+                        new BasicAWSCredentials(
+                                awsS3Properties.credentials().accessKey(),
+                                awsS3Properties.credentials().secretKey())))
                 .build();
 
         // Create bucket if not exists
+        String bucket = awsS3Properties.s3().bucket();
         if (!client.doesBucketExistV2(bucket)) {
             client.createBucket(bucket);
             log.info("Created S3 mock bucket: {}", bucket);

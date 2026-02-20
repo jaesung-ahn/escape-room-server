@@ -1,16 +1,17 @@
 package com.wiiee.server.api.domain.gathering;
 
 import com.google.common.net.HttpHeaders;
+import com.wiiee.server.api.config.properties.PushProperties;
 import com.wiiee.server.common.domain.gathering.Gathering;
 import com.wiiee.server.common.domain.gathering.request.GatheringRequest;
 import com.wiiee.server.common.domain.gathering.request.GatheringRequestStatus;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,11 @@ import java.io.IOException;
 import java.util.HashMap;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class GatheringNotificationService {
 
-    @Value(value = "${push.api.url}")
-    private String basePushUrl;
-
-    @Value(value = "${push.enabled:true}")
-    private boolean pushEnabled;
+    private final PushProperties pushProperties;
 
     /**
      * 동행 신청 푸시 요청
@@ -34,7 +32,7 @@ public class GatheringNotificationService {
     public void sendGatheringRequestPush(Gathering gathering, GatheringRequest gatheringRequest) {
         log.info("call sendGatheringRequestPush()");
 
-        if (!pushEnabled) {
+        if (!pushProperties.enabled()) {
             log.info("[MOCK] Push notification would be sent - GatheringId: {}, UserId: {}",
                     gathering.getId(), gatheringRequest.getRequestUser().getId());
             return;
@@ -54,7 +52,7 @@ public class GatheringNotificationService {
             log.info("sendGatheringRequestPush request message = " + message);
 
             okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
-            String apiUrl = basePushUrl + "/sendGatheringRequestPush";
+            String apiUrl = pushProperties.api().url() + "/sendGatheringRequestPush";
 
             Request requestObj = new Request.Builder()
                     .url(apiUrl)
@@ -80,7 +78,7 @@ public class GatheringNotificationService {
                                           GatheringRequestStatus gatheringRequestStatus) {
         log.info("call sendGatheringConfirmPush()");
 
-        if (!pushEnabled) {
+        if (!pushProperties.enabled()) {
             log.info("[MOCK] Push confirm notification would be sent - GatheringId: {}, UserId: {}, Status: {}",
                     gathering.getId(), gatheringRequest.getRequestUser().getId(), gatheringRequestStatus);
             return;
@@ -99,7 +97,7 @@ public class GatheringNotificationService {
             log.info("request message = " + message);
 
             okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
-            String apiUrl = basePushUrl + "/sendGatheringConfirmPush";
+            String apiUrl = pushProperties.api().url() + "/sendGatheringConfirmPush";
 
             Request requestObj = new Request.Builder()
                     .url(apiUrl)

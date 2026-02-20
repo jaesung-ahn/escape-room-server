@@ -2,9 +2,9 @@ package com.wiiee.server.api.infrastructure.aws;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
+import com.wiiee.server.api.config.properties.AwsS3Properties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,9 +20,7 @@ import java.util.UUID;
 @Component
 public class S3Util {
     private final AmazonS3Client amazonS3Client;
-
-    @Value("${cloud.aws.s3.bucket}")
-    public String bucket;
+    private final AwsS3Properties awsS3Properties;
 
     private static final String IMAGE_EXTENSION = ".jpg";
 
@@ -34,7 +32,7 @@ public class S3Util {
     }
 
     public void delete(String key) {
-        amazonS3Client.deleteObject(this.bucket, key);
+        amazonS3Client.deleteObject(awsS3Properties.s3().bucket(), key);
     }
 
     // s3로 파일 업로드
@@ -48,6 +46,7 @@ public class S3Util {
 
     // s3 업로드
     private String putS3(File uploadFile, String fileName) {
+        String bucket = awsS3Properties.s3().bucket();
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
@@ -89,7 +88,7 @@ public class S3Util {
     }
 
     public void deleteDir(String dirName) {
-        ObjectListing objectList = amazonS3Client.listObjects(this.bucket, dirName);
+        ObjectListing objectList = amazonS3Client.listObjects(awsS3Properties.s3().bucket(), dirName);
         List<S3ObjectSummary> objectSummaryList = objectList.getObjectSummaries();
         String[] keyList = new String[objectSummaryList.size()];
         if (keyList.length > 0) {
@@ -98,7 +97,7 @@ public class S3Util {
                 keyList[count++] = summary.getKey();
             }
             if (count > 0) {
-                amazonS3Client.deleteObjects(new DeleteObjectsRequest(this.bucket)
+                amazonS3Client.deleteObjects(new DeleteObjectsRequest(awsS3Properties.s3().bucket())
                         .withKeys(keyList));
             }
         }

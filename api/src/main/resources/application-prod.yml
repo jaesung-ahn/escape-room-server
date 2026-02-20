@@ -55,8 +55,6 @@ cloud:
       bucket: ${AWS_S3_BUCKET}
     region:
       static: ap-northeast-2
-    stack:
-      auto: false
 
 slack:
   enabled: ${SLACK_ENABLED:true}
@@ -74,5 +72,5 @@ logging:
     root: info
     com.wiiee.server: info
     org.hibernate.SQL: warn
-    org.hibernate.type.descriptor.sql.BasicBinder: warn
+    org.hibernate.orm.jdbc.bind: warn
     com.amazonaws: warn

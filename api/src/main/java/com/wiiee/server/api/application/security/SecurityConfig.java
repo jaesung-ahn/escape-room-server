@@ -1,8 +1,8 @@
 package com.wiiee.server.api.application.security;
 
+import com.wiiee.server.api.config.properties.CorsProperties;
 import com.wiiee.server.api.domain.security.SecurityUserDetailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,12 +40,7 @@ public class SecurityConfig {
     private final SecurityAccessDeniedHandler securityAccessDeniedHandler;
     private final SecurityAuthenticationEntryPoint securityAuthenticationEntryPoint;
     private final SecurityUserDetailService securityUserDetailService;
-
-    @Value("${cors.allowed-origins:http://localhost:3000}")
-    private String allowedOrigins;
-
-    @Value("${cors.max-age:3600}")
-    private long corsMaxAge;
+    private final CorsProperties corsProperties;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -90,7 +85,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        List<String> origins = Arrays.asList(corsProperties.allowedOrigins().split(","));
         configuration.setAllowedOrigins(origins);
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -109,7 +104,7 @@ public class SecurityConfig {
                 "Authorization"
         ));
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(corsMaxAge);
+        configuration.setMaxAge(corsProperties.maxAge());
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

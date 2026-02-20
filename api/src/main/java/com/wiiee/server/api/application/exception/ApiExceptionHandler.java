@@ -82,11 +82,12 @@ public class ApiExceptionHandler {
         return ApiResponse.error(BAD_REQUEST.value(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), Arrays.asList("입력값 검증 실패"));
     }
 
-    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
     @ExceptionHandler(RequestNotPermitted.class)
-    public ApiResponse<?> handleRateLimitException(RequestNotPermitted e, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<?>> handleRateLimitException(RequestNotPermitted e, HttpServletRequest request) {
         log.warn("Rate limit exceeded at {}: {}", request.getRequestURI(), e.getMessage());
-        return ApiResponse.error(HttpStatus.TOO_MANY_REQUESTS.value(), "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.", Arrays.asList(request.getRequestURI()));
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(ApiResponse.error(HttpStatus.TOO_MANY_REQUESTS.value(), "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.", Arrays.asList(request.getRequestURI())));
     }
 
 }

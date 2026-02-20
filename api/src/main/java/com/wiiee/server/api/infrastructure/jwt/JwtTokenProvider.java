@@ -1,12 +1,12 @@
 package com.wiiee.server.api.infrastructure.jwt;
 
 import com.wiiee.server.api.application.security.JwtModel;
+import com.wiiee.server.api.config.properties.JwtProperties;
 import com.wiiee.server.api.domain.security.SecurityUserDetailService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,15 +23,7 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String jwtSecretKey;
-
-    @Value("${jwt.access-token-expiration-ms}")
-    private long accessTokenExpirationMs;
-
-    @Value("${jwt.refresh-token-expiration-ms}")
-    private long refreshTokenExpirationMs;
-
+    private final JwtProperties jwtProperties;
     private final SecurityUserDetailService securityUserDetailService;
 
     public JwtModel createToken(String email) {
@@ -39,8 +31,8 @@ public class JwtTokenProvider {
         claims.put("email", email);
 
         Date now = new Date();
-        Date accessDate = new Date(now.getTime() + accessTokenExpirationMs);
-        Date refreshDate = new Date(now.getTime() + refreshTokenExpirationMs);
+        Date accessDate = new Date(now.getTime() + jwtProperties.accessTokenExpirationMs());
+        Date refreshDate = new Date(now.getTime() + jwtProperties.refreshTokenExpirationMs());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return JwtModel.builder()
@@ -56,7 +48,7 @@ public class JwtTokenProvider {
                 .issuedAt(now)
                 .claims(claims)
                 .expiration(expirationDate)
-                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtSecretKey.getBytes()))
+                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtProperties.secret().getBytes()))
                 .compact();
     }
 
@@ -99,7 +91,7 @@ public class JwtTokenProvider {
 
     public Jws<Claims> extractAllClaims(String token) throws ExpiredJwtException {
         return Jwts.parser()
-                .verifyWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtSecretKey.getBytes()))
+                .verifyWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtProperties.secret().getBytes()))
                 .build()
                 .parseSignedClaims(token);
     }

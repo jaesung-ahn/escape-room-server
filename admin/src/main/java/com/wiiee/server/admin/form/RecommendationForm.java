@@ -78,8 +78,7 @@ public class RecommendationForm {
                 .createdAt(DateUtil.formatDateTime(recommendation.getCreatedAt()))
                 .build();
 
-        log.debug(String.valueOf("recommendationForm = " + recommendationForm));
-        System.out.println("recommendationForm contentForms = " + recommendationForm.getContentForms());
+        log.debug("recommendationForm = {}", recommendationForm);
         return recommendationForm;
     }
 }

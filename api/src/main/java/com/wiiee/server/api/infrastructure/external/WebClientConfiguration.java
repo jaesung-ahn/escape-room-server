@@ -3,6 +3,7 @@ package com.wiiee.server.api.infrastructure.external;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import com.wiiee.server.common.util.LogMaskingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,13 +52,21 @@ public class WebClientConfiguration {
                 .filter(ExchangeFilterFunction.ofRequestProcessor(
                         clientRequest -> {
                             log.debug("Request: {} {}", clientRequest.method(), clientRequest.url());
-                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.debug("{} : {}", name, value)));
+                            clientRequest.headers().forEach((name, values) -> values.forEach(value -> {
+                                String logValue = name.equalsIgnoreCase("Authorization")
+                                        ? LogMaskingUtil.maskToken(value) : value;
+                                log.debug("{} : {}", name, logValue);
+                            }));
                             return Mono.just(clientRequest);
                         }
                 ))
                 .filter(ExchangeFilterFunction.ofResponseProcessor(
                         clientResponse -> {
-                            clientResponse.headers().asHttpHeaders().forEach((name, values) -> values.forEach(value -> log.debug("{} : {}", name, value)));
+                            clientResponse.headers().asHttpHeaders().forEach((name, values) -> values.forEach(value -> {
+                                String logValue = name.equalsIgnoreCase("Authorization")
+                                        ? LogMaskingUtil.maskToken(value) : value;
+                                log.debug("{} : {}", name, logValue);
+                            }));
                             return Mono.just(clientResponse);
                         }
                 ))

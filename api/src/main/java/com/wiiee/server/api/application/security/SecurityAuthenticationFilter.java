@@ -3,6 +3,7 @@ package com.wiiee.server.api.application.security;
 import com.wiiee.server.api.infrastructure.jwt.JwtTokenProvider;
 import com.wiiee.server.api.domain.user.UserRepository;
 import com.wiiee.server.common.domain.user.User;
+import com.wiiee.server.common.util.LogMaskingUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,10 +44,10 @@ public class SecurityAuthenticationFilter extends OncePerRequestFilter {
             if(userOpt.isPresent()) {
                 refreshToken = userOpt.get().getRefreshToken();
             }
-            log.error("ACCESS TOKEN EXPIRED {} | {}", accessToken, e.getMessage());
+            log.error("ACCESS TOKEN EXPIRED {} | {}", LogMaskingUtil.maskToken(accessToken), e.getMessage());
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
-            log.error("JWT FILTER INTERNAL ERROR : {} | {}", accessToken, e.getMessage(), e);
+            log.error("JWT FILTER INTERNAL ERROR : {} | {}", LogMaskingUtil.maskToken(accessToken), e.getMessage(), e);
             return;
         }
 

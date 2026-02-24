@@ -109,7 +109,7 @@ public class ContentService {
 
                 Image contentImage = imageService.getImageById(id);
                 log.debug(String.valueOf("contentImage = " + contentImage));
-                System.out.println("contentImage = " + contentImage.getUrl());
+                log.debug("contentImage url = {}", contentImage.getUrl());
                 contentImageForms.add(new ContentForm.ContentImageForm(
                         contentImage.getUrl(),
                         contentImage.getId(),
@@ -166,7 +166,7 @@ public class ContentService {
                         contentPriceForm.getPrice());
             }
             else if (contentPriceId > 0 ) {
-                System.out.println("contentPriceId = " + contentPriceId + " "+ contentPriceForm.getPeopleNumber());
+                log.debug("contentPriceId = {} {}", contentPriceId, contentPriceForm.getPeopleNumber());
                 updatePrice(contentPriceId, contentPriceForm.getPeopleNumber(),
                         contentPriceForm.getPrice());
             }

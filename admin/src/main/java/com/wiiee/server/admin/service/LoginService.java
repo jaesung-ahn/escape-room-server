@@ -34,21 +34,10 @@ public class LoginService implements UserDetailsService {
         //adminUser 정보 조회
         Optional<AdminUser> adminUser = adminUserRepository.findByAdminEmail(adminEmail);
 
-        log.info("authAdmin : {}", adminUser.get());
+        log.info("authAdmin email: {}", adminUser.map(u -> u.getAdminEmail()).orElse("not found"));
 
         if(adminUser.isPresent()) {
-//            AdminUser.of()
-//            AdminUser authAdmin = AdminUser.builder()
-//                    .id(admin.getId())
-//                    .adminEmail(admin.getAdminEmail())
-//                    .password(admin.getPassword())
-//                    .role(admin.getRole())
-//                    .adminName(admin.getAdminName())
-//                    .createdAt(admin.getCreatedAt())
-//                    .updatedAt(admin.getUpdatedAt())
-//                    .build();
-
-            log.info("authAdmin : {}", adminUser.get());
+            log.info("authAdmin email: {}", adminUser.get().getAdminEmail());
             return adminUser.get();
         }
         return null;

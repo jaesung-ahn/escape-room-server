@@ -13,6 +13,7 @@ import com.wiiee.server.push.constant.PushMessageConst;
 import com.wiiee.server.push.constant.ResponseConst;
 import com.wiiee.server.push.service.*;
 import io.swagger.v3.oas.annotations.Operation;
+import com.wiiee.server.common.util.LogMaskingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -52,17 +53,17 @@ public class PushController {
         // 해당 이벤트 존재하는지 체크
         Event event = eventService.findById(requestDTO.getEventId());
         log.debug(String.valueOf("event = " + event));
-        System.out.println("event = " + event.getId());
-        System.out.println("event = " + event.getTitle());
+        log.debug("event id = {}", event.getId());
+        log.debug("event title = {}", event.getTitle());
 
         List<User> allEventUsers = userService.findAllForEvent();
         int successCnt = 0;
         int failCnt = 0;
         Exception exception = null;
         for (User user : allEventUsers) {
-            System.out.println("user = " + user.getProfile().getMemberType());
-            System.out.println("user = " + user.getProfile().getNickname());
-            System.out.println("user = " + user.getPushToken());
+            log.debug("user memberType = {}", user.getProfile().getMemberType());
+            log.debug("user nickname = {}", user.getProfile().getNickname());
+            log.debug("user pushToken = {}", LogMaskingUtil.maskToken(user.getPushToken()));
             try {
                 if (user.getProfile().isPushEvent() && user.getProfile().getUserOs() != null && user.getProfile().getUserOs().equals(UserOS.AOS)) {
                     boolean isResult = firebaseCloudMessageService.sendPushMessage(user.getPushToken(),

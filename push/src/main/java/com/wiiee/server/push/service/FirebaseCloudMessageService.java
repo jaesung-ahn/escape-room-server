@@ -53,7 +53,7 @@ public class FirebaseCloudMessageService {
             responseBody = response.body().string();
         }
 
-        System.out.println("response.body():" + responseBody);
+        log.debug("response.body(): {}", responseBody);
 
         if (responseBody != null && responseBody.contains("error")) {
             return false;
@@ -89,7 +89,6 @@ public class FirebaseCloudMessageService {
                 .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
         googleCredentials.refreshIfExpired();
         String tokenValue = googleCredentials.getAccessToken().getTokenValue();
-        log.debug(String.valueOf("tokenValue = " + tokenValue));
         return tokenValue;
     }
 }

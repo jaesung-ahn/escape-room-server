@@ -11,6 +11,7 @@ import com.wiiee.server.common.domain.common.Image;
 import com.wiiee.server.common.domain.content.Content;
 import com.wiiee.server.common.domain.content.RankContent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,6 +33,7 @@ public class ContentService {
     private final ContentRepository contentRepository;
     private final ReviewRepository reviewRepository;
 
+    @CacheEvict(value = "content-hot", allEntries = true)
     @Transactional
     public ContentModel createNewContent(ContentPostRequestDTO dto) {
         final var contentBasicInfo = dto.toContentBasicInfo();

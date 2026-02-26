@@ -23,6 +23,8 @@ public class WbtiService {
 
     private final ImageService imageService;
 
+    private final CacheEvictService cacheEvictService;
+
     @Transactional(readOnly = true)
     public List<WbtiListForm> findAllForForm() {
 
@@ -57,5 +59,6 @@ public class WbtiService {
                 wbtiPartners);
 
         wbtiRepository.save(wbti);
+        cacheEvictService.evictCache("wbti");
     }
 }

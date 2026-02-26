@@ -23,6 +23,7 @@ public class RecommendationService {
 
     private final RecommendationRepository recommendationRepository;
     private final ModelMapper modelMapper;
+    private final CacheEvictService cacheEvictService;
     @Autowired
     private ContentService contentService;
 
@@ -51,6 +52,7 @@ public class RecommendationService {
         List<Content> contents = getContentList(contentForms);
         recommendation.updateRDT(recommendationInfo, contents);
         recommendationRepository.save(recommendation);
+        cacheEvictService.evictCache("recommendation");
     }
 
 
@@ -61,6 +63,7 @@ public class RecommendationService {
         List<Content> contents = getContentList(contentForms);
 //        recommendation.updateRDT(recommendationInfo, contents);
         recommendationRepository.save(new Recommendation(recommendationInfo, contents));
+        cacheEvictService.evictCache("recommendation");
     }
 
     private List<Content> getContentList(List<RecommendationForm.ContentForm> contentForms) {

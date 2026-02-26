@@ -37,6 +37,8 @@ public class ContentService {
 
     private final CompanyService companyService;
 
+    private final CacheEvictService cacheEvictService;
+
     @Transactional(readOnly = true)
     public List<ContentListForm> findAllContentList(ContentForm contentForm) {
         Page<Content> contentPages = contentCustomRepository.findAllByContentGetListForm(
@@ -171,6 +173,7 @@ public class ContentService {
                         contentPriceForm.getPrice());
             }
         }
+        cacheEvictService.evictCache("content-hot");
         return content;
     }
 
@@ -195,6 +198,7 @@ public class ContentService {
             contentAdded.addPrice(contentPriceForm.getPeopleNumber(),
                     contentPriceForm.getPrice());
         }
+        cacheEvictService.evictCache("content-hot");
         return contentAdded;
     }
 
@@ -208,12 +212,14 @@ public class ContentService {
 
     @Transactional
     public Optional<Content> saveContent(Content content) {
-
-        return Optional.of(contentRepository.save(content));
+        Optional<Content> saved = Optional.of(contentRepository.save(content));
+        cacheEvictService.evictCache("content-hot");
+        return saved;
     }
 
     @Transactional
     public void deleteContentPrice(Long contentPriceId) {
         contentPriceRepository.deleteById(contentPriceId);
+        cacheEvictService.evictCache("content-hot");
     }
 }

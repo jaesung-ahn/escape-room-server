@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '3.0.13'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
+    id 'jacoco'
 }
 
 group 'com.wiiee.server'
@@ -105,4 +106,64 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+jacoco {
+    toolVersion = '0.8.11'
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        html.required = true
+        xml.required = true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: [
+                    '**/config/**',
+                    '**/dto/**',
+                    '**/application/**',
+                    '**/exception/**',
+                    '**/code/**',
+                    '**/infrastructure/**',
+                    '**/ApiApplication*',
+                    '**/common/domain/**'
+            ])
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.50
+            }
+        }
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: [
+                    '**/config/**',
+                    '**/dto/**',
+                    '**/application/**',
+                    '**/exception/**',
+                    '**/code/**',
+                    '**/infrastructure/**',
+                    '**/ApiApplication*',
+                    '**/common/domain/**'
+            ])
+        }))
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification

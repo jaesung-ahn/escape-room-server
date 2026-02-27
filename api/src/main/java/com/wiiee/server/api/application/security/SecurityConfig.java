@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -67,12 +68,21 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/swagger-ui.html/**", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/favicon.ico").permitAll()
-                .requestMatchers("/api/jwt/reissue").permitAll()
-                .requestMatchers("/api/util/**").permitAll()
-                .requestMatchers("/api/image/**").permitAll()
-                .requestMatchers(GET, "/api/user/check-nickname", "/api/user/*").permitAll()
-                .requestMatchers(POST, "/api/user/login/**", "/api/user").permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
+                .requestMatchers(
+                        new AntPathRequestMatcher("/swagger-ui.html/**"),
+                        new AntPathRequestMatcher("/swagger-ui/**"),
+                        new AntPathRequestMatcher("/v3/api-docs/**"),
+                        new AntPathRequestMatcher("/h2-console/**"),
+                        new AntPathRequestMatcher("/favicon.ico")
+                ).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/jwt/reissue")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/util/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/image/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/user/check-nickname", GET.name())).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/user/*", GET.name())).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/user/login/**", POST.name())).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/user", POST.name())).permitAll()
                 .anyRequest().authenticated()
         );
 

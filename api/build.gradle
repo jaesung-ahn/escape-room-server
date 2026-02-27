@@ -69,6 +69,13 @@ dependencies {
     // HTTP Client
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
+    // Monitoring (Actuator + Prometheus)
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+    // Structured Logging (JSON encoder for prod)
+    runtimeOnly 'net.logstash.logback:logstash-logback-encoder:7.4'
+
     // Resilience4j (Rate Limiting)
     implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
     implementation 'io.github.resilience4j:resilience4j-ratelimiter:2.2.0'
@@ -80,6 +87,7 @@ dependencies {
 
     // Database
     runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'com.h2database:h2'
 
     // S3Mock for local development
     implementation 'io.findify:s3mock_2.13:0.2.6'

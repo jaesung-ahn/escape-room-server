@@ -76,6 +76,11 @@ push:
   api:
     url: "http://localhost:8082/api/push"
 
+management:
+  endpoint:
+    health:
+      show-details: always
+
 logging:
   level:
     root: info

@@ -67,6 +67,10 @@ push:
   api:
     url: ${PUSH_API_URL}
 
+management:
+  server:
+    port: 9090
+
 logging:
   level:
     root: info

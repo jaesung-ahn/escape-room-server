@@ -63,9 +63,42 @@ services:
   #   networks:
   #     - wiiee-network
 
+  # Prometheus - Metrics collection
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: wiiee-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    networks:
+      - wiiee-network
+
+  # Grafana - Metrics dashboard
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: wiiee-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - wiiee-network
+
 volumes:
   postgres_data:
   redis_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   wiiee-network:

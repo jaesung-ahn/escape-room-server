@@ -23,6 +23,6 @@ USER appuser
 # JVM options for container environment
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
 
-EXPOSE 3781
+EXPOSE 3781 9090
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

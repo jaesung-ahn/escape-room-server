@@ -1,11 +1,8 @@
 package com.wiiee.server.api.infrastructure.repository.gathering;
 
-import com.amazonaws.util.CollectionUtils;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wiiee.server.api.application.gathering.GatheringGetRequestDTO;
-import com.wiiee.server.common.domain.common.City;
-import com.wiiee.server.common.domain.common.State;
 import com.wiiee.server.common.domain.content.Difficulty;
 import com.wiiee.server.common.domain.content.Genre;
 import com.wiiee.server.common.domain.gathering.Gathering;
@@ -14,8 +11,8 @@ import com.wiiee.server.common.domain.gathering.member.Status;
 import com.wiiee.server.common.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,37 +32,44 @@ public class GatheringCustomRepositoryImpl implements GatheringCustomRepository 
 
     @Override
     public Page<Gathering> findAllByGatheringGetRequestDTO(GatheringGetRequestDTO dto, Pageable pageable) {
-        List<Difficulty> difficultyList = dto.getDifficultyCodes() != null ? dto.getDifficultyCodes().stream().map(
-                difficulty -> Difficulty.valueOf(difficulty)
-                )
-                .collect(Collectors.toList()) : null;
-        final var list = jpaQueryFactory.select(gathering)
+        List<Difficulty> difficultyList = dto.getDifficultyCodes() != null
+                ? dto.getDifficultyCodes().stream().map(Difficulty::valueOf).collect(Collectors.toList())
+                : null;
+
+        BooleanExpression[] conditions = {
+                gathering.deleted.eq(false),
+                titleContains(dto.getTitle()),
+                difficultyContains(difficultyList),
+                genreEq(dto.getGenreCode())
+        };
+
+        List<Gathering> results = jpaQueryFactory.select(gathering)
                 .from(gathering)
                 .join(gathering.content, content).fetchJoin()
                 .join(content.company, company).fetchJoin()
-                .where(
-                        gathering.deleted.eq(false),
-                        titleContains(dto.getTitle()),
-                        difficultyContains(difficultyList),
-//                        stateEq(dto.getStateCode()),
-//                        cityEq(dto.getCityCode()),
-                        genreEq(dto.getGenreCode())
-                )
-                .orderBy()
+                .where(conditions)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
-        return new PageImpl<>(list.getResults(), pageable, list.getTotal());
+                .fetch();
+
+        var countQuery = jpaQueryFactory.select(gathering.count())
+                .from(gathering)
+                .join(gathering.content, content)
+                .where(conditions);
+
+        return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
     }
 
     @Override
     public int findCountByUser(User user) {
-        return jpaQueryFactory
-                .selectFrom(gatheringMember)
+        return jpaQueryFactory.select(gatheringMember.count())
+                .from(gatheringMember)
                 .where(
                         gatheringMember.status.eq(Status.APPROVAL),
                         gatheringMember.user.eq(user)
-                ).fetch().size();
+                )
+                .fetchOne()
+                .intValue();
     }
 
     private BooleanExpression titleContains(String title) {
@@ -76,21 +80,8 @@ public class GatheringCustomRepositoryImpl implements GatheringCustomRepository 
         return difficultyCodes != null ? gathering.content.contentBasicInfo.difficulty.in(difficultyCodes) : null;
     }
 
-    private BooleanExpression stateEq(Integer stateCode) {
-        return stateCode != null ? gathering.content.company.basicInfo.state.eq(State.valueOf(stateCode)) : null;
-    }
-
-    private BooleanExpression cityEq(Integer cityCode) {
-        return cityCode != null ? gathering.content.company.basicInfo.city.eq(City.valueOf(cityCode)) : null;
-    }
-
     private BooleanExpression genreEq(Integer genreCode) {
         return genreCode != null ? content.contentBasicInfo.genre.eq(Genre.valueOf(genreCode)) : null;
-    }
-
-    private BooleanExpression genreIn(List<Integer> genreCodes){
-        return !CollectionUtils.isNullOrEmpty(genreCodes) ?
-                gathering.content.contentBasicInfo.genre.in(genreCodes.stream().map(Genre::valueOf).collect(Collectors.toList())) : null;
     }
 
     @Override
@@ -112,5 +103,4 @@ public class GatheringCustomRepositoryImpl implements GatheringCustomRepository 
                         gatheringMember.user.eq(user))
                 .fetchOne();
     }
-
 }

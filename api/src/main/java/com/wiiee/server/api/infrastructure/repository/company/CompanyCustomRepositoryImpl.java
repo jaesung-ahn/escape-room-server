@@ -8,13 +8,14 @@ import com.wiiee.server.common.domain.common.State;
 import com.wiiee.server.common.domain.company.Company;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import static com.wiiee.server.common.domain.company.QCompany.company;
+import java.util.List;
 
+import static com.wiiee.server.common.domain.company.QCompany.company;
 
 @RequiredArgsConstructor
 @Repository
@@ -24,17 +25,24 @@ public class CompanyCustomRepositoryImpl implements CompanyCustomRepository {
 
     @Override
     public Page<Company> findAllByCompanyGetRequestDTO(CompanyGetRequestDTO dto, Pageable pageable) {
-        final var list = jpaQueryFactory.selectFrom(company)
-                .where(
-                        nameContains(dto.getName()),
-                        stateEq(dto.getStateCode()),
-                        cityEq(dto.getCityCode())
-                )
+        BooleanExpression[] conditions = {
+                nameContains(dto.getName()),
+                stateEq(dto.getStateCode()),
+                cityEq(dto.getCityCode())
+        };
+
+        List<Company> results = jpaQueryFactory.selectFrom(company)
+                .where(conditions)
                 .orderBy(company.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
-        return new PageImpl<>(list.getResults(), pageable, list.getTotal());
+                .fetch();
+
+        var countQuery = jpaQueryFactory.select(company.count())
+                .from(company)
+                .where(conditions);
+
+        return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
     }
 
     private BooleanExpression nameContains(String name) {
@@ -48,5 +56,4 @@ public class CompanyCustomRepositoryImpl implements CompanyCustomRepository {
     private BooleanExpression cityEq(Integer cityCode) {
         return cityCode != null ? company.basicInfo.city.eq(City.valueOf(cityCode)) : null;
     }
-
 }

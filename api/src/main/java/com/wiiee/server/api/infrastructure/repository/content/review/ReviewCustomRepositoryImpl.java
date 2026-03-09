@@ -10,11 +10,11 @@ import com.wiiee.server.common.domain.content.review.Review;
 import com.wiiee.server.common.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.EntityManager;
+import java.util.List;
 
 import static com.wiiee.server.common.domain.company.QCompany.company;
 import static com.wiiee.server.common.domain.content.QContent.content;
@@ -25,28 +25,36 @@ import static com.wiiee.server.common.domain.content.review.QReview.review;
 public class ReviewCustomRepositoryImpl implements ReviewCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final EntityManager em;
 
     @Override
     public Page<Review> findAllByReviewGetRequestDTO(User user, Long contentId, ReviewGetRequestDTO dto) {
         final Pageable pageable = dto.toPageable();
-        final var reviewList = jpaQueryFactory.select(review)
+
+        BooleanExpression[] conditions = {
+                userEq(user),
+                contentIdEq(contentId),
+                stateEq(dto.getStateCode()),
+                cityEq(dto.getCityCode()),
+                review.isApproval.eq(true)
+        };
+
+        List<Review> results = jpaQueryFactory.select(review)
                 .from(review)
                 .leftJoin(review.content, content)
                 .leftJoin(content.company, company)
-                .where(
-                        userEq(user),
-                        contentIdEq(contentId),
-                        stateEq(dto.getStateCode()),
-                        cityEq(dto.getCityCode()),
-                        review.isApproval.eq(true)
-                )
+                .where(conditions)
                 .orderBy(review.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
 
-        return new PageImpl<>(reviewList.getResults(), pageable, reviewList.getTotal());
+        var countQuery = jpaQueryFactory.select(review.count())
+                .from(review)
+                .leftJoin(review.content, content)
+                .leftJoin(content.company, company)
+                .where(conditions);
+
+        return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
     }
 
     @Override

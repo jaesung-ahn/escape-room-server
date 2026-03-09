@@ -7,8 +7,8 @@ import com.wiiee.server.common.domain.event.Event;
 import com.wiiee.server.common.domain.event.EventLocation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -20,25 +20,31 @@ import static com.wiiee.server.common.domain.event.QEvent.event;
 @Repository
 public class EventCustomRepositoryImpl implements EventCustomRepository {
 
-
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public Page<Event> findAllByEventGetRequestDTO(EventGetRequestDTO dto, Pageable pageable) {
-        final var list = jpaQueryFactory.selectFrom(event)
-                .where(
-                        eventLocationEq(dto.getEventLocationCode()),
+        LocalDateTime now = LocalDateTime.now();
 
-                        event.isOperated.eq(true),
-                        event.startDate.loe(LocalDateTime.now()),
-                        event.endDate.goe(LocalDateTime.now())
-                )
+        BooleanExpression[] conditions = {
+                eventLocationEq(dto.getEventLocationCode()),
+                event.isOperated.eq(true),
+                event.startDate.loe(now),
+                event.endDate.goe(now)
+        };
+
+        List<Event> results = jpaQueryFactory.selectFrom(event)
+                .where(conditions)
                 .orderBy(event.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
 
-        return new PageImpl<>(list.getResults(), pageable, list.getTotal());
+        var countQuery = jpaQueryFactory.select(event.count())
+                .from(event)
+                .where(conditions);
+
+        return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
     }
 
     private BooleanExpression eventLocationEq(Integer eventLocationCode) {
@@ -47,7 +53,6 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 
     @Override
     public List<Event> findAllEvents() {
-
         return jpaQueryFactory.selectFrom(event)
                 .where(
                         event.isOperated.eq(true),

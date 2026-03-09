@@ -14,8 +14,8 @@ import com.wiiee.server.common.domain.common.State;
 import com.wiiee.server.common.domain.content.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -36,52 +36,53 @@ public class ContentCustomRepositoryImpl implements ContentCustomRepository {
 
     @Override
     public Page<Content> findAllByContentGetRequestDTO(ContentGetRequestDTO dto, Pageable pageable) {
+        BooleanExpression[] conditions = {
+                companyIdEq(dto.getCompanyId()),
+                nameContains(dto.getName()),
+                stateEq(dto.getStateCode()),
+                cityEq(dto.getCityCode()),
+                genreIn(dto.getGenreCodes()),
+                difficultyEq(dto.getDifficultyCode()),
+                escapeTypeEq(dto.getEscapeTypeCode()),
+                createAtGoe(dto.getFrom()),
+                contentIdNe(dto.getExceptContentId()),
+                content.contentBasicInfo.isOperated.eq(true)
+        };
+
         final var fetchList = jpaQueryFactory.select(content)
                 .from(content)
                 .join(content.company, company).fetchJoin()
                 .leftJoin(content.reviews, review).on(
                         review.isNotNull(), review.isApproval.eq(true)
                 )
-                .where(
-                        companyIdEq(dto.getCompanyId()),
-                        nameContains(dto.getName()),
-                        stateEq(dto.getStateCode()),
-                        cityEq(dto.getCityCode()),
-                        genreIn(dto.getGenreCodes()),
-                        difficultyEq(dto.getDifficultyCode()),
-                        escapeTypeEq(dto.getEscapeTypeCode()),
-                        createAtGoe(dto.getFrom()),
-                        contentIdNe(dto.getExceptContentId()),
-                        content.contentBasicInfo.isOperated.eq(true)
-                )
+                .where(conditions)
                 .groupBy(content, company)
                 .orderBy(orderSpecifier(dto.getContentOrderType()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // 전체 count
-        long contentCnt = jpaQueryFactory.select(content)
+        var countQuery = jpaQueryFactory.select(content.count())
                 .from(content)
-                .where(
-                        companyIdEq(dto.getCompanyId()),
-                        nameContains(dto.getName()),
-                        stateEq(dto.getStateCode()),
-                        cityEq(dto.getCityCode()),
-                        genreIn(dto.getGenreCodes()),
-                        difficultyEq(dto.getDifficultyCode()),
-                        escapeTypeEq(dto.getEscapeTypeCode()),
-                        createAtGoe(dto.getFrom()),
-                        contentIdNe(dto.getExceptContentId()),
-                        content.contentBasicInfo.isOperated.eq(true)
-                )
-                .fetchCount();
+                .where(conditions);
 
-        return new PageImpl<>(fetchList, pageable, contentCnt);
+        return PageableExecutionUtils.getPage(fetchList, pageable, countQuery::fetchOne);
     }
 
     @Override
     public Page<ContentResponseDTO> findContentModelByContentGetRequestDTO(ContentGetRequestDTO dto, Pageable pageable) {
+        BooleanExpression[] conditions = {
+                companyIdEq(dto.getCompanyId()),
+                nameContains(dto.getName()),
+                stateEq(dto.getStateCode()),
+                cityEq(dto.getCityCode()),
+                genreIn(dto.getGenreCodes()),
+                difficultyEq(dto.getDifficultyCode()),
+                escapeTypeEq(dto.getEscapeTypeCode()),
+                createAtGoe(dto.getFrom()),
+                contentIdNe(dto.getExceptContentId())
+        };
+
         final var list = jpaQueryFactory.select(
                         Projections.constructor(ContentResponseDTO.class,
                                 content.id,
@@ -96,24 +97,19 @@ public class ContentCustomRepositoryImpl implements ContentCustomRepository {
                 .from(content)
                 .leftJoin(content.company, company)
                 .leftJoin(content.reviews, review)
-                .where(
-                        companyIdEq(dto.getCompanyId()),
-                        nameContains(dto.getName()),
-                        stateEq(dto.getStateCode()),
-                        cityEq(dto.getCityCode()),
-                        genreIn(dto.getGenreCodes()),
-                        difficultyEq(dto.getDifficultyCode()),
-                        escapeTypeEq(dto.getEscapeTypeCode()),
-                        createAtGoe(dto.getFrom()),
-                        contentIdNe(dto.getExceptContentId())
-                )
+                .where(conditions)
                 .groupBy(content.id)
                 .orderBy(orderSpecifier(dto.getContentOrderType()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
 
-        return new PageImpl<>(list.getResults(), pageable, list.getTotal());
+        var countQuery = jpaQueryFactory.select(content.count())
+                .from(content)
+                .leftJoin(content.company, company)
+                .where(conditions);
+
+        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchOne);
     }
 
     @Override
@@ -180,5 +176,4 @@ public class ContentCustomRepositoryImpl implements ContentCustomRepository {
         }
         return new OrderSpecifier<>(Order.DESC, content.createdAt).nullsLast();
     }
-
 }

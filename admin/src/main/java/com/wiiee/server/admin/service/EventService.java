@@ -3,12 +3,10 @@ package com.wiiee.server.admin.service;
 import com.wiiee.server.admin.form.EventForm;
 import com.wiiee.server.admin.repository.event.EventCustomRepository;
 import com.wiiee.server.admin.repository.event.EventRepository;
-import com.wiiee.server.admin.util.DateUtil;
 import com.wiiee.server.common.domain.common.Image;
 import com.wiiee.server.common.domain.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +22,6 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final ImageService imageService;
-    private final ModelMapper modelMapper;
 
     private final EventCustomRepository eventCustomRepository;
 
@@ -33,7 +30,7 @@ public class EventService {
         Optional<Event> optEvent = eventRepository.findById(id);
         Event event = optEvent.get();
 
-        EventForm eventForm = modelMapper.map(event, EventForm.class);
+        EventForm eventForm = EventForm.from(event);
         Long bannerImgId = eventForm.getBannerImgId();
         if (bannerImgId != null) {
             Image bannerImg = imageService.getImageById(bannerImgId);
@@ -42,42 +39,20 @@ public class EventService {
             }
         }
 
-        eventForm.setDisplayStartDate(DateUtil.formatDate(event.getStartDate()));
-        eventForm.setDisplayEndDate(DateUtil.formatDate(event.getEndDate()));
-
         return eventForm;
     }
 
     public List<EventForm> findAll() {
 
         List<Event> events = eventRepository.findAll();
-        List<EventForm> eventForms =
-                events.stream().map(p -> modelMapper.map(p, EventForm.class))
-                        .collect(Collectors.toList());
-
-        eventForms.stream().forEach(eventForm -> {
-
-            eventForm.setDisplayStartDate(
-                    DateUtil.formatDate(eventForm.getStartDate())
-            );
-            log.debug(String.valueOf("eventForm = " + eventForm));
-        });
-
-        return eventForms;
+        return events.stream().map(EventForm::from)
+                .collect(Collectors.toList());
     }
 
     public List<EventForm> findAllByEnableEvent() {
         List<Event> events = eventCustomRepository.findAllByEnableEvent();
-        List<EventForm> eventForms = events.stream().map(event -> modelMapper.map(event, EventForm.class))
+        return events.stream().map(EventForm::from)
                 .collect(Collectors.toList());
-
-        eventForms.stream().forEach(eventForm -> {
-
-            eventForm.setDisplayStartDate(DateUtil.formatDate(eventForm.getStartDate()));
-            eventForm.setDisplayEndDate(DateUtil.formatDate(eventForm.getEndDate()));
-
-        });
-        return eventForms;
     }
 
     public void updateEvent(EventForm eventForm) {

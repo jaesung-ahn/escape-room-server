@@ -6,7 +6,6 @@ import com.wiiee.server.admin.repository.WbtiRepository;
 import com.wiiee.server.common.domain.common.Image;
 import com.wiiee.server.common.domain.wbti.Wbti;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +18,6 @@ public class WbtiService {
 
     private final WbtiRepository wbtiRepository;
 
-    private final ModelMapper modelMapper;
-
     private final ImageService imageService;
 
     private final CacheEvictService cacheEvictService;
@@ -29,7 +26,7 @@ public class WbtiService {
     public List<WbtiListForm> findAllForForm() {
 
         return wbtiRepository.findAll().stream().map(
-                wbti -> modelMapper.map(wbti, WbtiListForm.class)
+                WbtiListForm::from
         ).collect(Collectors.toList());
     }
 

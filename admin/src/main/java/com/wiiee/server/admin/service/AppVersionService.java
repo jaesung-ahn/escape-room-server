@@ -6,7 +6,6 @@ import com.wiiee.server.admin.repository.AppVersionRepository;
 import com.wiiee.server.admin.util.DateUtil;
 import com.wiiee.server.common.domain.appVersion.AppVersion;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 public class AppVersionService {
 
     private final AppVersionRepository appVersionRepository;
-    private final ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
     public List<AppVersionListForm> findAll() {
@@ -50,7 +48,7 @@ public class AppVersionService {
     @Transactional(readOnly = true)
     public AppVersionDetailForm findByIdForForm(Long appVersionId) {
         AppVersion appVersion = appVersionRepository.findById(appVersionId).get();
-        return modelMapper.map(appVersion, AppVersionDetailForm.class);
+        return AppVersionDetailForm.from(appVersion);
     }
 
     @Transactional

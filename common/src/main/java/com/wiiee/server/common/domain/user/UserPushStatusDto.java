@@ -24,6 +24,16 @@ public class UserPushStatusDto {
         this.isAgreeServiceMarketing = isAgreeServiceMarketing;
     }
 
+    public static UserPushStatusDto of(Boolean isPushContent, Boolean isPushGathering,
+                                       Boolean isPushEvent, Boolean isAgreeServiceMarketing) {
+        UserPushStatusDto dto = new UserPushStatusDto();
+        dto.isPushContent = isPushContent;
+        dto.isPushGathering = isPushGathering;
+        dto.isPushEvent = isPushEvent;
+        dto.isAgreeServiceMarketing = isAgreeServiceMarketing;
+        return dto;
+    }
+
     public Optional<Boolean> getIsPushContent() {
         return Optional.ofNullable(isPushContent);
     }

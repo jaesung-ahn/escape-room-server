@@ -14,7 +14,6 @@ import com.wiiee.server.common.domain.user.UserUpdateRequest;
 import com.wiiee.server.common.domain.wbti.Wbti;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,6 @@ public class UserProfileService {
     private final WbtiService wbtiService;
     private final ImageService imageService;
     private final GatheringCustomRepositoryImpl gatheringCustomRepository;
-    private final ModelMapper modelMapper;
 
     @Transactional
     public void updateUser(Long authUserId, Long targetUserId, UserUpdateRequest request) {
@@ -102,7 +100,12 @@ public class UserProfileService {
                 .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
 
         user.getProfile().updatePushStatusIfPresent(
-                modelMapper.map(requestDTO, UserPushStatusDto.class)
+                UserPushStatusDto.of(
+                        requestDTO.getIsPushContent(),
+                        requestDTO.getIsPushGathering(),
+                        requestDTO.getIsPushEvent(),
+                        requestDTO.getIsAgreeServiceMarketing()
+                )
         );
     }
 

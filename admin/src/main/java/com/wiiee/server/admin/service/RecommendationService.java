@@ -9,7 +9,6 @@ import com.wiiee.server.common.domain.recommendation.Recommendation;
 import com.wiiee.server.common.domain.recommendation.RecommendationInfo;
 import com.wiiee.server.common.domain.user.UserGenderType;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 public class RecommendationService {
 
     private final RecommendationRepository recommendationRepository;
-    private final ModelMapper modelMapper;
     private final CacheEvictService cacheEvictService;
     @Autowired
     private ContentService contentService;

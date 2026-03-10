@@ -3,6 +3,7 @@ package com.wiiee.server.admin.form;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.wiiee.server.common.domain.push.PushHistory;
 import com.wiiee.server.common.domain.push.PushType;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +29,15 @@ public class PushHistoryListForm {
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime createdAt;
 
+    public static PushHistoryListForm from(PushHistory pushHistory) {
+        PushHistoryListForm form = new PushHistoryListForm();
+        form.setId(pushHistory.getId());
+        form.setTitle(pushHistory.getTitle());
+        form.setPushType(pushHistory.getPushType());
+        form.setTargetOs(pushHistory.getTargetOs());
+        form.setSuccessCnt(pushHistory.getSuccessCnt());
+        form.setFailCnt(pushHistory.getFailCnt());
+        form.setCreatedAt(pushHistory.getCreatedAt());
+        return form;
+    }
 }

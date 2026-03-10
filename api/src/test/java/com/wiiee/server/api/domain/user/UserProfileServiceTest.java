@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
@@ -38,8 +37,6 @@ class UserProfileServiceTest {
     private ImageService imageService;
     @Mock
     private GatheringCustomRepositoryImpl gatheringCustomRepository;
-    @Mock
-    private ModelMapper modelMapper;
 
     @InjectMocks
     private UserProfileService userProfileService;

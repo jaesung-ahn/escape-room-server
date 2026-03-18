@@ -45,7 +45,7 @@ public class Gathering extends BaseEntity {
     @Embedded
     private GatheringInfo gatheringInfo;
 
-    @OneToMany(mappedBy = "gathering", cascade = {PERSIST, REMOVE})
+    @OneToMany(mappedBy = "gathering", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private Set<GatheringMember> gatheringMembers = new HashSet<>();
 
     public Gathering(Content content, User user, GatheringInfo gatheringInfo) {
